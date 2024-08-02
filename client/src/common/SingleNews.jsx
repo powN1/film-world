@@ -14,7 +14,7 @@ const SingleNews = ({ title, comments, img, type, gridarea = null }) => {
 							<img
 								src={img}
 								alt={title}
-								className="h-full  object-cover group-hover:scale-110 duration-700"
+								className="h-full object-cover group-hover:scale-110 duration-700"
 							/>
 						</div>
 					</article>
@@ -32,7 +32,7 @@ const SingleNews = ({ title, comments, img, type, gridarea = null }) => {
 							/>
 						</div>
 						<div className="flex flex-col">
-							<p className="text-sm py-1 group-hover:text-yellow-400 duration-300 text-ellipsis overflow-hidden line-clamp-2">
+							<p className="text-sm py-1 group-hover:text-yellow-500 duration-300 text-ellipsis overflow-hidden line-clamp-2">
 								{title}
 							</p>
 							<span className="text-gray-400 text-xs">{comments} comments</span>
@@ -54,7 +54,7 @@ const SingleNews = ({ title, comments, img, type, gridarea = null }) => {
 							className="object-cover h-full w-full group-hover:scale-110 duration-700"
 						/>
 						<div className="absolute bottom-3 left-0 flex flex-col p-3">
-							<p className="text-3xl text-white group-hover:text-yellow-400 duration-300 [text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)]">
+							<p className="text-2xl text-white group-hover:text-yellow-500 duration-300 [text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)]">
 								{title}
 							</p>
 							<span className="text-gray-400">{comments} comments</span>
@@ -70,7 +70,7 @@ const SingleNews = ({ title, comments, img, type, gridarea = null }) => {
 							className="object-cover h-full w-full group-hover:scale-110 duration-700"
 						/>
 						<div className="absolute bottom-3 left-0 flex flex-col p-3">
-							<p className="text-3xl text-white group-hover:text-yellow-400 duration-300 [text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)]">
+							<p className="text-3xl text-white group-hover:text-yellow-500 duration-300 [text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)]">
 								{title}
 							</p>
 							<span className="text-gray-400">{comments} comments</span>

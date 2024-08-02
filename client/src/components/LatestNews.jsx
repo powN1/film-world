@@ -64,11 +64,48 @@ const news = [
 		img: reaper,
 		comments: 42,
 	},
+	{
+		title: `Captain America 4. Giancarlo Esposito reveals who he's going to play`,
+		img: reaper,
+		comments: 42,
+	},
+	{
+		title: `Captain America 4. Giancarlo Esposito reveals who he's going to play`,
+		img: reaper,
+		comments: 42,
+	},
+	{
+		title: `Captain America 4. Giancarlo Esposito reveals who he's going to play`,
+		img: reaper,
+		comments: 42,
+	},
+	{
+		title: `Captain America 4. Giancarlo Esposito reveals who he's going to play`,
+		img: reaper,
+		comments: 42,
+	},
+	{
+		title: `Captain America 4. Giancarlo Esposito reveals who he's going to play`,
+		img: reaper,
+		comments: 42,
+	},
+	{
+		title: `Captain America 4. Giancarlo Esposito reveals who he's going to play`,
+		img: reaper,
+		comments: 42,
+	},
 ];
 
 const LastestNews = () => {
+	const [currentCategory, setCurrentCategory] = useState("suggested");
+
 	const handleShowUnderline = (e) => {
-		// e.target.classList.toggle("after:w-full");
+		const category = e.target.innerText.toLowerCase();
+		console.log(e.target, category);
+
+		if (category !== currentCategory) {
+			setCurrentCategory(category);
+		}
 	};
 
 	return (
@@ -83,8 +120,13 @@ const LastestNews = () => {
 							<li key={i} className="">
 								<Link
 									path="/"
-									className="block py-2 relative hover:text-gray-500 duration-300 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[4px] after:bg-yellow-400"
-									onClick={(e) => handleShowUnderline(e)}
+									className={
+										"block py-2 relative hover:text-gray-500 duration-300 after:content-[''] after:absolute after:bottom-0 after:h-[3px] after:bg-yellow-400 after:duration-300 after:transition-[width_left] " +
+										(currentCategory === category.title.toLowerCase()
+											? "after:w-[100%] after:left-0"
+											: "after:w-[0%] after:left-[50%]")
+									}
+									onClick={handleShowUnderline}
 								>
 									{category.title}
 								</Link>
@@ -115,7 +157,7 @@ const LastestNews = () => {
 				</div>
 				<Link
 					path="/"
-					className="self-center py-4 px-32 border border-gray-300 font-bold"
+					className="self-center py-3 px-24 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
 				>
 					See all movies
 				</Link>
