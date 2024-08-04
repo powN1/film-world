@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import deadpool from "../imgs/deadpool.jpg";
 import mcu from "../imgs/mcu.jpg";
@@ -10,17 +10,33 @@ import hellboy from "../imgs/hellboy.jpg";
 import penguin from "../imgs/penguin.jpg";
 import reaper from "../imgs/reaper.jpg";
 import Slider from "react-slick";
-import Slide from "../common/Slide";
+import MovieSlide from "../common/MovieSlide";
 
-const WideSlider = () => {
+const WideSlider = ({ theme, type }) => {
+	const [currentTheme, setCurrentTheme] = useState("dark");
+
+	useEffect(() => {
+		setCurrentTheme(theme);
+	}, []);
+
 	// Slider settings
-	const settings = {
+	const settingsMovies = {
 		dots: true,
 		infinite: true,
 		speed: 500,
-		slidesToShow: 8,
-		slidesToScroll: 8,
-    initialSlide: 0,
+		slidesToShow: 7,
+		slidesToScroll: 7,
+		initialSlide: 1,
+	};
+	const settingsTrailers = {
+		dots: true,
+		infinite: true,
+		speed: 500,
+		slidesToShow: 7,
+		slidesToScroll: 7,
+		initialSlide: 0,
+		// centerMode: true,
+		// variableWidth: true,
 	};
 	const categories = [
 		{ title: "Movies of the day" },
@@ -31,46 +47,65 @@ const WideSlider = () => {
 	];
 
 	const movies = [
-		{ title: "I am legend 2", img: deadpool, ranking: 1 },
+		{
+			title: "I am legend 2",
+			img: deadpool,
+			ranking: 1,
+			desc: "A world in which everyone escapes their fate by treachery and cunning",
+		},
 		{
 			title: "Awoken",
 			img: mcu,
 			ranking: 2,
+			description:
+				"A lonley wolf on a mission of vengeance. Will he complete his task or will he be neutralized?",
 		},
 		{
 			title: `Code of Evil`,
 			img: rdj,
 			ranking: 3,
+			description:
+				"A story about a little boy who had a big dream of becoming one of the greatest musicians of his generation. Countless hours spent practicing make him a formidable adversary to others.",
 		},
 		{
 			title: `Twisters`,
 			img: batman,
 			ranking: 4,
+			description:
+				"A lonley wolf on a mission of vengeance. Will he complete his task or will he be neutralized?",
 		},
 		{
 			title: `Black telephone`,
 			img: giancarlo,
 			ranking: 5,
+			description:
+				"A lonley wolf on a mission of vengeance. Will he complete his task or will he be neutralized?",
 		},
 		{
 			title: `Love Lies Bleeding`,
 			img: reaper,
 			ranking: 6,
+			desc: "A world in which everyone escapes their fate by treachery and cunning",
 		},
 		{
 			title: `Dexter`,
 			img: dexter,
 			ranking: 7,
+			desc: "A world in which everyone escapes their fate by treachery and cunning",
 		},
 		{
-      title: `Hellboy: Hell Unites`,
+			title: `Hellboy: Hell Unites`,
 			img: hellboy,
 			ranking: 8,
+			description:
+				"A lonley wolf on a mission of vengeance. Will he complete his task or will he be neutralized?",
 		},
 		{
-      title: `Batman: Arkham Vengence`,
+			title: `Batman: Arkham Vengence`,
 			img: penguin,
 			ranking: 9,
+			description:
+				"A lonley wolf on a mission of vengeance. Will he complete his task or will he be neutralized?",
 		},
 		{
 			title: `Ministry`,
@@ -110,19 +145,41 @@ const WideSlider = () => {
 	};
 
 	return (
-		<div className="bg-black text-white flex flex-col py-10">
-			<h2 className="uppercase text-3xl font-bold text-center">Most popular</h2>
-			<ul className="w-[70%] mx-auto list-none flex justify-center relative after:absolute after:content-[''] after:bottom-0 after:left-0 after:h-[1px] after:w-full after:bg-gray-800 after:-translate-y-[50%]">
+		<div
+			className={
+				"flex flex-col py-10 gap-y-5 " +
+				(currentTheme === "light"
+					? "bg-transparent text-black"
+					: "bg-black text-white")
+			}
+		>
+			<h2
+				className={
+					"uppercase text-4xl font-bold text-center tracking-tighter font-sansNarrow " +
+					(currentTheme === "light" ? "text-black" : "text-gray-100")
+				}
+			>
+				{type === "movie" ? "Most popular" : "Trailers"}
+			</h2>
+			<ul
+				className={
+					"w-[55%] mx-auto list-none flex justify-center relative after:absolute after:content-[''] after:bottom-0 after:left-0 after:h-[1px] after:w-full after:-translate-y-[50%] " +
+					(currentTheme === "light" ? "after:bg-gray-200" : "after:bg-gray-800")
+				}
+			>
 				{categories.map((category, i) => {
 					return (
-						<li key={i} className="">
+						<li key={i}>
 							<Link
 								path="/"
 								className={
-									"block px-5 py-2 relative hover:text-white duration-300 after:content-[''] after:z-10 after:absolute after:bottom-0 after:h-[3px] after:bg-yellow-400 after:duration-300 after:transition-[width_left] " +
+									"block px-5 py-2 relative duration-300 after:content-[''] after:z-10 after:absolute after:bottom-0 after:h-[3px] after:bg-yellow-400 after:duration-300 after:transition-[width_left] " +
 									(currentCategory === category.title.toLowerCase()
-										? "after:w-[100%] after:left-0 text-white"
-										: "after:w-[0%] after:left-[50%] text-gray-400 ")
+										? "after:w-[100%] after:left-0 "
+										: "after:w-[0%] after:left-[50%] text-gray-400 ") +
+									(currentTheme === "light"
+										? "hover:text-black"
+										: "hover:text-white")
 								}
 								onClick={handleShowUnderline}
 							>
@@ -133,15 +190,19 @@ const WideSlider = () => {
 				})}
 			</ul>
 			<div className="w-[95%] self-center">
-				<Slider {...settings}>
-					{movies.map((movie, i) => (
-						<Slide
-							key={i}
-							title={movie.title}
-							img={movie.img}
-							ranking={movie.ranking ? movie.ranking : null}
-						/>
-					))}
+				<Slider {...(type === "movie" ? settingsMovies : settingsTrailers)}>
+					{movies.map((movie, i) => {
+						return (
+							<MovieSlide
+								key={i}
+								title={movie.title}
+								img={movie.img}
+								ranking={movie.ranking ? movie.ranking : null}
+								description={movie.description ? movie.description : null}
+								type={type}
+							/>
+						);
+					})}
 				</Slider>
 			</div>
 			<Link

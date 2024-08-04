@@ -11,3 +11,17 @@
     @apply rounded-sm p-2 pl-10 outline-none;
   }
 }
+
+.slick-prev:before,
+.slick-next:before {
+  position: absolute;
+  color: #ffdb00;
+  font-size: 30px;
+}
+
+.slick-prev:before {
+  left: -20%;
+}
+.slick-next:before {
+  left: 20%;
+}
