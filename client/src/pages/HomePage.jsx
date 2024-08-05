@@ -5,6 +5,8 @@ import Reviews from "../components/Reviews";
 import WideReviewSlider from "../components/WideReviewSlider";
 import Ranking from "../components/Ranking";
 import Games from "../components/Games";
+import Download from "../components/Download";
+import Footer from "../components/Footer";
 
 const HomePage = () => {
 	return (
@@ -15,13 +17,15 @@ const HomePage = () => {
 			</section>
 			<WideMovieSlider />
 			<section className="w-[55vw] mx-auto">
-        <Reviews />
-      </section>
+				<Reviews />
+			</section>
 			<WideReviewSlider />
 			<section className="w-[55vw] mx-auto">
-        <Ranking />
-  <Games/>      
-      </section>
+				<Ranking />
+				<Games />
+				<Download />
+			</section>
+			<Footer />
 		</>
 	);
 };

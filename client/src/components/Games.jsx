@@ -52,7 +52,7 @@ const Ranking = () => {
 				<img
 					src={movies[2].img}
 					alt=""
-					className="h-full w-full object-cover group-hover:scale-110 duration-300"
+					className="h-full w-full object-cover group-hover:scale-110 duration-700"
 				/>
 				<h2 className="absolute left-0 bottom-[12%] text-white text-5xl font-extrabold uppercase w-full text-center group-hover:text-yellow-400 duration-700 tracking-wide">
 					MCU adaptation in the world of games!
