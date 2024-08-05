@@ -12,38 +12,23 @@ import reaper from "../imgs/reaper.jpg";
 import Slider from "react-slick";
 import MovieSlide from "../common/MovieSlide";
 
-const WideSlider = ({ theme, type }) => {
-	const [currentTheme, setCurrentTheme] = useState("dark");
-
-	useEffect(() => {
-		setCurrentTheme(theme);
-	}, []);
+const WideReviewSlider = () => {
+	const [currentMovieCategory, setCurrentMovieCategory] = useState("movies");
 
 	// Slider settings
-	const settingsMovies = {
-		dots: true,
+	const settings = {
+		dots: false,
 		infinite: true,
-		speed: 500,
-		slidesToShow: 7,
-		slidesToScroll: 7,
-		initialSlide: 1,
-	};
-	const settingsTrailers = {
-		dots: true,
-		infinite: true,
-		speed: 500,
-		slidesToShow: 7,
-		slidesToScroll: 7,
-		initialSlide: 0,
-		// centerMode: true,
-		// variableWidth: true,
+		slidesToShow: 3,
+		slidesToScroll: 3,
+		autoplay: true,
+		autoplaySpeed: 15000,
+		pauseOnHover: true,
 	};
 	const categories = [
-		{ title: "Movies of the day" },
-		{ title: "Series of the day" },
-		{ title: "VOD" },
-		{ title: "Games of the day" },
-		{ title: "Cinema" },
+		{ title: "Movies" },
+		{ title: "Series" },
+		{ title: "Games" },
 	];
 
 	const movies = [
@@ -52,6 +37,7 @@ const WideSlider = ({ theme, type }) => {
 			img: deadpool,
 			ranking: 1,
 			desc: "A world in which everyone escapes their fate by treachery and cunning",
+			pegi: 16,
 		},
 		{
 			title: "Awoken",
@@ -59,6 +45,7 @@ const WideSlider = ({ theme, type }) => {
 			ranking: 2,
 			description:
 				"A lonley wolf on a mission of vengeance. Will he complete his task or will he be neutralized?",
+			pegi: 16,
 		},
 		{
 			title: `Code of Evil`,
@@ -66,6 +53,7 @@ const WideSlider = ({ theme, type }) => {
 			ranking: 3,
 			description:
 				"A story about a little boy who had a big dream of becoming one of the greatest musicians of his generation. Countless hours spent practicing make him a formidable adversary to others.",
+			pegi: 12,
 		},
 		{
 			title: `Twisters`,
@@ -73,6 +61,7 @@ const WideSlider = ({ theme, type }) => {
 			ranking: 4,
 			description:
 				"A lonley wolf on a mission of vengeance. Will he complete his task or will he be neutralized?",
+			pegi: 18,
 		},
 		{
 			title: `Black telephone`,
@@ -80,18 +69,21 @@ const WideSlider = ({ theme, type }) => {
 			ranking: 5,
 			description:
 				"A lonley wolf on a mission of vengeance. Will he complete his task or will he be neutralized?",
+			pegi: 18,
 		},
 		{
 			title: `Love Lies Bleeding`,
 			img: reaper,
 			ranking: 6,
 			desc: "A world in which everyone escapes their fate by treachery and cunning",
+			pegi: 12,
 		},
 		{
 			title: `Dexter`,
 			img: dexter,
 			ranking: 7,
 			desc: "A world in which everyone escapes their fate by treachery and cunning",
+			pegi: 18,
 		},
 		{
 			title: `Hellboy: Hell Unites`,
@@ -99,6 +91,7 @@ const WideSlider = ({ theme, type }) => {
 			ranking: 8,
 			description:
 				"A lonley wolf on a mission of vengeance. Will he complete his task or will he be neutralized?",
+			pegi: 12,
 		},
 		{
 			title: `Batman: Arkham Vengence`,
@@ -106,65 +99,62 @@ const WideSlider = ({ theme, type }) => {
 			ranking: 9,
 			description:
 				"A lonley wolf on a mission of vengeance. Will he complete his task or will he be neutralized?",
+			pegi: 16,
 		},
 		{
 			title: `Ministry`,
 			img: reaper,
 			ranking: 10,
+			pegi: 16,
 		},
 		{
 			title: `Black organs`,
 			img: reaper,
+			pegi: 16,
 		},
 		{
 			title: `Blackbird`,
 			img: reaper,
+			pegi: 16,
 		},
 		{
 			title: `Out of this world`,
 			img: reaper,
+			pegi: 16,
 		},
 		{
 			title: `Vicious cycle`,
 			img: reaper,
+			pegi: 16,
 		},
 		{
 			title: `Perpetual burn`,
 			img: reaper,
+			pegi: 16,
 		},
 	];
-	const [currentCategory, setCurrentCategory] = useState("suggested");
 
 	const handleShowUnderline = (e) => {
 		const category = e.target.innerText.toLowerCase();
 		console.log(e.target, category);
 
-		if (category !== currentCategory) {
-			setCurrentCategory(category);
+		if (category !== currentMovieCategory) {
+			setCurrentMovieCategory(category);
 		}
 	};
 
 	return (
-		<div
-			className={
-				"flex flex-col py-10 gap-y-5 " +
-				(currentTheme === "light"
-					? "bg-transparent text-black"
-					: "bg-black text-white")
-			}
-		>
+		<div className={"flex flex-col py-10 gap-y-5 bg-transparent text-black"}>
 			<h2
 				className={
-					"uppercase text-4xl font-bold text-center tracking-tighter font-sansNarrow " +
-					(currentTheme === "light" ? "text-black" : "text-gray-100")
+					"uppercase text-4xl font-bold text-center tracking-tighter font-sansNarrow"
 				}
 			>
-				{type === "movie" ? "Most popular" : "Trailers"}
+				Trailers
 			</h2>
 			<ul
 				className={
-					"w-[55%] mx-auto list-none flex justify-center relative after:absolute after:content-[''] after:bottom-0 after:left-0 after:h-[1px] after:w-full after:-translate-y-[50%] " +
-					(currentTheme === "light" ? "after:bg-gray-200" : "after:bg-gray-800")
+					"w-[55%] mx-auto list-none flex justify-center relative after:absolute after:content-[''] after:bottom-0 after:left-0 after:h-[1px] after:w-full after:-translate-y-[50%] after:bg-gray-300"
 				}
 			>
 				{categories.map((category, i) => {
@@ -174,12 +164,9 @@ const WideSlider = ({ theme, type }) => {
 								path="/"
 								className={
 									"block px-5 py-2 relative duration-300 after:content-[''] after:z-10 after:absolute after:bottom-0 after:h-[3px] after:bg-yellow-400 after:duration-300 after:transition-[width_left] " +
-									(currentCategory === category.title.toLowerCase()
+									(currentMovieCategory === category.title.toLowerCase()
 										? "after:w-[100%] after:left-0 "
-										: "after:w-[0%] after:left-[50%] text-gray-400 ") +
-									(currentTheme === "light"
-										? "hover:text-black"
-										: "hover:text-white")
+										: "after:w-[0%] after:left-[50%] text-gray-400 hover:text-black")
 								}
 								onClick={handleShowUnderline}
 							>
@@ -190,7 +177,7 @@ const WideSlider = ({ theme, type }) => {
 				})}
 			</ul>
 			<div className="w-[95%] self-center">
-				<Slider {...(type === "movie" ? settingsMovies : settingsTrailers)}>
+				<Slider {...settings}>
 					{movies.map((movie, i) => {
 						return (
 							<MovieSlide
@@ -198,8 +185,9 @@ const WideSlider = ({ theme, type }) => {
 								title={movie.title}
 								img={movie.img}
 								ranking={movie.ranking ? movie.ranking : null}
-								description={movie.description ? movie.description : null}
-								type={type}
+								description={movie.description}
+								type="trailer"
+								pegi={movie.pegi}
 							/>
 						);
 					})}
@@ -207,7 +195,7 @@ const WideSlider = ({ theme, type }) => {
 			</div>
 			<Link
 				path="/"
-				className="self-center py-3 px-24 border border-gray-300 font-bold mt-8 hover:bg-white hover:text-black duration-500"
+				className="self-center py-3 px-24 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
 			>
 				Check most popular movies
 			</Link>
@@ -215,4 +203,4 @@ const WideSlider = ({ theme, type }) => {
 	);
 };
 
-export default WideSlider;
+export default WideReviewSlider;

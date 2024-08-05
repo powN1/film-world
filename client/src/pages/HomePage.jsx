@@ -1,7 +1,10 @@
 import MainNews from "../components/MainNews";
 import LatestNews from "../components/LatestNews";
-import WideSlider from "../components/WideSlider";
+import WideMovieSlider from "../components/WideMovieSlider";
 import Reviews from "../components/Reviews";
+import WideReviewSlider from "../components/WideReviewSlider";
+import Ranking from "../components/Ranking";
+import Games from "../components/Games";
 
 const HomePage = () => {
 	return (
@@ -10,11 +13,15 @@ const HomePage = () => {
 				<MainNews />
 				<LatestNews />
 			</section>
-			<WideSlider theme="dark" type="movie"/>
+			<WideMovieSlider />
 			<section className="w-[55vw] mx-auto">
         <Reviews />
       </section>
-			<WideSlider theme="light" type="trailer"/>
+			<WideReviewSlider />
+			<section className="w-[55vw] mx-auto">
+        <Ranking />
+  <Games/>      
+      </section>
 		</>
 	);
 };

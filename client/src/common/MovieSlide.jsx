@@ -1,11 +1,20 @@
 import { Link } from "react-router-dom";
+import { FaRegCirclePlay } from "react-icons/fa6";
+import { useState } from "react";
 
-const MovieSlide = ({ title, img, ranking = null, description, type, }) => {
+const MovieSlide = ({
+	title,
+	img,
+	ranking = null,
+	description = null,
+	type,
+	pegi = null,
+}) => {
 	const renderMovieSlide = () => {
 		switch (type) {
 			case "movie":
 				return (
-					<Link className="flex flex-col mx-4 gap-y-2 relative group">
+					<Link className="flex flex-col gap-y-2 relative group">
 						<div className="h-[260px] border border-gray-700 overflow-hidden">
 							<img
 								src={img}
@@ -15,24 +24,41 @@ const MovieSlide = ({ title, img, ranking = null, description, type, }) => {
 						</div>
 						<p className="text-center">{title}</p>
 						<span className="absolute bottom-[8%] left-[-10%] font-bold text-7xl">
-							{ranking ? ranking : null}
+							{ranking}
 						</span>
 					</Link>
 				);
 			case "trailer":
 				return (
-					<Link className="flex flex-col mx-4 gap-y-2 relative group">
-						<div className="h-[400px] border border-gray-300 overflow-hidden">
+					<Link to="/" className="flex flex-col gap-y-2 relative group">
+						<div className="h-[400px] border border-gray-300 overflow-hidden after:content-[''] after:absolute after:left-0 after:top-0 after:w-full after:h-full after:bg-black after:opacity-25">
 							<img
 								src={img}
 								alt={title}
-								className="h-full object-cover"
+								className="h-full w-full object-cover"
 							/>
 						</div>
-						<div className="absolute bottom-0 left-0 px-3 text-white">
+						<FaRegCirclePlay className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-5xl text-white group-hover:text-yellow-400 duration-100" />
+						<div className="absolute bottom-0 left-0 p-3 text-white">
 							<p className="">{title}</p>
-              <p>2024</p>
-              <div className="">{description ? description : null}</div>
+							<p className="text-sm">2024</p>
+							<div className={"text-sm w-[80%]"}>{description}</div>
+						</div>
+						<div
+							className={
+								"absolute top-0 left-0 text-black w-[27px] h-[27px] rounded flex justify-center items-center m-2 " +
+								(pegi === 12
+									? "bg-yellow-400"
+									: pegi === 16
+										? "bg-orange-400"
+										: pegi === 18
+											? "bg-red-500"
+											: null)
+							}
+						>
+							<p className="text-xl text-white font-bold flex justify-center items-center">
+								{pegi}
+							</p>
 						</div>
 					</Link>
 				);
