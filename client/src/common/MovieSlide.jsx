@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { FaRegCirclePlay } from "react-icons/fa6";
-import { useState } from "react";
 
 const MovieSlide = ({
 	title,
