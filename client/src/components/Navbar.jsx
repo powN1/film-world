@@ -50,11 +50,20 @@ const Navbar = () => {
 
 	const [navbarSize, setNavbarSize] = useState("big");
 	const [searchModalVisible, setSearchModalVisible] = useState(false);
+	const [modalInputValue, setModalInputValue] = useState("");
+	const [foundMovies, setFoundMovies] = useState([]);
 
+
+	const modalInputRef = useRef(null);
 	let ref = useRef();
+
 	const handleDropdown = () => {
 		console.log(ref.current);
 		ref.current.classList.toggle("hidden");
+	};
+
+	const handleInputSearch = (e) => {
+		setModalInputValue(e.target.value);
 	};
 
 	const resizeNavbar = () => {
@@ -73,10 +82,20 @@ const Navbar = () => {
 		window.addEventListener("scroll", resizeNavbar);
 		if (searchModalVisible) {
 			document.body.style.overflow = "hidden";
+			modalInputRef.current.focus();
 		} else {
 			document.body.style.overflow = "visible";
+			setModalInputValue("");
+			setFoundMovies([]);
 		}
-	}, [navbarSize, searchModalVisible]);
+		if (modalInputValue) {
+			setFoundMovies(
+				movies.filter((movie) =>
+					movie.title.toLowerCase().includes(modalInputValue),
+				),
+			);
+		}
+	}, [navbarSize, searchModalVisible, modalInputValue]);
 
 	return (
 		<>
@@ -207,8 +226,19 @@ const Navbar = () => {
 									type="text"
 									className="input-box grow border border-gray-400 rounded-md focus:border-yellow-400 duration-300 focus:[box-shadow:_2px_2px_6px_rgb(250_204_21/_15%)]"
 									placeholder="Search..."
+									ref={modalInputRef}
+									onChange={handleInputSearch}
+									value={modalInputValue}
 								/>
 								<FaMagnifyingGlass className="absolute left-3 top-1/2 translate-y-[-50%] text-lg text-yellow-400" />
+								{modalInputValue ? (
+									<button
+										className="absolute right-3 top-1/2 translate-y-[-50%] py-2 px-5 font-bold text-xs border border-gray-200 rounded-sm hover:bg-black hover:text-white duration-300"
+										onClick={() => setModalInputValue("")}
+									>
+										Clear
+									</button>
+								) : null}
 							</div>
 							<button
 								className="py-3 px-6 rounded-sm text-black font-bold hover:bg-slate-50 duration-300"
@@ -218,44 +248,82 @@ const Navbar = () => {
 							</button>
 						</div>
 
-						<div className="flex gap-x-5">
-							<div className="grow flex flex-col gap-y-4">
-								<div className="flex justify-between items-end">
-									<p className="text-xl uppercase tracking-tighter">Best movies</p>
-									<Link to="/" className="text-sm text-yellow-800">See all</Link>
-								</div>
-								<div className="flex gap-x-5">
+						{modalInputValue ? (
+							<div className="flex flex-col gap-y-10">
+								<div className="grid grid-rows-1 grid-cols-6 gap-x-5">
 									{/* SLIDES */}
-									{movies.slice(3).map((poster, i) => (
+									{foundMovies.map((movie, i) => (
 										<SearchPoster
 											key={i}
-											title={poster.title}
-											img={poster.img}
-											type="poster"
-										/>
-									))}
-								</div>
-							</div>
-
-							<div className="grow flex flex-col gap-y-4">
-								<div className="flex justify-between items-end">
-									<p className="text-xl uppercase tracking-tighter">Best series</p>
-									<Link to="/" className="text-sm text-yellow-800">See all</Link>
-								</div>
-								<div className="flex gap-x-5">
-									{/* SLIDES */}
-									{movies.slice(3).map((poster, i) => (
-										<SearchPoster
-											key={i}
-											title={poster.title}
-											img={poster.img}
-                      year="2022"
+											title={movie.title}
+											img={movie.img}
+											year={movie.year}
 											type="searchResult"
 										/>
 									))}
 								</div>
+								{foundMovies.length !== 0 ? (
+									<Link
+										to="/"
+										className="self-center py-2 px-14 border border-gray-200 font-bold hover:bg-black hover:text-white duration-300"
+									>
+										See more results
+									</Link>
+								) : null}
 							</div>
-						</div>
+						) : (
+							<div className="flex gap-x-5">
+								<div className="w-1/2 flex flex-col gap-y-4">
+									<div className="flex justify-between items-end">
+										<p className="text-xl uppercase tracking-tighter">
+											Best movies
+										</p>
+										<Link
+											to="/"
+											className="text-xs text-yellow-700 hover:text-yellow-400 duration-500"
+										>
+											See all
+										</Link>
+									</div>
+									<div className="flex gap-x-5">
+										{/* SLIDES */}
+										{movies.slice(3).map((movie, i) => (
+											<SearchPoster
+												key={i}
+												title={movie.title}
+												img={movie.img}
+												type="poster"
+											/>
+										))}
+									</div>
+								</div>
+
+								<div className="w-1/2 flex flex-col gap-y-4">
+									<div className="flex justify-between items-end">
+										<p className="text-xl uppercase tracking-tighter">
+											Best series
+										</p>
+										<Link
+											to="/"
+											className="text-xs text-yellow-700 hover:text-yellow-400 duration-500"
+										>
+											See all
+										</Link>
+									</div>
+									<div className="grid grid-rows-1 grid-cols-3 gap-x-5">
+										{/* SLIDES */}
+										{movies.slice(3).map((movie, i) => (
+											<SearchPoster
+												key={i}
+												title={movie.title}
+												img={movie.img}
+												type="poster"
+											/>
+										))}
+									</div>
+								</div>
+							</div>
+						)}
 					</div>
 				</div>
 			) : null}
