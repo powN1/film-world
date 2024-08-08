@@ -2,7 +2,9 @@ import { Link, Outlet } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { CiUser } from "react-icons/ci";
-import filmwebLogo from "../imgs/filmweb-logo.svg";
+import { RxHamburgerMenu } from "react-icons/rx";
+import { IoMdClose } from "react-icons/io";
+import filmwebLogo from "../imgs/filmweb-logo.png";
 import filmwebLogoSmall from "../imgs/filmweb-logo-small.png";
 import { navbarItems } from "./navbarItems";
 import { useEffect, useRef, useState } from "react";
@@ -52,14 +54,26 @@ const Navbar = () => {
 	const [searchModalVisible, setSearchModalVisible] = useState(false);
 	const [modalInputValue, setModalInputValue] = useState("");
 	const [foundMovies, setFoundMovies] = useState([]);
-
+	const [showMobileMenu, setShowMobileMenu] = useState(false);
 
 	const modalInputRef = useRef(null);
-	let ref = useRef();
 
-	const handleDropdown = () => {
-		console.log(ref.current);
-		ref.current.classList.toggle("hidden");
+	const handleDropdown = (e) => {
+		const list = e.currentTarget.children[1];
+		list.classList.toggle("animate-slide");
+		list.classList.toggle("h-fit");
+		list.classList.toggle("visible");
+		// if (list.classList.contains("invisible")) {
+		// 	list.classList.remove("invisible");
+		// 	list.classList.remove("h-0");
+		// 	list.classList.add("visible");
+		// 	list.classList.add("h-fit");
+		// } else {
+		// 	list.classList.remove("visible");
+		// 	list.classList.remove("h-fit");
+		// 	list.classList.add("invisible");
+		// 	list.classList.add("h-0");
+		// }
 	};
 
 	const handleInputSearch = (e) => {
@@ -78,8 +92,7 @@ const Navbar = () => {
 		}
 	};
 
-	useEffect(() => {
-		window.addEventListener("scroll", resizeNavbar);
+	const handleSearchModal = () => {
 		if (searchModalVisible) {
 			document.body.style.overflow = "hidden";
 			modalInputRef.current.focus();
@@ -88,6 +101,22 @@ const Navbar = () => {
 			setModalInputValue("");
 			setFoundMovies([]);
 		}
+	};
+
+	const handleMobileMenu = () => {
+		if (showMobileMenu) {
+			document.body.style.overflow = "hidden";
+		} else {
+			document.body.style.overflow = "visible";
+		}
+	};
+
+	useEffect(() => {
+		window.addEventListener("scroll", resizeNavbar);
+
+		handleSearchModal();
+		handleMobileMenu();
+
 		if (modalInputValue) {
 			setFoundMovies(
 				movies.filter((movie) =>
@@ -95,23 +124,25 @@ const Navbar = () => {
 				),
 			);
 		}
-	}, [navbarSize, searchModalVisible, modalInputValue]);
+	}, [navbarSize, searchModalVisible, modalInputValue, showMobileMenu]);
 
 	return (
 		<>
 			<nav className="sticky top-0 z-20 font-lato bg-black flex flex-col justify-between items-center gap-y-3 text-white">
 				<div
 					className={
-						"flex items-center gap-y-2 w-[55%] " +
+						"flex items-center gap-y-2 w-[55%] max-lg:w-full max-lg:gap-x-6 max-lg:px-4 max-lg:py-3 " +
 						(navbarSize === "small"
 							? "gap-x-2"
-							: "flex-wrap justify-evenly gap-x-4 pt-3")
+							: "flex-wrap justify-evenly lg:gap-x-4 lg:pt-3 max-lg:flex-nowrap max-lg:justify-end")
 					}
 				>
 					<Link
 						to="/"
 						className={
-							navbarSize === "small" ? "h-[25px] -order-2" : "h-[40px]"
+							navbarSize === "small"
+								? "h-[25px] -order-2"
+								: "h-[40px] max-lg:mr-auto max-lg:h-[32px]"
 						}
 					>
 						<img
@@ -123,10 +154,10 @@ const Navbar = () => {
 					{/* Search input */}
 					<div
 						className={
-							"relative text-black text-sm " +
+							"relative text-black text-sm self-stretch w-[40px] " +
 							(navbarSize === "small"
 								? "self-stretch w-[40px] cursor-pointer group"
-								: "self-stretch grow")
+								: "self-stretch grow max-lg:grow-0")
 						}
 						onClick={() => {
 							setSearchModalVisible(true);
@@ -135,8 +166,8 @@ const Navbar = () => {
 						<input
 							type="text"
 							className={
-								"h-full " +
-								(navbarSize === "small" ? "w-0" : "w-full input-box")
+								"h-full max-lg:w-0 " +
+								(navbarSize === "small" ? "w-0" : "w-full lg:input-box")
 							}
 							placeholder="Look for movies, series, animations..."
 						/>
@@ -145,14 +176,14 @@ const Navbar = () => {
 								"absolute left-3 top-1/2 translate-y-[-50%] text-lg " +
 								(navbarSize === "small"
 									? "text-white opacity-75"
-									: "text-yellow-400 opacity-50 ")
+									: "text-yellow-400 max-lg:text-white opacity-50 max-lg:opacity-75 max-lg:text-2xl")
 							}
 						/>
 					</div>
 					{/* Sign in google button */}
 					<button
 						className={
-							"py-2 px-7 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium " +
+							"py-2 px-7 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium max-lg:hidden " +
 							(navbarSize === "small" ? "" : "self-stretch")
 						}
 					>
@@ -162,20 +193,43 @@ const Navbar = () => {
 					{/* Sign in button */}
 					<button
 						className={
-							"flex justify-center items-center gap-x-2 px-3 h-full hover:text-yellow-400 duration-200 " +
+							"flex justify-center items-center gap-x-2 h-full lg:hover:text-yellow-400 duration-200 max-lg:flex-col " +
 							(navbarSize === "small" ? "flex-col" : "")
 						}
 					>
 						<CiUser
-							className={navbarSize === "small" ? "text-xl" : "text-2xl"}
+							className={
+								navbarSize === "small" ? "text-xl" : "text-2xl max-lg:text-2xl"
+							}
 						/>
-						<p className={navbarSize === "small" ? "text-xs" : ""}>Sign in</p>
+						<p
+							className={navbarSize === "small" ? "text-xs" : "max-lg:text-xs"}
+						>
+							Sign in
+						</p>
+					</button>
+
+					{/* Mobile menu button */}
+					<button
+						className="flex justify-center items-center gap-x-2 h-full max-lg:flex-col lg:hidden"
+						onClick={() => setShowMobileMenu((prevVal) => !prevVal)}
+					>
+						<RxHamburgerMenu
+							className={
+								navbarSize === "small" ? "text-xl" : "text-2xl max-lg:text-2xl"
+							}
+						/>
+						<p
+							className={navbarSize === "small" ? "text-xs" : "max-lg:text-xs"}
+						>
+							Menu
+						</p>
 					</button>
 
 					{/* Menu categories */}
 					<ul
 						className={
-							"list-none " +
+							"list-none max-lg:hidden " +
 							(navbarSize === "small" ? "-order-1 grow" : "w-full")
 						}
 					>
@@ -325,6 +379,68 @@ const Navbar = () => {
 							</div>
 						)}
 					</div>
+				</div>
+			) : null}
+
+			{showMobileMenu ? (
+				<div className="flex flex-col w-screen h-screen fixed top-0 left-0 bg-white z-30">
+					<div className="bg-red-200 px-3 py-3 flex flex-col gap-y-2">
+						<div className="flex items-center justify-between">
+							<Link to="/" className="h-[30px]">
+								<img
+									src={filmwebLogo}
+									alt="website logo"
+									className="h-full w-full object-cover block mx-auto select-none"
+								/>
+							</Link>
+							<button className="" onClick={handleMobileMenu}>
+								<IoMdClose
+									className="text-white text-4xl"
+									onClick={() => setShowMobileMenu((prevVal) => !prevVal)}
+								/>
+							</button>
+						</div>
+						<div className="flex flex-col gap-y-2">
+							<button className="h-[36px] py-2 px-7 flex justify-center items-center gap-x-2 rounded bg-white text-gray-600 font-bold text-sm">
+								<FaGoogle className="text-yellow-400 text-lg" />
+								Sign in through google
+							</button>
+							<button className="h-[36px] py-2 px-7 flex justify-center items-center gap-x-2 rounded bg-transparent text-white text-sm border border-gray-200">
+								<CiUser className="text-xl" />
+								Sign in
+							</button>
+						</div>
+					</div>
+
+					<ul className="list-none flex flex-col">
+						{navbarItems.map((item, itemIndex) => {
+							return (
+								<li
+									key={itemIndex}
+									className="relative  "
+									onClick={handleDropdown}
+								>
+									<Link to={item.path} className="relative block py-3 px-5">
+										{item.title}
+									</Link>
+									{item.submenu ? (
+										<ul className="w-full list-none block transition-all duration-500 ease-in-out ">
+											{item.submenu.map((submenu, submenuIndex) => (
+												<li
+													key={submenuIndex}
+													className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
+												>
+													<Link className="block py-2 px-7 uppercase font-medium hover:text-yellow-500">
+														{submenu.title}
+													</Link>
+												</li>
+											))}
+										</ul>
+									) : null}
+								</li>
+							);
+						})}
+					</ul>
 				</div>
 			) : null}
 			<Outlet />
