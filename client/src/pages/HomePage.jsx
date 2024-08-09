@@ -11,16 +11,16 @@ import Footer from "../components/Footer";
 const HomePage = () => {
 	return (
 		<>
-			<section className="bg-black w-[55vw] mx-auto">
+			<section className="bg-black lg:w-[55vw] mx-auto">
 				<MainNews />
 				<LatestNews />
 			</section>
 			<WideMovieSlider />
-			<section className="w-[55vw] mx-auto">
+			<section className="lg:w-[55vw] mx-auto">
 				<Reviews />
 			</section>
 			<WideReviewSlider />
-			<section className="w-[55vw] mx-auto">
+			<section className="lg:w-[55vw] mx-auto">
 				<Ranking />
 				<Games />
 				<Download />

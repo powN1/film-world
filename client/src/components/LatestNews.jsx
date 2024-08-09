@@ -109,12 +109,12 @@ const LastestNews = () => {
 	};
 
 	return (
-		<div className="bg-white flex p-4 gap-x-3">
+		<div className="bg-white flex max-lg:flex-col p-4 gap-x-3">
 			<div className="basis-[70%] flex flex-col gap-y-3">
 				<h3 className="w-full font-bold uppercase tracking-wider">
 					Latest news
 				</h3>
-				<ul className="w-full list-none flex gap-x-5">
+				<ul className="w-full list-none flex max-lg:flex-wrap max-lg:justify-center gap-x-5">
 					{categories.map((category, i) => {
 						return (
 							<li key={i} className="">
@@ -134,7 +134,7 @@ const LastestNews = () => {
 						);
 					})}
 				</ul>
-				<div className="grid grid-rows-[190px_190px_190px_190px_190px_190px] grid-cols-3 gap-3">
+				<div className="grid grid-rows-[190px_190px_190px_190px_190px_190px] grid-cols-3 max-lg:grid-rows-16rows70px max-lg:grid-cols-1 gap-3">
 					{news.map((article, i) => {
 						let gridarea = {};
 						if (i === 3) {

@@ -4,6 +4,7 @@ import { FaMagnifyingGlass } from "react-icons/fa6";
 import { CiUser } from "react-icons/ci";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoMdClose } from "react-icons/io";
+import { IoChevronDown } from "react-icons/io5";
 import filmwebLogo from "../imgs/filmweb-logo.png";
 import filmwebLogoSmall from "../imgs/filmweb-logo-small.png";
 import { navbarItems } from "./navbarItems";
@@ -58,22 +59,24 @@ const Navbar = () => {
 
 	const modalInputRef = useRef(null);
 
-	const handleDropdown = (e) => {
+	const handleMobileMenuDropdown = (e) => {
 		const list = e.currentTarget.children[1];
-		list.classList.toggle("animate-slide");
-		list.classList.toggle("h-fit");
-		list.classList.toggle("visible");
-		// if (list.classList.contains("invisible")) {
-		// 	list.classList.remove("invisible");
-		// 	list.classList.remove("h-0");
-		// 	list.classList.add("visible");
-		// 	list.classList.add("h-fit");
-		// } else {
-		// 	list.classList.remove("visible");
-		// 	list.classList.remove("h-fit");
-		// 	list.classList.add("invisible");
-		// 	list.classList.add("h-0");
-		// }
+		console.log();
+		if (list) {
+			if (list.classList.contains("invisible")) {
+				list.classList.remove("invisible");
+				list.classList.remove("max-h-0");
+				list.classList.add("visible");
+				list.classList.add("max-h-[700px]");
+				e.currentTarget.children[0].children[0].classList.toggle("rotate-180");
+			} else {
+				list.classList.remove("visible");
+				list.classList.remove("max-h-[700px]");
+				list.classList.add("invisible");
+				list.classList.add("max-h-0");
+				e.currentTarget.children[0].children[0].classList.toggle("rotate-180");
+			}
+		}
 	};
 
 	const handleInputSearch = (e) => {
@@ -384,9 +387,9 @@ const Navbar = () => {
 
 			{showMobileMenu ? (
 				<div className="flex flex-col w-screen h-screen fixed top-0 left-0 bg-white z-30">
-					<div className="bg-red-200 px-3 py-3 flex flex-col gap-y-2">
+					<div className="bg-gradient-to-r from-[#4D2F3B] from-10% via-[#1D2236] via-40% to-[#6B949A] px-3 py-4 flex flex-col gap-y-2">
 						<div className="flex items-center justify-between">
-							<Link to="/" className="h-[30px]">
+							<Link to="/" className="h-[32px]">
 								<img
 									src={filmwebLogo}
 									alt="website logo"
@@ -417,20 +420,26 @@ const Navbar = () => {
 							return (
 								<li
 									key={itemIndex}
-									className="relative  "
-									onClick={handleDropdown}
+									className="relative"
+									onClick={handleMobileMenuDropdown}
 								>
-									<Link to={item.path} className="relative block py-3 px-5">
+									<Link
+										to={item.path}
+										className="relative flex justify-between items-center py-3 px-5 bg-white"
+									>
 										{item.title}
+										{item.submenu ? (
+											<IoChevronDown className="text-gray-400 text-xl duration-300 origin-center" />
+										) : null}
 									</Link>
 									{item.submenu ? (
-										<ul className="w-full list-none block transition-all duration-500 ease-in-out ">
+										<ul className="w-full list-none block transition-all duration-500 max-h-0 invisible sliding relative after:content-[''] after:w-[4px] after:h-full after:absolute after:left-0 after:top-0 after:bg-yellow-400 ">
 											{item.submenu.map((submenu, submenuIndex) => (
 												<li
 													key={submenuIndex}
 													className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
 												>
-													<Link className="block py-2 px-7 uppercase font-medium hover:text-yellow-500">
+													<Link className="block py-3 px-7 font-medium hover:text-yellow-500">
 														{submenu.title}
 													</Link>
 												</li>

@@ -19,14 +19,13 @@ export default {
 				lato: ["'Lato'", "sans-serif"],
 				sansNarrow: ["PT Sans Narrow", "sans-serif"],
 			},
-			keyframes: {
-				slide: {
-					"0%, 100%": { height: "fit-content", visibility: "visible" },
-					"100%, 0%": { height: "0", visibility: "hidden" },
-				},
+			transitionTimingFunction: {
+				sliding: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
 			},
-			animation: {
-				slide: "slide 1s ease-in-out infinite",
+			gridTemplateRows: {
+				// Simple 16 row grid
+				'16rows70px': "repeat(17, 70px)",
+
 			},
 		},
 	},
