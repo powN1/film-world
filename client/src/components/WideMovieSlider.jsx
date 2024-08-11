@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import deadpool from "../imgs/deadpool.jpg";
 import mcu from "../imgs/mcu.jpg";
@@ -11,18 +11,22 @@ import penguin from "../imgs/penguin.jpg";
 import reaper from "../imgs/reaper.jpg";
 import Slider from "react-slick";
 import MovieSlide from "../common/MovieSlide";
+import { MediaQueriesContext } from "../App";
 
 const WideSlider = () => {
 	const [currentMovieCategory, setCurrentMovieCategory] =
 		useState("movies of the day");
 
+	const { mobileView } = useContext(MediaQueriesContext);
+
 	// Slider settings
 	const settings = {
 		dots: false,
+		arrows: mobileView ? false : true,
 		infinite: true,
 		speed: 500,
-		slidesToShow: 8,
-		slidesToScroll: 8,
+		slidesToShow: mobileView ? 2 : 8,
+		slidesToScroll: mobileView ? 2 : 8,
 	};
 	const categories = [
 		{ title: "Movies of the day" },
@@ -79,7 +83,7 @@ const WideSlider = () => {
 			ranking: 9,
 		},
 		{
-			title: `Ministry`,
+			title: `Batman: Arkham Vengence`,
 			img: reaper,
 			ranking: 10,
 		},
@@ -129,7 +133,7 @@ const WideSlider = () => {
 			</h2>
 			<ul
 				className={
-					"w-[55%] mx-auto list-none flex justify-center relative after:absolute after:content-[''] after:bottom-0 after:left-0 after:h-[1px] after:w-full after:-translate-y-[50%] after:bg-gray-800"
+					"w-[55%] max-lg:w-full max-lg:flex-wrap max-lg:justify-center mx-auto list-none flex justify-center relative after:absolute after:content-[''] after:bottom-0 after:left-0 after:h-[1px] after:w-full after:-translate-y-[50%] after:bg-gray-800"
 				}
 			>
 				{categories.map((category, i) => {
@@ -168,7 +172,7 @@ const WideSlider = () => {
 			</div>
 			<Link
 				path="/"
-				className="self-center py-3 px-24 border border-gray-300 font-bold mt-8 hover:bg-white hover:text-black duration-500"
+				className="self-center py-3 px-24 max-lg:px-10 border border-gray-300 font-bold mt-8 hover:bg-white hover:text-black duration-500"
 			>
 				Check most popular movies
 			</Link>

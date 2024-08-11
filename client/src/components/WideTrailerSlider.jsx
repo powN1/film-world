@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import deadpool from "../imgs/deadpool.jpg";
 import mcu from "../imgs/mcu.jpg";
@@ -11,16 +11,20 @@ import penguin from "../imgs/penguin.jpg";
 import reaper from "../imgs/reaper.jpg";
 import Slider from "react-slick";
 import MovieSlide from "../common/MovieSlide";
+import { MediaQueriesContext } from "../App";
 
-const WideReviewSlider = () => {
+const WideTrailerSlider = () => {
 	const [currentMovieCategory, setCurrentMovieCategory] = useState("movies");
+
+	const { mobileView } = useContext(MediaQueriesContext);
 
 	// Slider settings
 	const settings = {
 		dots: false,
+    arrows: mobileView ? false : true,
 		infinite: true,
-		slidesToShow: 3,
-		slidesToScroll: 3,
+		slidesToShow: mobileView ? 2 : 3,
+		slidesToScroll: mobileView ? 2 : 3,
 		autoplay: true,
 		autoplaySpeed: 15000,
 		pauseOnHover: true,
@@ -144,7 +148,7 @@ const WideReviewSlider = () => {
 	};
 
 	return (
-		<div className={"flex flex-col py-10 gap-y-5 bg-transparent text-black"}>
+		<div className={"flex flex-col py-10 gap-y-5 bg-transparent text-black bg-white"}>
 			<h2
 				className={
 					"uppercase text-4xl font-bold text-center tracking-tighter font-sansNarrow"
@@ -154,7 +158,7 @@ const WideReviewSlider = () => {
 			</h2>
 			<ul
 				className={
-					"w-[55%] mx-auto list-none flex justify-center relative after:absolute after:content-[''] after:bottom-0 after:left-0 after:h-[1px] after:w-full after:-translate-y-[50%] after:bg-gray-300"
+					"w-[55%] max-lg:w-auto mx-auto list-none flex justify-center relative after:absolute after:content-[''] after:bottom-0 after:left-0 after:h-[1px] after:w-full after:-translate-y-[50%] after:bg-gray-300"
 				}
 			>
 				{categories.map((category, i) => {
@@ -195,7 +199,7 @@ const WideReviewSlider = () => {
 			</div>
 			<Link
 				path="/"
-				className="self-center py-3 px-24 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
+				className="self-center py-3 px-24 max-lg:px-10 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
 			>
 				Check most popular movies
 			</Link>
@@ -203,4 +207,4 @@ const WideReviewSlider = () => {
 	);
 };
 
-export default WideReviewSlider;
+export default WideTrailerSlider;

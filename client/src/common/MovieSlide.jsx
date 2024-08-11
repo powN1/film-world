@@ -21,10 +21,12 @@ const MovieSlide = ({
 								className="h-full object-cover group-hover:scale-110 duration-700"
 							/>
 						</div>
-						<p className="text-center">{title}</p>
-						<span className="absolute bottom-[8%] left-[-10%] font-bold text-7xl">
-							{ranking}
-						</span>
+						<p className="relative block text-center px-3">
+							{title}
+							<span className="absolute top-0 left-[5%] max-lg:left-0 translate-x-[-50%] translate-y-[-65%] font-bold text-6xl max-lg:text-4xl">
+								{ranking}
+							</span>
+						</p>
 					</Link>
 				);
 			case "trailer":
@@ -41,7 +43,7 @@ const MovieSlide = ({
 						<div className="absolute bottom-0 left-0 p-3 text-white">
 							<p className="">{title}</p>
 							<p className="text-sm">2024</p>
-							<div className={"text-sm w-[80%]"}>{description}</div>
+							<div className="text-sm w-[80%] max-lg:hidden">{description}</div>
 						</div>
 						<div
 							className={

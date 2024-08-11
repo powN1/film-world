@@ -2,7 +2,7 @@ import MainNews from "../components/MainNews";
 import LatestNews from "../components/LatestNews";
 import WideMovieSlider from "../components/WideMovieSlider";
 import Reviews from "../components/Reviews";
-import WideReviewSlider from "../components/WideReviewSlider";
+import WideReviewSlider from "../components/WideTrailerSlider";
 import Ranking from "../components/Ranking";
 import Games from "../components/Games";
 import Download from "../components/Download";

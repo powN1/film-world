@@ -5,37 +5,40 @@ import rdj from "../imgs/rdj.jpg";
 import batman from "../imgs/batman.jpg";
 import GameSlide from "../common/GameSlide";
 import Slider from "react-slick";
+import { useContext } from "react";
+import { MediaQueriesContext } from "../App";
 
 const Ranking = () => {
+	const { mobileView } = useContext(MediaQueriesContext);
 	// Slider settings
 	const settings = {
-		dots: false,
+		dots: true,
 		infinite: true,
 		speed: 500,
-		slidesToShow: 3,
-		slidesToScroll: 3,
+		slidesToShow: mobileView ? 1 : 3,
+		slidesToScroll: mobileView ? 1 : 3,
 	};
 
 	const movies = [
 		{
 			title: "I am legend 2",
 			img: deadpool,
-      comments: 13,
+			comments: 13,
 		},
 		{
 			title: "Awoken",
 			img: mcu,
-      comments: 44,
+			comments: 44,
 		},
 		{
 			title: `Code of Evil`,
 			img: rdj,
-      comments: 4,
+			comments: 4,
 		},
 		{
 			title: `Twisters`,
 			img: batman,
-      comments: 7,
+			comments: 7,
 		},
 	];
 
@@ -54,15 +57,20 @@ const Ranking = () => {
 					alt=""
 					className="h-full w-full object-cover group-hover:scale-110 duration-700"
 				/>
-				<h2 className="absolute left-0 bottom-[12%] text-white text-5xl font-extrabold uppercase w-full text-center group-hover:text-yellow-400 duration-700 tracking-wide">
+				<h2 className="absolute left-0 bottom-[12%] text-white text-5xl max-lg:text-3xl font-extrabold uppercase w-full text-center group-hover:text-yellow-400 duration-700 tracking-wide">
 					MCU adaptation in the world of games!
 				</h2>
 			</Link>
-			<div className="w-[95%] self-center mt-[-5%]">
+			<div className="w-[95%] self-center mt-[-5%] max-lg:mt-[-10%]">
 				<Slider {...settings}>
 					{movies.slice(1).map((movie, i) => {
 						return (
-							<GameSlide key={i + 1} title={movie.title} img={movie.img} comments={movie.comments} />
+							<GameSlide
+								key={i + 1}
+								title={movie.title}
+								img={movie.img}
+								comments={movie.comments}
+							/>
 						);
 					})}
 				</Slider>
@@ -71,7 +79,7 @@ const Ranking = () => {
 				path="/"
 				className="self-center py-3 px-24 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
 			>
-        See all news
+				See all news
 			</Link>
 		</div>
 	);

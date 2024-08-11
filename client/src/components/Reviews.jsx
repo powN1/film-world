@@ -6,8 +6,12 @@ import giancarlo from "../imgs/giancarlo.jpg";
 import dexter from "../imgs/dexter.jpg";
 import Slider from "react-slick";
 import ReviewSlide from "../common/ReviewSlide";
+import { useContext } from "react";
+import { MediaQueriesContext } from "../App";
 
 const Reviews = () => {
+	const { mobileView } = useContext(MediaQueriesContext);
+
 	const reviews = [
 		{
 			title: "I am legend 2",
@@ -86,8 +90,8 @@ const Reviews = () => {
 		dots: true,
 		infinite: true,
 		speed: 500,
-		slidesToShow: 3,
-		slidesToScroll: 3,
+		slidesToShow: mobileView ? 1 : 3,
+		slidesToScroll: mobileView ? 1 : 3,
 		initialSlide: 0,
 	};
 	return (
@@ -105,7 +109,7 @@ const Reviews = () => {
 							<ReviewSlide
 								key={i}
 								title={review.title}
-                category={review.category}
+								category={review.category}
 								img={review.img}
 								author={personal_info}
 								rating={review.rating}

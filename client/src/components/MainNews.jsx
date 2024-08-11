@@ -56,20 +56,20 @@ const MainNews = () => {
 			{movies.map((movie, i) => {
 				let gridarea = {};
 				if (i === 0) {
-					gridarea["row-start"] = 1;
-					gridarea["row-span"] = 4;
-					gridarea["col-start"] = 1;
-					gridarea["col-span"] = 2;
+					gridarea["row-start"] = "row-start-1";
+					gridarea["row-span"] = "row-span-4";
+					gridarea["col-start"] = "col-start-1";
+					gridarea["col-span"] = "col-span-2";
 				} else if (i === 1) {
-					gridarea["row-start"] = 5;
-					gridarea["row-span"] = 2;
-					gridarea["col-start"] = 1;
-					gridarea["col-span"] = 1;
+					gridarea["row-start"] = "row-start-5";
+					gridarea["row-span"] = "row-span-2";
+					gridarea["col-start"] = "col-start-1";
+					gridarea["col-span"] = "col-span-1";
 				} else if (i === 2) {
-					gridarea["row-start"] = 5;
-					gridarea["row-span"] = 2;
-					gridarea["col-start"] = 2;
-					gridarea["col-span"] = 1;
+					gridarea["row-start"] = "row-start-5";
+					gridarea["row-span"] = "row-span-2";
+					gridarea["col-start"] = "col-start-2";
+					gridarea["col-span"] = "col-span-1";
 				} 
 
 				return (

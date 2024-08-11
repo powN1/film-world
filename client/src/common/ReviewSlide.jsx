@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { FaRegStar } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 
-const MovieSlide = ({
+const ReviewSlide = ({
 	title,
 	img,
 	category,
@@ -60,4 +60,4 @@ const MovieSlide = ({
 	);
 };
 
-export default MovieSlide;
+export default ReviewSlide;

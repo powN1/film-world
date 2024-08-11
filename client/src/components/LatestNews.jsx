@@ -109,7 +109,7 @@ const LastestNews = () => {
 	};
 
 	return (
-		<div className="bg-white flex max-lg:flex-col p-4 gap-x-3">
+		<div className="bg-white flex max-lg:flex-col p-4 gap-x-3 max-lg:gap-y-6">
 			<div className="basis-[70%] flex flex-col gap-y-3">
 				<h3 className="w-full font-bold uppercase tracking-wider">
 					Latest news
@@ -134,14 +134,14 @@ const LastestNews = () => {
 						);
 					})}
 				</ul>
-				<div className="grid grid-rows-[190px_190px_190px_190px_190px_190px] grid-cols-3 max-lg:grid-rows-16rows70px max-lg:grid-cols-1 gap-3">
+				<div className="grid lg:grid-rows-[190px_190px_190px_190px_190px_190px] grid-cols-3 max-lg:grid-rows-16rows70px max-lg:grid-cols-1 gap-3">
 					{news.map((article, i) => {
 						let gridarea = {};
 						if (i === 3) {
-							gridarea["row-start"] = 2;
-							gridarea["col-start"] = 1;
-							gridarea["row-span"] = 2;
-							gridarea["col-span"] = 2;
+							gridarea["row-start"] = "row-start-2";
+							gridarea["row-span"] = "row-span-2";
+							gridarea["col-start"] = "col-start-1";
+							gridarea["col-span"] = "col-span-2";
 						}
 						return (
 							<SingleNews
@@ -162,7 +162,7 @@ const LastestNews = () => {
 					See all movies
 				</Link>
 			</div>
-			<div className="basis-[30%] flex flex-col gap-y-3">
+			<div className="basis-[30%]  flex flex-col gap-y-3">
 				<h3 className="w-full font-bold uppercase tracking-wider">
 					Most popular
 				</h3>

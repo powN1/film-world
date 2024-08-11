@@ -8,7 +8,7 @@ import { IoChevronDown } from "react-icons/io5";
 import filmwebLogo from "../imgs/filmweb-logo.png";
 import filmwebLogoSmall from "../imgs/filmweb-logo-small.png";
 import { navbarItems } from "./navbarItems";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import deadpool from "../imgs/deadpool.jpg";
 import mcu from "../imgs/mcu.jpg";
 import rdj from "../imgs/rdj.jpg";
@@ -16,8 +16,11 @@ import batman from "../imgs/batman.jpg";
 import giancarlo from "../imgs/giancarlo.jpg";
 import dexter from "../imgs/dexter.jpg";
 import SearchPoster from "../common/SearchPoster";
+import { MediaQueriesContext } from "../App";
 
 const Navbar = () => {
+	const { mobileView } = useContext(MediaQueriesContext);
+
 	const movies = [
 		{
 			title: "I am legend 2",
@@ -56,12 +59,13 @@ const Navbar = () => {
 	const [modalInputValue, setModalInputValue] = useState("");
 	const [foundMovies, setFoundMovies] = useState([]);
 	const [showMobileMenu, setShowMobileMenu] = useState(false);
+	const [showMobileNavbar, setShowMobileNavbar] = useState(true);
+	const [lastScrollY, setLastScrollY] = useState(0);
 
 	const modalInputRef = useRef(null);
 
 	const handleMobileMenuDropdown = (e) => {
 		const list = e.currentTarget.children[1];
-		console.log();
 		if (list) {
 			if (list.classList.contains("invisible")) {
 				list.classList.remove("invisible");
@@ -83,6 +87,19 @@ const Navbar = () => {
 		setModalInputValue(e.target.value);
 	};
 
+	const showOrHideNavbarMobile = () => {
+		if (window.scrollY > lastScrollY) {
+			// if scroll down hide the navbar
+			setShowMobileNavbar(false);
+		} else {
+			// if scroll up show the navbar
+			setShowMobileNavbar(true);
+		}
+
+		// remember current page location to use in the next move
+		setLastScrollY(window.scrollY);
+	};
+
 	const resizeNavbar = () => {
 		if (window.scrollY >= 250) {
 			if (navbarSize !== "small") {
@@ -98,9 +115,13 @@ const Navbar = () => {
 	const handleSearchModal = () => {
 		if (searchModalVisible) {
 			document.body.style.overflow = "hidden";
+			document.body.style.position = "fixed";
+			document.body.style.width = "100%";
 			modalInputRef.current.focus();
 		} else {
 			document.body.style.overflow = "visible";
+			document.body.style.position = "";
+			document.body.style.width = "";
 			setModalInputValue("");
 			setFoundMovies([]);
 		}
@@ -109,13 +130,18 @@ const Navbar = () => {
 	const handleMobileMenu = () => {
 		if (showMobileMenu) {
 			document.body.style.overflow = "hidden";
+			document.body.style.position = "fixed";
+			document.body.style.width = "100%";
 		} else {
 			document.body.style.overflow = "visible";
+			document.body.style.position = "";
+			document.body.style.width = "";
 		}
 	};
 
 	useEffect(() => {
 		window.addEventListener("scroll", resizeNavbar);
+		window.addEventListener("scroll", showOrHideNavbarMobile);
 
 		handleSearchModal();
 		handleMobileMenu();
@@ -127,154 +153,184 @@ const Navbar = () => {
 				),
 			);
 		}
-	}, [navbarSize, searchModalVisible, modalInputValue, showMobileMenu]);
+
+		return () => {
+			window.removeEventListener("scroll", resizeNavbar);
+			window.removeEventListener("scroll", showOrHideNavbarMobile);
+		};
+	}, [
+		navbarSize,
+		searchModalVisible,
+		modalInputValue,
+		showMobileMenu,
+		lastScrollY,
+	]);
 
 	return (
 		<>
-			<nav className="sticky top-0 z-20 font-lato bg-black flex flex-col justify-between items-center gap-y-3 text-white">
-				<div
+			<div className="bg-black">
+				<nav
 					className={
-						"flex items-center gap-y-2 w-[55%] max-lg:w-full max-lg:gap-x-6 max-lg:px-4 max-lg:py-3 " +
-						(navbarSize === "small"
-							? "gap-x-2"
-							: "flex-wrap justify-evenly lg:gap-x-4 lg:pt-3 max-lg:flex-nowrap max-lg:justify-end")
+						"fixed w-full top-0 z-20 font-lato bg-black flex flex-col justify-between items-center gap-y-3 text-white duration-300 " +
+						(mobileView ? (showMobileNavbar ? "" : "translate-y-[-100%]") : "")
 					}
 				>
-					<Link
-						to="/"
-						className={
-							navbarSize === "small"
-								? "h-[25px] -order-2"
-								: "h-[40px] max-lg:mr-auto max-lg:h-[32px]"
-						}
-					>
-						<img
-							src={navbarSize === "small" ? filmwebLogoSmall : filmwebLogo}
-							alt="website logo"
-							className="h-full w-full object-cover block mx-auto select-none"
-						/>
-					</Link>
-					{/* Search input */}
 					<div
 						className={
-							"relative text-black text-sm self-stretch w-[40px] " +
+							"flex items-center gap-y-2 w-[55%] max-lg:w-full max-lg:gap-x-6 max-lg:px-4 max-lg:py-3 " +
 							(navbarSize === "small"
-								? "self-stretch w-[40px] cursor-pointer group"
-								: "self-stretch grow max-lg:grow-0")
+								? "gap-x-2"
+								: "flex-wrap justify-evenly lg:gap-x-4 lg:pt-3 max-lg:flex-nowrap max-lg:justify-end")
 						}
-						onClick={() => {
-							setSearchModalVisible(true);
-						}}
 					>
-						<input
-							type="text"
+						<Link
+							to="/"
 							className={
-								"h-full max-lg:w-0 " +
-								(navbarSize === "small" ? "w-0" : "w-full lg:input-box")
+								navbarSize === "small" && !mobileView
+									? "h-[25px] -order-2"
+									: "h-[40px] max-lg:mr-auto max-lg:h-[32px]"
 							}
-							placeholder="Look for movies, series, animations..."
-						/>
-						<FaMagnifyingGlass
+						>
+							<img
+								src={
+									navbarSize === "small" && !mobileView
+										? filmwebLogoSmall
+										: filmwebLogo
+								}
+								alt="website logo"
+								className="h-full w-full object-cover block mx-auto select-none"
+							/>
+						</Link>
+						{/* Search input */}
+						<div
 							className={
-								"absolute left-3 top-1/2 translate-y-[-50%] text-lg " +
+								"relative text-black text-sm self-stretch w-[40px] " +
 								(navbarSize === "small"
-									? "text-white opacity-75"
-									: "text-yellow-400 max-lg:text-white opacity-50 max-lg:opacity-75 max-lg:text-2xl")
+									? "self-stretch w-[40px] cursor-pointer group"
+									: "self-stretch grow max-lg:grow-0")
 							}
-						/>
-					</div>
-					{/* Sign in google button */}
-					<button
-						className={
-							"py-2 px-7 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium max-lg:hidden " +
-							(navbarSize === "small" ? "" : "self-stretch")
-						}
-					>
-						<FaGoogle className="text-yellow-400 text-lg" />
-						Sign in through google
-					</button>
-					{/* Sign in button */}
-					<button
-						className={
-							"flex justify-center items-center gap-x-2 h-full lg:hover:text-yellow-400 duration-200 max-lg:flex-col " +
-							(navbarSize === "small" ? "flex-col" : "")
-						}
-					>
-						<CiUser
-							className={
-								navbarSize === "small" ? "text-xl" : "text-2xl max-lg:text-2xl"
-							}
-						/>
-						<p
-							className={navbarSize === "small" ? "text-xs" : "max-lg:text-xs"}
+							onClick={() => {
+								setSearchModalVisible(true);
+							}}
 						>
-							Sign in
-						</p>
-					</button>
-
-					{/* Mobile menu button */}
-					<button
-						className="flex justify-center items-center gap-x-2 h-full max-lg:flex-col lg:hidden"
-						onClick={() => setShowMobileMenu((prevVal) => !prevVal)}
-					>
-						<RxHamburgerMenu
+							<input
+								type="text"
+								className={
+									"h-full max-lg:w-0 " +
+									(navbarSize === "small" ? "w-0" : "w-full lg:input-box")
+								}
+								placeholder="Look for movies, series, animations..."
+							/>
+							<FaMagnifyingGlass
+								className={
+									"absolute left-3 top-1/2 translate-y-[-50%] text-lg " +
+									(navbarSize === "small" && !mobileView
+										? "text-white opacity-75"
+										: "text-yellow-400 max-lg:text-white opacity-50 max-lg:opacity-75 max-lg:text-2xl")
+								}
+							/>
+						</div>
+						{/* Sign in google button */}
+						<button
 							className={
-								navbarSize === "small" ? "text-xl" : "text-2xl max-lg:text-2xl"
+								"py-2 px-7 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium max-lg:hidden " +
+								(navbarSize === "small" ? "" : "self-stretch")
 							}
-						/>
-						<p
-							className={navbarSize === "small" ? "text-xs" : "max-lg:text-xs"}
 						>
-							Menu
-						</p>
-					</button>
+							<FaGoogle className="text-yellow-400 text-lg" />
+							Sign in through google
+						</button>
+						{/* Sign in button */}
+						<button
+							className={
+								"flex justify-center items-center gap-x-2 h-full lg:hover:text-yellow-400 duration-200 max-lg:flex-col " +
+								(navbarSize === "small" ? "flex-col" : "")
+							}
+						>
+							<CiUser
+								className={
+									navbarSize === "small" && !mobileView
+										? "text-xl"
+										: "text-2xl max-lg:text-2xl"
+								}
+							/>
+							<p
+								className={
+									navbarSize === "small" ? "text-xs" : "max-lg:text-xs"
+								}
+							>
+								Sign in
+							</p>
+						</button>
 
-					{/* Menu categories */}
-					<ul
-						className={
-							"list-none max-lg:hidden " +
-							(navbarSize === "small" ? "-order-1 grow" : "w-full")
-						}
-					>
-						{navbarItems.map((item, itemIndex) => {
-							return (
-								<li
-									key={itemIndex}
-									className="relative float-left group hover:text-yellow-500 duration-200 hover:before:content-[''] hover:before:absolute hover:before:bottom-0 hover:before:left-0 hover:before:bg-yellow-500 hover:before:w-full hover:before:h-[4px]"
-								>
-									<Link
-										to={item.path}
-										className={
-											"relative block " +
-											(navbarSize === "small"
-												? "text-xs py-5 px-2"
-												: "py-3 px-5")
-										}
+						{/* Mobile menu button */}
+						<button
+							className="flex justify-center items-center gap-x-2 h-full max-lg:flex-col lg:hidden"
+							onClick={() => setShowMobileMenu((prevVal) => !prevVal)}
+						>
+							<RxHamburgerMenu
+								className={
+									navbarSize === "small" && !mobileView
+										? "text-xl"
+										: "text-2xl max-lg:text-2xl"
+								}
+							/>
+							<p
+								className={
+									navbarSize === "small" ? "text-xs" : "max-lg:text-xs"
+								}
+							>
+								Menu
+							</p>
+						</button>
+
+						{/* Menu categories */}
+						<ul
+							className={
+								"list-none max-lg:hidden " +
+								(navbarSize === "small" ? "-order-1 grow" : "w-full")
+							}
+						>
+							{navbarItems.map((item, itemIndex) => {
+								return (
+									<li
+										key={itemIndex}
+										className="relative float-left group hover:text-yellow-500 duration-200 hover:before:content-[''] hover:before:absolute hover:before:bottom-0 hover:before:left-0 hover:before:bg-yellow-500 hover:before:w-full hover:before:h-[4px]"
 									>
-										{item.title.toUpperCase()}
-									</Link>
-									{item.submenu ? (
-										<ul className="absolute left-0 list-none group-hover:block hidden z-10">
-											{item.submenu.map((submenu, submenuIndex) => (
-												<li
-													key={submenuIndex}
-													className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
-												>
-													<Link className="block py-2 px-7 uppercase font-medium hover:text-yellow-500">
-														{submenu.title}
-													</Link>
-												</li>
-											))}
-										</ul>
-									) : null}
-								</li>
-							);
-						})}
-					</ul>
-				</div>
-			</nav>
+										<Link
+											to={item.path}
+											className={
+												"relative block " +
+												(navbarSize === "small"
+													? "text-xs py-5 px-2"
+													: "py-3 px-5")
+											}
+										>
+											{item.title.toUpperCase()}
+										</Link>
+										{item.submenu ? (
+											<ul className="absolute left-0 list-none group-hover:block hidden z-10">
+												{item.submenu.map((submenu, submenuIndex) => (
+													<li
+														key={submenuIndex}
+														className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
+													>
+														<Link className="block py-2 px-7 uppercase font-medium hover:text-yellow-500">
+															{submenu.title}
+														</Link>
+													</li>
+												))}
+											</ul>
+										) : null}
+									</li>
+								);
+							})}
+						</ul>
+					</div>
+				</nav>
+			</div>
 			{searchModalVisible ? (
-				<div className="w-screen h-screen fixed top-0 left-0 bg-white z-30 flex justify-center">
+				<div className="w-screen h-screen fixed top-0 left-0 bg-white z-30 flex justify-center overflow-hidden">
 					<div className="w-[55%] flex flex-col py-8 gap-y-8">
 						{/* Search */}
 						<div className="flex gap-x-4">
@@ -386,7 +442,7 @@ const Navbar = () => {
 			) : null}
 
 			{showMobileMenu ? (
-				<div className="flex flex-col w-screen h-screen fixed top-0 left-0 bg-white z-30">
+				<div className="flex flex-col w-screen h-screen fixed top-0 left-0 bg-white z-30 overflow-hidden">
 					<div className="bg-gradient-to-r from-[#4D2F3B] from-10% via-[#1D2236] via-40% to-[#6B949A] px-3 py-4 flex flex-col gap-y-2">
 						<div className="flex items-center justify-between">
 							<Link to="/" className="h-[32px]">

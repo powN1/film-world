@@ -1,14 +1,10 @@
 const SingleNews = ({ title, comments, img, type, gridarea = null }) => {
-	console.log(gridarea);
-	const gridClass = gridarea
-		? `row-start-${gridarea["row-start"]} row-span-${gridarea["row-span"]} col-start-${gridarea["col-start"]} col-span-${gridarea["col-span"]}`
-		: "";
 	const renderArticle = () => {
 		switch (type) {
 			case "tiny":
 				return (
 					<article className="flex justify-between group overflow-hidden cursor-pointer">
-						<p className="block w-[70%] text-sm group-hover:text-yellow-400 duration-300 text-ellipsis overflow-hidden line-clamp-2">
+						<p className="w-[70%] text-sm group-hover:text-yellow-400 duration-300 overflow-hidden line-clamp-3">
 							{title}
 						</p>
 						<div className="h-[65px] w-[65px] overflow-hidden border border-gray-300">
@@ -32,7 +28,7 @@ const SingleNews = ({ title, comments, img, type, gridarea = null }) => {
 						</div>
 						<div className="flex flex-col px-2 py-1 justify-between w-[60%]">
 							<p className="text-white text-sm line-clamp-2 text-ellipsis group-hover:text-yellow-400 duration-300 [text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)]">
-                {title}
+								{title}
 							</p>
 							<span className="text-xs text-gray-400">13 komentarzy</span>
 						</div>
@@ -60,15 +56,18 @@ const SingleNews = ({ title, comments, img, type, gridarea = null }) => {
 				return (
 					<article
 						className={
-							"relative group overflow-hidden cursor-pointer max-lg:flex max-lg:flex-col max-lg:col-span-1 max-lg:row-span-2 " + gridClass
+							`relative group cursor-pointer max-lg:flex max-lg:flex-col max-lg:col-span-1 max-lg:row-span-2 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}` 
+							
 						}
 					>
-						<img
-							src={img}
-							alt={title}
-							className="object-cover h-1/2 w-full group-hover:scale-110 duration-700"
-						/>
-						<div className="lg:absolute lg:bottom-2 lg:left-0 flex flex-col lg:p-3">
+						<div className="h-full max-lg:h-1/2 overflow-hidden">
+							<img
+								src={img}
+								alt={title}
+								className="object-cover h-full w-full group-hover:scale-110 duration-700"
+							/>
+						</div>
+						<div className="lg:absolute lg:bottom-0 lg:left-0 flex flex-col lg:p-3">
 							<p className="text-white text-sm line-clamp-3 text-ellipsis py-1 group-hover:text-yellow-400 duration-300 [text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)]">
 								{title}
 							</p>
@@ -80,7 +79,8 @@ const SingleNews = ({ title, comments, img, type, gridarea = null }) => {
 				return (
 					<article
 						className={
-							"relative group overflow-hidden cursor-pointer max-lg:row-span-3 " + gridClass
+							`relative group overflow-hidden cursor-pointer max-lg:row-span-2 max-lg:col-span-1 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}` 
+							
 						}
 					>
 						<img
@@ -89,19 +89,19 @@ const SingleNews = ({ title, comments, img, type, gridarea = null }) => {
 							className="object-cover h-full w-full group-hover:scale-110 duration-700"
 						/>
 						<div className="absolute bottom-3 max-lg:bottom-0 left-0 flex flex-col p-3">
-							<p className="text-2xl max-lg:text-xl text-white group-hover:text-yellow-500 duration-300 [text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)]">
+							<p className="text-2xl max-lg:text-base text-white group-hover:text-yellow-500 duration-300 [text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)]">
 								{title}
 							</p>
-							<span className="text-gray-400 max-lg:text-xs">{comments} comments</span>
+							<span className="text-gray-400 max-lg:text-xs">
+								{comments} comments
+							</span>
 						</div>
 					</article>
 				);
 			case "gigantic":
 				return (
 					<article
-						className={
-							"relative group overflow-hidden cursor-pointer max-lg:row-span-3 max-lg:col-span-2 " + gridClass
-						}
+						className={`relative group overflow-hidden cursor-pointer max-lg:row-span-3 max-lg:col-span-2 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}`}
 					>
 						<img
 							src={img}
