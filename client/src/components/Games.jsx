@@ -20,7 +20,7 @@ const Ranking = () => {
 
 	return (
     <div className="bg-white">
-		<div className="lg:w-[55%] mx-auto flex flex-col py-10 gap-y-5 bg-transparent text-black">
+		<div className="lg:w-[55%] mx-auto flex flex-col py-6 gap-y-5 bg-transparent text-black">
 			<h2 className="uppercase text-4xl font-bold text-center tracking-tighter font-sansNarrow">
 				Games
 			</h2>
@@ -50,7 +50,8 @@ const Ranking = () => {
 			</div>
 			<Link
 				path="/"
-				className="self-center py-3 px-24 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
+				className="w-[90%] lg:w-1/3 text-center self-center py-3 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
+
 			>
 				See all news
 			</Link>

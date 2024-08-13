@@ -31,7 +31,7 @@ const MovieSlide = ({
 				);
 			case "trailer":
 				return (
-					<Link to="/" className="flex flex-col mx-3 gap-y-2 relative group">
+					<Link to="/" className="flex flex-col mx-2 gap-y-2 relative group">
 						<div className="h-[400px] border border-gray-300 overflow-hidden after:content-[''] after:absolute after:left-0 after:top-0 after:w-full after:h-full after:bg-black after:opacity-25">
 							<img
 								src={img}

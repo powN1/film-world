@@ -24,7 +24,7 @@ const Reviews = () => {
 	};
 	return (
 		<div className="bg-white">
-			<div className="lg:w-[55vw] mx-auto flex flex-col py-10 gap-y-5">
+			<div className="lg:w-[55vw] mx-auto flex flex-col py-6 gap-y-5">
 				<h2 className="uppercase text-4xl font-bold text-center tracking-tighter font-sansNarrow text-black">
 					Critic's reviews
 				</h2>

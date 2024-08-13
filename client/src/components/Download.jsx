@@ -6,7 +6,7 @@ import phoneApp from "../imgs/phoneApp.webp";
 const Download = () => {
 	return (
     <div className="bg-white">
-		<div className="lg:w-[55%] mx-auto flex justify-evenly items-center max-lg:px-4 pb-6">
+		<div className="lg:w-[55%] mx-auto flex justify-evenly items-center max-lg:px-4 py-6">
 			<div className="flex flex-col gap-y-2">
 				<h4 className="font-bold text-xl">Download our app!</h4>
 				<p className="w-[75%] max-lg:w-[85%]">

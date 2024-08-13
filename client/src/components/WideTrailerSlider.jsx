@@ -5,7 +5,7 @@ import MovieSlide from "../common/MovieSlide";
 import { MediaQueriesContext } from "../App";
 import { dummyMovies } from "../common/dummyDataMovies";
 
-const WideTrailerSlider = () => {
+const WideTrailerSlider = ({showCategories = true}) => {
 	const [currentMovieCategory, setCurrentMovieCategory] = useState("movies");
 
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
@@ -42,6 +42,8 @@ const WideTrailerSlider = () => {
 			<h2 className="uppercase text-4xl font-bold text-center tracking-tighter font-sansNarrow">
 				Trailers
 			</h2>
+      {showCategories ? (
+
 			<ul
 				className={
 					"w-[55%] max-lg:w-auto mx-auto list-none flex justify-center relative after:absolute after:content-[''] after:bottom-0 after:left-0 after:h-[1px] after:w-full after:-translate-y-[50%] after:bg-gray-300"
@@ -66,6 +68,7 @@ const WideTrailerSlider = () => {
 					);
 				})}
 			</ul>
+      ) : null}
 			<div className="w-[95%] self-center">
 				<Slider {...settings}>
 					{dummyMovies.map((movie, i) => {
@@ -85,9 +88,9 @@ const WideTrailerSlider = () => {
 			</div>
 			<Link
 				path="/"
-				className="self-center py-3 px-24 max-lg:px-10 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
+				className="w-[90%] lg:w-1/5 text-center self-center py-3 max-lg:px-10 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
 			>
-				Check most popular movies
+				Check all trailers
 			</Link>
 		</div>
 	);

@@ -35,7 +35,7 @@ export const dummyMovies = [
 		review:
 			"Lovely movie with a few problems. The director did a really good job when it comes to capturing the emotions. On top of that it was really impressive work from all the actors and actresses.",
 		likes: 15,
-		ratedByCount: 18242,
+		ratedByCount: 2422,
 		peopleAwaiting: 562,
 		pegi: 12,
 		comments: 15,
