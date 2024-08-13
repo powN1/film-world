@@ -1,32 +1,24 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import deadpool from "../imgs/deadpool.jpg";
-import mcu from "../imgs/mcu.jpg";
-import rdj from "../imgs/rdj.jpg";
-import batman from "../imgs/batman.jpg";
-import giancarlo from "../imgs/giancarlo.jpg";
-import dexter from "../imgs/dexter.jpg";
-import hellboy from "../imgs/hellboy.jpg";
-import penguin from "../imgs/penguin.jpg";
-import reaper from "../imgs/reaper.jpg";
 import Slider from "react-slick";
 import MovieSlide from "../common/MovieSlide";
 import { MediaQueriesContext } from "../App";
+import { dummyMovies } from "../common/dummyDataMovies";
 
 const WideSlider = () => {
 	const [currentMovieCategory, setCurrentMovieCategory] =
 		useState("movies of the day");
 
-	const { mobileView } = useContext(MediaQueriesContext);
+	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
 	// Slider settings
 	const settings = {
-		dots: false,
-		arrows: mobileView ? false : true,
+		dots: true,
+		arrows: mobileView || tabletView ? false : true,
 		infinite: true,
 		speed: 500,
-		slidesToShow: mobileView ? 2 : 8,
-		slidesToScroll: mobileView ? 2 : 8,
+		slidesToShow: mobileView ? 2 : tabletView ? 3 : 8,
+		slidesToScroll: mobileView ? 2 : tabletView ? 3 : 8,
 	};
 	const categories = [
 		{ title: "Movies of the day" },
@@ -36,82 +28,6 @@ const WideSlider = () => {
 		{ title: "Cinema" },
 	];
 
-	const movies = [
-		{
-			title: "I am legend 2",
-			img: deadpool,
-			ranking: 1,
-		},
-		{
-			title: "Awoken",
-			img: mcu,
-			ranking: 2,
-		},
-		{
-			title: `Code of Evil`,
-			img: rdj,
-			ranking: 3,
-		},
-		{
-			title: `Twisters`,
-			img: batman,
-			ranking: 4,
-		},
-		{
-			title: `Black telephone`,
-			img: giancarlo,
-			ranking: 5,
-		},
-		{
-			title: `Love Lies Bleeding`,
-			img: reaper,
-			ranking: 6,
-		},
-		{
-			title: `Dexter`,
-			img: dexter,
-			ranking: 7,
-		},
-		{
-			title: `Hellboy: Hell Unites`,
-			img: hellboy,
-			ranking: 8,
-		},
-		{
-			title: `Batman: Arkham Vengence`,
-			img: penguin,
-			ranking: 9,
-		},
-		{
-			title: `Batman: Arkham Vengence`,
-			img: reaper,
-			ranking: 10,
-		},
-		{
-			title: `Black organs`,
-			img: reaper,
-		},
-		{
-			title: `Blackbird`,
-			img: reaper,
-		},
-		{
-			title: `Out of this world`,
-			img: reaper,
-		},
-		{
-			title: `Vicious cycle`,
-			img: reaper,
-		},
-		{
-			title: `Perpetual burn`,
-			img: reaper,
-		},
-		{
-			title: `Perpetual burn`,
-			img: reaper,
-		},
-	];
 
 	const handleShowUnderline = (e) => {
 		const category = e.target.innerText.toLowerCase();
@@ -157,7 +73,7 @@ const WideSlider = () => {
 			</ul>
 			<div className="w-[95%] self-center">
 				<Slider {...settings}>
-					{movies.map((movie, i) => {
+					{dummyMovies.map((movie, i) => {
 						return (
 							<MovieSlide
 								key={i}

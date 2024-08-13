@@ -17,42 +17,11 @@ import giancarlo from "../imgs/giancarlo.jpg";
 import dexter from "../imgs/dexter.jpg";
 import SearchPoster from "../common/SearchPoster";
 import { MediaQueriesContext } from "../App";
+import { dummyMovies } from "../common/dummyDataMovies";
 
 const Navbar = () => {
-	const { mobileView } = useContext(MediaQueriesContext);
+	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
-	const movies = [
-		{
-			title: "I am legend 2",
-			img: deadpool,
-			year: 2012,
-		},
-		{
-			title: "Awoken",
-			img: mcu,
-			year: 2001,
-		},
-		{
-			title: `Code of Evil`,
-			img: rdj,
-			year: 1995,
-		},
-		{
-			title: `Twisters`,
-			img: batman,
-			year: 1982,
-		},
-		{
-			title: `Black telephone`,
-			img: giancarlo,
-			year: 2022,
-		},
-		{
-			title: `Dexter`,
-			img: dexter,
-			year: 1999,
-		},
-	];
 
 	const [navbarSize, setNavbarSize] = useState("big");
 	const [searchModalVisible, setSearchModalVisible] = useState(false);
@@ -148,7 +117,7 @@ const Navbar = () => {
 
 		if (modalInputValue) {
 			setFoundMovies(
-				movies.filter((movie) =>
+				dummyMovies.filter((movie) =>
 					movie.title.toLowerCase().includes(modalInputValue),
 				),
 			);
@@ -167,168 +136,172 @@ const Navbar = () => {
 	]);
 
 	return (
-		<>
-			<div className="bg-black">
-				<nav
+		<div className="bg-black">
+			<nav
+				className={
+					"sticky w-full top-0 z-20 font-lato bg-black flex flex-col justify-between items-center gap-y-3 text-white duration-300 " +
+					(mobileView ? (showMobileNavbar ? "" : "translate-y-[-100%]") : "")
+				}
+			>
+				<div
 					className={
-						"fixed w-full top-0 z-20 font-lato bg-black flex flex-col justify-between items-center gap-y-3 text-white duration-300 " +
-						(mobileView ? (showMobileNavbar ? "" : "translate-y-[-100%]") : "")
+						"flex items-center gap-y-2 w-[55%] max-lg:w-full max-lg:gap-x-6 max-lg:px-4 max-lg:py-3 " +
+						(navbarSize === "small"
+							? "gap-x-2"
+							: "flex-wrap justify-evenly lg:gap-x-4 lg:pt-3 max-lg:flex-nowrap max-lg:justify-end")
 					}
 				>
-					<div
+					<Link
+						to="/"
 						className={
-							"flex items-center gap-y-2 w-[55%] max-lg:w-full max-lg:gap-x-6 max-lg:px-4 max-lg:py-3 " +
-							(navbarSize === "small"
-								? "gap-x-2"
-								: "flex-wrap justify-evenly lg:gap-x-4 lg:pt-3 max-lg:flex-nowrap max-lg:justify-end")
-						}
-					>
-						<Link
-							to="/"
-							className={
-								navbarSize === "small" && !mobileView
+							mobileView || tabletView
+								? "h-[40px] max-lg:mr-auto max-lg:h-[32px]"
+								: navbarSize === "small"
 									? "h-[25px] -order-2"
 									: "h-[40px] max-lg:mr-auto max-lg:h-[32px]"
-							}
-						>
-							<img
-								src={
-									navbarSize === "small" && !mobileView
+						}
+					>
+						<img
+							src={
+								mobileView || tabletView
+									? filmwebLogo
+									: navbarSize === "small"
 										? filmwebLogoSmall
 										: filmwebLogo
-								}
-								alt="website logo"
-								className="h-full w-full object-cover block mx-auto select-none"
-							/>
-						</Link>
-						{/* Search input */}
-						<div
-							className={
-								"relative text-black text-sm self-stretch w-[40px] " +
-								(navbarSize === "small"
-									? "self-stretch w-[40px] cursor-pointer group"
-									: "self-stretch grow max-lg:grow-0")
 							}
-							onClick={() => {
-								setSearchModalVisible(true);
-							}}
-						>
-							<input
-								type="text"
-								className={
-									"h-full max-lg:w-0 " +
-									(navbarSize === "small" ? "w-0" : "w-full lg:input-box")
-								}
-								placeholder="Look for movies, series, animations..."
-							/>
-							<FaMagnifyingGlass
-								className={
-									"absolute left-3 top-1/2 translate-y-[-50%] text-lg " +
-									(navbarSize === "small" && !mobileView
+							alt="website logo"
+							className="h-full w-full object-cover block mx-auto select-none"
+						/>
+					</Link>
+					{/* Search input */}
+					<div
+						className={
+							"relative text-black text-sm self-stretch w-[40px] " +
+							(navbarSize === "small"
+								? "self-stretch w-[40px] cursor-pointer group"
+								: "self-stretch grow max-lg:grow-0")
+						}
+						onClick={() => {
+							setSearchModalVisible(true);
+						}}
+					>
+						<input
+							type="text"
+							className={
+								"h-full max-lg:w-0 " +
+								(navbarSize === "small" ? "w-0" : "w-full lg:input-box")
+							}
+							placeholder="Look for movies, series, animations..."
+						/>
+						<FaMagnifyingGlass
+							className={
+								"absolute left-3 top-1/2 translate-y-[-50%] text-lg " +
+									(mobileView || tabletView
+									? "text-yellow-400 max-lg:text-white opacity-50 max-lg:opacity-75 max-lg:text-2xl"
+									: navbarSize === "small"
 										? "text-white opacity-75"
 										: "text-yellow-400 max-lg:text-white opacity-50 max-lg:opacity-75 max-lg:text-2xl")
-								}
-							/>
-						</div>
-						{/* Sign in google button */}
-						<button
-							className={
-								"py-2 px-7 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium max-lg:hidden " +
-								(navbarSize === "small" ? "" : "self-stretch")
 							}
-						>
-							<FaGoogle className="text-yellow-400 text-lg" />
-							Sign in through google
-						</button>
-						{/* Sign in button */}
-						<button
-							className={
-								"flex justify-center items-center gap-x-2 h-full lg:hover:text-yellow-400 duration-200 max-lg:flex-col " +
-								(navbarSize === "small" ? "flex-col" : "")
-							}
-						>
-							<CiUser
-								className={
-									navbarSize === "small" && !mobileView
-										? "text-xl"
-										: "text-2xl max-lg:text-2xl"
-								}
-							/>
-							<p
-								className={
-									navbarSize === "small" ? "text-xs" : "max-lg:text-xs"
-								}
-							>
-								Sign in
-							</p>
-						</button>
-
-						{/* Mobile menu button */}
-						<button
-							className="flex justify-center items-center gap-x-2 h-full max-lg:flex-col lg:hidden"
-							onClick={() => setShowMobileMenu((prevVal) => !prevVal)}
-						>
-							<RxHamburgerMenu
-								className={
-									navbarSize === "small" && !mobileView
-										? "text-xl"
-										: "text-2xl max-lg:text-2xl"
-								}
-							/>
-							<p
-								className={
-									navbarSize === "small" ? "text-xs" : "max-lg:text-xs"
-								}
-							>
-								Menu
-							</p>
-						</button>
-
-						{/* Menu categories */}
-						<ul
-							className={
-								"list-none max-lg:hidden " +
-								(navbarSize === "small" ? "-order-1 grow" : "w-full")
-							}
-						>
-							{navbarItems.map((item, itemIndex) => {
-								return (
-									<li
-										key={itemIndex}
-										className="relative float-left group hover:text-yellow-500 duration-200 hover:before:content-[''] hover:before:absolute hover:before:bottom-0 hover:before:left-0 hover:before:bg-yellow-500 hover:before:w-full hover:before:h-[4px]"
-									>
-										<Link
-											to={item.path}
-											className={
-												"relative block " +
-												(navbarSize === "small"
-													? "text-xs py-5 px-2"
-													: "py-3 px-5")
-											}
-										>
-											{item.title.toUpperCase()}
-										</Link>
-										{item.submenu ? (
-											<ul className="absolute left-0 list-none group-hover:block hidden z-10">
-												{item.submenu.map((submenu, submenuIndex) => (
-													<li
-														key={submenuIndex}
-														className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
-													>
-														<Link className="block py-2 px-7 uppercase font-medium hover:text-yellow-500">
-															{submenu.title}
-														</Link>
-													</li>
-												))}
-											</ul>
-										) : null}
-									</li>
-								);
-							})}
-						</ul>
+						/>
 					</div>
-				</nav>
-			</div>
+					{/* Sign in google button */}
+					<button
+						className={
+							"py-2 px-7 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium max-lg:hidden " +
+							(navbarSize === "small" ? "" : "self-stretch")
+						}
+					>
+						<FaGoogle className="text-yellow-400 text-lg" />
+						Sign in through google
+					</button>
+					{/* Sign in button */}
+					<button
+						className={
+							"flex justify-center items-center gap-x-2 h-full lg:hover:text-yellow-400 duration-200 max-lg:flex-col " +
+							(navbarSize === "small" ? "flex-col" : "")
+						}
+					>
+						<CiUser
+							className={
+                (mobileView || tabletView ?  "text-2xl max-lg:text-2xl" :  
+								navbarSize === "small" 
+									? "text-xl"
+									: "text-2xl max-lg:text-2xl")
+							}
+						/>
+						<p
+							className={navbarSize === "small" ? "text-xs" : "max-lg:text-xs"}
+						>
+							Sign in
+						</p>
+					</button>
+
+					{/* Mobile menu button */}
+					<button
+						className="flex justify-center items-center gap-x-2 h-full max-lg:flex-col lg:hidden"
+						onClick={() => setShowMobileMenu((prevVal) => !prevVal)}
+					>
+						<RxHamburgerMenu
+							className={
+                (mobileView || tabletView ?  "text-2xl max-lg:text-2xl" : 
+
+								navbarSize === "small"
+									? "text-xl"
+									: "text-2xl max-lg:text-2xl"
+                )
+							}
+						/>
+						<p
+							className={navbarSize === "small" ? "text-xs" : "max-lg:text-xs"}
+						>
+							Menu
+						</p>
+					</button>
+
+					{/* Menu categories */}
+					<ul
+						className={
+							"list-none max-lg:hidden " +
+							(navbarSize === "small" ? "-order-1 grow" : "w-full")
+						}
+					>
+						{navbarItems.map((item, itemIndex) => {
+							return (
+								<li
+									key={itemIndex}
+									className="relative float-left group hover:text-yellow-500 duration-200 hover:before:content-[''] hover:before:absolute hover:before:bottom-0 hover:before:left-0 hover:before:bg-yellow-500 hover:before:w-full hover:before:h-[4px]"
+								>
+									<Link
+										to={item.path}
+										className={
+											"relative block " +
+											(navbarSize === "small"
+												? "text-xs py-5 px-2"
+												: "py-3 px-5")
+										}
+									>
+										{item.title.toUpperCase()}
+									</Link>
+									{item.submenu ? (
+										<ul className="absolute left-0 list-none group-hover:block hidden z-10">
+											{item.submenu.map((submenu, submenuIndex) => (
+												<li
+													key={submenuIndex}
+													className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
+												>
+													<Link className="block py-2 px-7 uppercase font-medium hover:text-yellow-500">
+														{submenu.title}
+													</Link>
+												</li>
+											))}
+										</ul>
+									) : null}
+								</li>
+							);
+						})}
+					</ul>
+				</div>
+			</nav>
 			{searchModalVisible ? (
 				<div className="w-screen h-screen fixed top-0 left-0 bg-white z-30 flex justify-center overflow-hidden">
 					<div className="w-[55%] flex flex-col py-8 gap-y-8">
@@ -400,7 +373,7 @@ const Navbar = () => {
 									</div>
 									<div className="flex gap-x-5">
 										{/* SLIDES */}
-										{movies.slice(3).map((movie, i) => (
+										{dummyMovies.slice(3).map((movie, i) => (
 											<SearchPoster
 												key={i}
 												title={movie.title}
@@ -425,7 +398,7 @@ const Navbar = () => {
 									</div>
 									<div className="grid grid-rows-1 grid-cols-3 gap-x-5">
 										{/* SLIDES */}
-										{movies.slice(3).map((movie, i) => (
+										{dummyMovies.slice(3).map((movie, i) => (
 											<SearchPoster
 												key={i}
 												title={movie.title}
@@ -509,7 +482,7 @@ const Navbar = () => {
 				</div>
 			) : null}
 			<Outlet />
-		</>
+		</div>
 	);
 };
 

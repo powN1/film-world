@@ -1,59 +1,32 @@
 import { Link } from "react-router-dom";
-import deadpool from "../imgs/deadpool.jpg";
-import mcu from "../imgs/mcu.jpg";
-import rdj from "../imgs/rdj.jpg";
-import batman from "../imgs/batman.jpg";
 import GameSlide from "../common/GameSlide";
 import Slider from "react-slick";
 import { useContext } from "react";
 import { MediaQueriesContext } from "../App";
+import { dummyMovies } from "../common/dummyDataMovies";
 
 const Ranking = () => {
-	const { mobileView } = useContext(MediaQueriesContext);
+	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 	// Slider settings
 	const settings = {
 		dots: true,
+		arrows: mobileView || tabletView ? false : true,
 		infinite: true,
 		speed: 500,
 		slidesToShow: mobileView ? 1 : 3,
 		slidesToScroll: mobileView ? 1 : 3,
 	};
 
-	const movies = [
-		{
-			title: "I am legend 2",
-			img: deadpool,
-			comments: 13,
-		},
-		{
-			title: "Awoken",
-			img: mcu,
-			comments: 44,
-		},
-		{
-			title: `Code of Evil`,
-			img: rdj,
-			comments: 4,
-		},
-		{
-			title: `Twisters`,
-			img: batman,
-			comments: 7,
-		},
-	];
 
 	return (
-		<div className={"flex flex-col py-10 gap-y-5 bg-transparent text-black"}>
-			<h2
-				className={
-					"uppercase text-4xl font-bold text-center tracking-tighter font-sansNarrow"
-				}
-			>
+    <div className="bg-white">
+		<div className="lg:w-[55%] mx-auto flex flex-col py-10 gap-y-5 bg-transparent text-black">
+			<h2 className="uppercase text-4xl font-bold text-center tracking-tighter font-sansNarrow">
 				Games
 			</h2>
 			<Link to="" className="relative h-[45vh] group overflow-hidden">
 				<img
-					src={movies[2].img}
+					src={dummyMovies[2].img}
 					alt=""
 					className="h-full w-full object-cover group-hover:scale-110 duration-700"
 				/>
@@ -61,9 +34,9 @@ const Ranking = () => {
 					MCU adaptation in the world of games!
 				</h2>
 			</Link>
-			<div className="w-[95%] self-center mt-[-5%] max-lg:mt-[-10%]">
+			<div className="w-[95%] self-center mt-[-13%] md:mt-[-6%] lg:mt-[-5%]">
 				<Slider {...settings}>
-					{movies.slice(1).map((movie, i) => {
+					{dummyMovies.slice(1).map((movie, i) => {
 						return (
 							<GameSlide
 								key={i + 1}
@@ -82,6 +55,7 @@ const Ranking = () => {
 				See all news
 			</Link>
 		</div>
+</div>
 	);
 };
 

@@ -13,12 +13,12 @@ const MovieSlide = ({
 		switch (type) {
 			case "movie":
 				return (
-					<Link className="flex flex-col gap-y-2 relative group">
+					<Link className="flex flex-col gap-y-2 mx-3 relative group">
 						<div className="h-[260px] border border-gray-700 overflow-hidden">
 							<img
 								src={img}
 								alt={title}
-								className="h-full object-cover group-hover:scale-110 duration-700"
+								className="h-full w-full object-cover group-hover:scale-110 duration-700"
 							/>
 						</div>
 						<p className="relative block text-center px-3">
@@ -31,7 +31,7 @@ const MovieSlide = ({
 				);
 			case "trailer":
 				return (
-					<Link to="/" className="flex flex-col gap-y-2 relative group">
+					<Link to="/" className="flex flex-col mx-3 gap-y-2 relative group">
 						<div className="h-[400px] border border-gray-300 overflow-hidden after:content-[''] after:absolute after:left-0 after:top-0 after:w-full after:h-full after:bg-black after:opacity-25">
 							<img
 								src={img}

@@ -11,7 +11,6 @@ const ReviewSlide = ({
 	likes,
 	author,
 }) => {
-	const starsToRender = 10;
 
 	return (
 		<div className="flex flex-col mx-3 my-3 gap-y-2 [box-shadow:_2px_2px_6px_rgb(0_0_0_/_7%)] h-[360px]">

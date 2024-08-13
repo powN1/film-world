@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 const GameSlide = ({ title, img, comments }) => {
 
 	return (
-		<div className="w-full mb-1 flex flex-col gap-y-2 duration-300 hover:[box-shadow:_2px_2px_6px_rgb(0_0_0_/_7%)]">
+		<div className="mx-3 mb-1 flex flex-col gap-y-2 duration-300 hover:[box-shadow:_2px_2px_6px_rgb(0_0_0_/_7%)]">
 			{/* Movie img */}
 			<Link
 				to="/"

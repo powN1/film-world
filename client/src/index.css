@@ -11,9 +11,18 @@
     @apply rounded-sm p-2 pl-10 outline-none;
   }
 }
-.slick-track {
-  display: flex;
-  column-gap: 26px;
+
+.slick-prev:before,
+.slick-next:before {
+  color: #ffdb00;
+  /* font-size: 30px; */
 }
 
-
+/* Inactive slider dot */
+.slick-dots li button:before {
+  color: white;
+}
+/* Active slider dot */
+.slick-dots li.slick-active button:before {
+  color: yellow;
+}

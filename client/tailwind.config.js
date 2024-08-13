@@ -4,9 +4,8 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 
 const fontFamily = defaultTheme.fontFamily;
 fontFamily["sans"] = [
-	"Lato", // <-- Roboto is a default sans font now
+	"Lato", //
 	"system-ui",
-	// <-- you may provide more font fallbacks here
 ];
 
 export default {

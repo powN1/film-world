@@ -1,7 +1,7 @@
 export const navbarItems = [
 	{
 		title: "Movies",
-		path: "/",
+		path: "/movies",
 		submenu: [
 			{ title: "Movies main page", path: "/" },
 			{ title: "Movies database", path: "/" },
@@ -13,7 +13,7 @@ export const navbarItems = [
 	},
 	{
 		title: "Series",
-		path: "/",
+		path: "/series",
 		submenu: [
 			{ title: "Series main page", path: "/" },
 			{ title: "Series database", path: "/" },
@@ -21,7 +21,7 @@ export const navbarItems = [
 	},
 	{
 		title: "Games",
-		path: "/",
+		path: "/games",
 		submenu: [
 			{ title: "Games main page", path: "/" },
 			{ title: "Games database", path: "/" },
@@ -30,7 +30,7 @@ export const navbarItems = [
 	},
 	{
 		title: "Rankings",
-		path: "/",
+		path: "/rankings",
 		submenu: [
 			{ title: "New movies ranking", path: "/" },
 			{ title: "Top 500 ranking", path: "/" },
@@ -39,15 +39,15 @@ export const navbarItems = [
 	},
 	{
 		title: "In cinemas",
-		path: "/",
+		path: "/cinemas",
 	},
 	{
 		title: "VOD",
-		path: "/",
+		path: "/vod",
 	},
 	{
 		title: "TV Program",
-		path: "/",
+		path: "/tv",
 		submenu: [
 			{ title: "TV programs", path: "/" },
 			{ title: "Top 500 tv programs", path: "/" },
