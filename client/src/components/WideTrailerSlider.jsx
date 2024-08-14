@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import MovieSlide from "../common/MovieSlide";
 import { MediaQueriesContext } from "../App";
-import { dummyMovies } from "../common/dummyDataMovies";
+import { dummyDataMovies } from "../common/dummyDataMovies";
 
 const WideTrailerSlider = ({showCategories = true}) => {
 	const [currentMovieCategory, setCurrentMovieCategory] = useState("movies");
@@ -71,7 +71,7 @@ const WideTrailerSlider = ({showCategories = true}) => {
       ) : null}
 			<div className="w-[95%] self-center">
 				<Slider {...settings}>
-					{dummyMovies.map((movie, i) => {
+					{dummyDataMovies.map((movie, i) => {
 						return (
 							<MovieSlide
 								key={i}

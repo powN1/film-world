@@ -8,7 +8,7 @@ import Slider from "react-slick";
 import ReviewSlide from "../common/ReviewSlide";
 import { useContext } from "react";
 import { MediaQueriesContext } from "../App";
-import { dummyMovies } from "../common/dummyDataMovies";
+import { dummyDataMovies } from "../common/dummyDataMovies";
 
 const Reviews = () => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
@@ -30,7 +30,7 @@ const Reviews = () => {
 				</h2>
 				<div className="w-[95%] self-center">
 					<Slider {...settings}>
-						{dummyMovies.map((review, i) => {
+						{dummyDataMovies.map((review, i) => {
 							let {
 								author: { personal_info },
 							} = review;

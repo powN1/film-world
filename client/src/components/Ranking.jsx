@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import RankingPoster from "../common/RankingPoster";
-import { dummyMovies } from "../common/dummyDataMovies";
+import { dummyDataMovies } from "../common/dummyDataMovies";
 
 const Ranking = ({ anticipated = false }) => {
 	const [currentMovieCategory, setCurrentMovieCategory] =
@@ -51,7 +51,7 @@ const Ranking = ({ anticipated = false }) => {
 					</ul>
 				)}
 				<div className="w-full self-center flex gap-x-6 max-lg:gap-4 max-lg:px-4 justify-center max-lg:flex-wrap">
-					{dummyMovies.slice(0, 6).map((movie, i) => {
+					{dummyDataMovies.slice(0, 6).map((movie, i) => {
 						return (
 							<RankingPoster
 								key={i}

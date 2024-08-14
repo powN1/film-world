@@ -1,4 +1,4 @@
-const SingleNews = ({ description, comments, img, type, gridarea = null }) => {
+const SingleNews = ({ title, description, comments, date, img, type, gridarea = null, category}) => {
 	const renderArticle = () => {
 		switch (type) {
 			case "tiny":
@@ -55,10 +55,7 @@ const SingleNews = ({ description, comments, img, type, gridarea = null }) => {
 			case "big":
 				return (
 					<article
-						className={
-							`relative group cursor-pointer max-md:flex max-md:flex-col max-md:col-span-1 max-md:row-span-2 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}` 
-							
-						}
+						className={`relative group cursor-pointer max-md:flex max-md:flex-col max-md:col-span-1 max-md:row-span-2 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}`}
 					>
 						<div className="h-full max-md:h-1/2 overflow-hidden">
 							<img
@@ -78,10 +75,7 @@ const SingleNews = ({ description, comments, img, type, gridarea = null }) => {
 			case "large":
 				return (
 					<article
-						className={
-							`relative group overflow-hidden cursor-pointer max-md:row-span-2 max-md:col-span-1 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}` 
-							
-						}
+						className={`relative group overflow-hidden cursor-pointer max-md:row-span-2 max-md:col-span-1 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}`}
 					>
 						<img
 							src={img}
@@ -115,6 +109,25 @@ const SingleNews = ({ description, comments, img, type, gridarea = null }) => {
 							<span className="text-gray-400 max-lg:text-sm">
 								{comments} comments
 							</span>
+						</div>
+					</article>
+				);
+			case "categorized":
+				return (
+					<article className="flex md:flex-col gap-y-1 max-md:gap-x-2 group overflow-hidden cursor-pointer hover:[box-shadow:_2px_2px_6px_rgb(0_0_0_/_7%)] duration-300 ease-in-out">
+						<div className="h-[150px] min-w-[150px] lg:h-[190px] aspect-square overflow-hidden border border-gray-300">
+							<img
+								src={img}
+								alt={description}
+								className="h-full w-full object-cover group-hover:scale-110 duration-700"
+							/>
+						</div>
+						<div className="flex flex-col py-1 md:items-center md:py-3 md:px-3 ">
+              <p className="text-yellow-400 uppercase text-xs font-bold">{category}</p>
+							<p className="py-1 text-ellipsis overflow-hidden line-clamp-3 md:text-center">
+								{description}
+							</p>
+							<span className="text-gray-400 text-xs mt-auto">{date} / {comments} comments</span>
 						</div>
 					</article>
 				);

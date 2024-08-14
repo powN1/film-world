@@ -6,7 +6,7 @@ import giancarlo from "../imgs/giancarlo.jpg";
 import dexter from "../imgs/dexter.jpg";
 import reaper from "../imgs/reaper.jpg";
 
-export const dummyMovies = [
+export const dummyDataMovies = [
 	{
 		title: "I am legend 2",
 		category: "movie",

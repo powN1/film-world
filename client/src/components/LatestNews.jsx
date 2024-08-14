@@ -1,7 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import SingleNews from "../common/SingleNews";
 import { useState } from "react";
-import { dummyMovies } from "../common/dummyDataMovies";
+import { dummyDataMovies } from "../common/dummyDataMovies";
 
 const categories = [
 	{ title: "Suggested" },
@@ -56,7 +56,7 @@ const LastestNews = () => {
 							})}
 						</ul>
 						<div className="grid md:grid-rows-[190px_190px_190px_190px_190px_190px] grid-cols-3 max-md:grid-rows-16rows70px max-md:grid-cols-1 gap-3">
-							{dummyMovies.slice(0,15).map((article, i) => {
+							{dummyDataMovies.slice(0,15).map((article, i) => {
 								let gridarea = {};
 								if (i === 3) {
 									gridarea["row-start"] = "row-start-2";
@@ -87,7 +87,7 @@ const LastestNews = () => {
 						<h3 className="w-full font-bold uppercase tracking-wider">
 							Most popular
 						</h3>
-						{dummyMovies.map((article, i) => {
+						{dummyDataMovies.map((article, i) => {
 							return (
 								<SingleNews
 									key={i}

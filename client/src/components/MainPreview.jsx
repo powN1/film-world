@@ -5,12 +5,12 @@ import Slider from "react-slick";
 import { useContext, useEffect, useRef, useState } from "react";
 import { MediaQueriesContext } from "../App";
 import PreviewSlide from "../common/PreviewSlide";
-import { dummyMovies } from "../common/dummyDataMovies";
+import { dummyDataMovies } from "../common/dummyDataMovies";
 
 const MainPreview = () => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
-	const [movies, setMovies] = useState([...dummyMovies]);
+	const [movies, setMovies] = useState([...dummyDataMovies]);
 
 	// Slider states
 	const [oldSlide, setOldSlide] = useState(0);

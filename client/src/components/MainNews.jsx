@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import SingleNews from "../common/SingleNews";
-import { dummyMovies } from "../common/dummyDataMovies";
+import { dummyDataMovies } from "../common/dummyDataMovies";
 
 const MainNews = () => {
 
 	return (
 		<div className="bg-white">
 			<div className="lg:w-[55%] mx-auto bg-black grid grid-rows-[80px_80px_80px_80px_80px_80px] grid-cols-[3fr_3fr_4fr] max-md:grid-rows-[70px_70px_70px_70px_70px_70px_70px_70px_70px_70px_70px] max-md:grid-cols-[1fr_1fr] gap-7 max-md:gap-5 p-4">
-				{dummyMovies.slice(0,9).map((movie, i) => {
+				{dummyDataMovies.slice(0,9).map((movie, i) => {
 					let gridarea = {};
 					if (i === 0) {
 						gridarea["row-start"] = "row-start-1";

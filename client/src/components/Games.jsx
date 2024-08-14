@@ -3,7 +3,7 @@ import GameSlide from "../common/GameSlide";
 import Slider from "react-slick";
 import { useContext } from "react";
 import { MediaQueriesContext } from "../App";
-import { dummyMovies } from "../common/dummyDataMovies";
+import { dummyDataMovies } from "../common/dummyDataMovies";
 
 const Ranking = () => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
@@ -26,7 +26,7 @@ const Ranking = () => {
 			</h2>
 			<Link to="" className="relative h-[45vh] group overflow-hidden">
 				<img
-					src={dummyMovies[2].img}
+					src={dummyDataMovies[2].img}
 					alt=""
 					className="h-full w-full object-cover group-hover:scale-110 duration-700"
 				/>
@@ -36,7 +36,7 @@ const Ranking = () => {
 			</Link>
 			<div className="w-[95%] self-center mt-[-13%] md:mt-[-6%] lg:mt-[-5%]">
 				<Slider {...settings}>
-					{dummyMovies.slice(1).map((movie, i) => {
+					{dummyDataMovies.slice(1).map((movie, i) => {
 						return (
 							<GameSlide
 								key={i + 1}

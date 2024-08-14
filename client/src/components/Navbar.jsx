@@ -17,7 +17,7 @@ import giancarlo from "../imgs/giancarlo.jpg";
 import dexter from "../imgs/dexter.jpg";
 import SearchPoster from "../common/SearchPoster";
 import { MediaQueriesContext } from "../App";
-import { dummyMovies } from "../common/dummyDataMovies";
+import { dummyDataMovies } from "../common/dummyDataMovies";
 
 const Navbar = () => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
@@ -117,7 +117,7 @@ const Navbar = () => {
 
 		if (modalInputValue) {
 			setFoundMovies(
-				dummyMovies.filter((movie) =>
+				dummyDataMovies.filter((movie) =>
 					movie.title.toLowerCase().includes(modalInputValue),
 				),
 			);
@@ -373,7 +373,7 @@ const Navbar = () => {
 									</div>
 									<div className="flex gap-x-5">
 										{/* SLIDES */}
-										{dummyMovies.slice(3).map((movie, i) => (
+										{dummyDataMovies.slice(3).map((movie, i) => (
 											<SearchPoster
 												key={i}
 												title={movie.title}
@@ -398,7 +398,7 @@ const Navbar = () => {
 									</div>
 									<div className="grid grid-rows-1 grid-cols-3 gap-x-5">
 										{/* SLIDES */}
-										{dummyMovies.slice(3).map((movie, i) => (
+										{dummyDataMovies.slice(3).map((movie, i) => (
 											<SearchPoster
 												key={i}
 												title={movie.title}
