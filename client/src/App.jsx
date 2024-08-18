@@ -4,6 +4,8 @@ import { createContext, useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import MoviesPage from "./pages/MoviesPage";
+import SeriesPage from "./pages/SeriesPage";
+import GamesPage from "./pages/GamesPage";
 
 export const MediaQueriesContext = createContext({});
 
@@ -47,6 +49,8 @@ function App() {
 				<Route path="/" element={<Navbar />}>
 					<Route index element={<HomePage />} />
 					<Route path="/movies" element={<MoviesPage />} />
+					<Route path="/series" element={<SeriesPage />} />
+					<Route path="/games" element={<GamesPage />} />
 				</Route>
 			</Routes>
 		</MediaQueriesContext.Provider>

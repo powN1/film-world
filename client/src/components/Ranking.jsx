@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import RankingPoster from "../common/RankingPoster";
 import { dummyDataMovies } from "../common/dummyDataMovies";
 
-const Ranking = ({ anticipated = false }) => {
+const Ranking = ({ showCategories = true, anticipated = false }) => {
 	const [currentMovieCategory, setCurrentMovieCategory] =
 		useState("most anticipated");
 
@@ -24,11 +24,11 @@ const Ranking = ({ anticipated = false }) => {
 
 	return (
 		<div className={ anticipated ? "bg-gray-100" : "bg-white"}>
-			<div className="lg:w-[55%] py-6 mx-auto flex flex-col gap-y-5 bg-transparent text-black">
+			<div className="lg:w-[55%] py-10 mx-auto flex flex-col gap-y-5 bg-transparent text-black">
 				<h2 className={ "uppercase text-4xl text-center tracking-tighter font-sansNarrow " + (anticipated ? "font-thin" : "font-bold ")}>
           {anticipated ? "Most anticipated" : "Ranking"}
 				</h2>
-				{!anticipated && (
+				{showCategories && (
 					<ul className="w-full max-lg:w-auto mx-auto list-none flex text-center justify-center relative after:absolute after:content-[''] after:bottom-0 after:left-0 after:h-[1px] after:w-full after:-translate-y-[50%] after:bg-gray-300">
 						{categories.map((category, i) => {
 							return (

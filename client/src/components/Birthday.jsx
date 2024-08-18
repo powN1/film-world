@@ -6,15 +6,17 @@ import { dummyDataActors } from "../common/dummyDataActors";
 
 const Birthday = () => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
+  const slidesToShow = mobileView ? 2 : tabletView ? 4 : 6
 
 	// Slider settings
+  // NOTE: Small screens 2 slides, medium 4, large 6
 	const settings = {
 		dots: true,
 		arrows: mobileView || tabletView ? false : true,
 		infinite: true,
 		speed: 500,
-		slidesToShow: mobileView ? 2 : tabletView ? 3 : 6,
-		slidesToScroll: mobileView ? 2 : tabletView ? 3 : 6,
+		slidesToShow: slidesToShow,
+		slidesToScroll: slidesToShow,
 	};
 
 	return (

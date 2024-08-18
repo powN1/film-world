@@ -114,8 +114,8 @@ const SingleNews = ({ title, description, comments, date, img, type, gridarea = 
 				);
 			case "categorized":
 				return (
-					<article className="flex md:flex-col gap-y-1 max-md:gap-x-2 group overflow-hidden cursor-pointer hover:[box-shadow:_2px_2px_6px_rgb(0_0_0_/_7%)] duration-300 ease-in-out">
-						<div className="h-[150px] min-w-[150px] lg:h-[190px] aspect-square overflow-hidden border border-gray-300">
+					<article className="flex md:flex-col gap-y-1 max-md:gap-x-2 group overflow-hidden cursor-pointer hover:[box-shadow:_0px_0px_6px_rgb(0_0_0_/_25%)] duration-300 ease-in-out">
+						<div className="h-[150px] min-w-[150px] md:h-[190px] aspect-square overflow-hidden border border-gray-300">
 							<img
 								src={img}
 								alt={description}

@@ -1,21 +1,18 @@
-import Birthday from "../components/Birthday";
-import Download from "../components/Download";
-import Footer from "../components/Footer";
 import MainPreview from "../components/MainPreview";
-import MostPopular from "../components/MostPopular";
-import News from "../components/News";
 import Ranking from "../components/Ranking";
 import WideTrailerSlider from "../components/WideTrailerSlider";
+import Download from "../components/Download";
+import Footer from "../components/Footer";
+import MostPopular from "../components/MostPopular";
+import News from "../components/News";
 
-const MoviesPage = () => {
+const SeriesPage = () => {
 	return (
 		<>
 			<MainPreview />
-			<WideTrailerSlider showCategories={false} />
 			<Ranking anticipated={true} showCategories={false} />
+			<WideTrailerSlider showCategories={false} />
 			<MostPopular type="roles" />
-			<Birthday />
-			<MostPopular type="characters" />
       <News />
 			<Download />
 			<Footer />
@@ -23,4 +20,4 @@ const MoviesPage = () => {
 	);
 };
 
-export default MoviesPage;
+export default SeriesPage;

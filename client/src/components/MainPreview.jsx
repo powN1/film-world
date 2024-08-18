@@ -42,7 +42,7 @@ const MainPreview = () => {
 	};
 
 	const settings = {
-		dots: true,
+		dots: false,
 		arrows: mobileView || tabletView ? false : true,
 		infinite: true,
 		speed: 2000,
@@ -80,24 +80,18 @@ const MainPreview = () => {
 	};
 
 	return (
-		<section className="flex flex-col bg-white">
-			<div className="h-[50vh] relative text-white bg-black">
+		<section className="w-full mx-auto flex flex-col">
+			<div className="h-[50vh] lg:w-[55%] w-full mx-auto relative text-white">
 				<Link
 					to={""}
 					style={{
-						backgroundImage: `linear-gradient(rgba(0,0,0,1) 0%, rgba(0,0,0,0.25) 30%, rgba(0,0,0,0.25) 70%, rgba(0,0,0,1) 100%), url(${currentSrc})`,
+						backgroundImage: `linear-gradient(to bottom ,rgba(0,0,0,1) 2%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,1) 98%), ${mobileView ? "" : "linear-gradient(to right, rgba(0,0,0,1) 5%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,1) 95%),"} url(${currentSrc})`,
 					}}
 					className={
 						"h-full w-full block bg-cover bg-center bg-no-repeat transition-opactiy duration-500 " +
 						(fade ? "opacity-0" : "opacity-100")
 					}
-				>
-					{/* <img */}
-					{/* 	src={movies[activeSlide].img} */}
-					{/* 	alt="" */}
-					{/* 	className={ "w-full h-full object-cover relative before:content-[''] before:h-full before:w-full before:absolute before:top-0 before:left-0 before:bg-gradient-to-b from-black from-2% via-transparent to-black to-98% transition-opacity duration-300 " + (fade ? "" : "")} */}
-					{/* /> */}
-				</Link>
+				></Link>
 				<div
 					className={
 						"absolute left-[50%] top-[5%] translate-x-[-50%] flex flex-col items-center gap-y-1 transition-opacity duration-500 " +
@@ -118,10 +112,10 @@ const MainPreview = () => {
 					<h2 className="text-4xl font-bold uppercase font-sansNarrow">
 						{movies[activeSlide].title}
 					</h2>
-					<div className="hidden gap-x-4">
+					<div className={"gap-x-5 flex text-sm " + (mobileView ? "hidden" : "") }>
 						<p>{movies[activeSlide].title}</p>
 						<span className="">{movies[activeSlide].length} min.</span>
-						<span>{movies[0].year}</span>
+						<span>{movies[activeSlide].year}</span>
 					</div>
 					<div className="flex gap-x-2 items-center">
 						<FaStar className="text-3xl text-yellow-400" />
@@ -135,7 +129,7 @@ const MainPreview = () => {
 							</span>
 						</p>
 					</div>
-					<p className="hidden">{movies[activeSlide].description}</p>
+					<p className={ "line-clamp-2 w-1/2 " + ( mobileView ? "hidden": "" ) }>{movies[activeSlide].description}</p>
 				</div>
 				<FaRegCirclePlay
 					className={
@@ -145,19 +139,21 @@ const MainPreview = () => {
 				/>
 			</div>
 
-			<div className="w-full -mt-16">
-				<Slider {...settings}>
-					{movies.map((movie, i) => {
-						return (
-							<PreviewSlide
-								key={i}
-								movie={movie}
-								activeSlide={activeSlide}
-								movieIndex={i}
-							/>
-						);
-					})}
-				</Slider>
+			<div className="w-full bg-white pb-10">
+				<div className="lg:w-[55%] mx-auto -mt-16">
+					<Slider {...settings}>
+						{movies.map((movie, i) => {
+							return (
+								<PreviewSlide
+									key={i}
+									movie={movie}
+									activeSlide={activeSlide}
+									movieIndex={i}
+								/>
+							);
+						})}
+					</Slider>
+				</div>
 			</div>
 		</section>
 	);

@@ -8,6 +8,7 @@ const MovieSlide = ({
 	description = null,
 	type,
 	pegi = null,
+  scrollable = false,
 }) => {
 	const renderMovieSlide = () => {
 		switch (type) {
@@ -31,8 +32,8 @@ const MovieSlide = ({
 				);
 			case "trailer":
 				return (
-					<Link to="/" className="flex flex-col mx-2 gap-y-2 relative group">
-						<div className="h-[400px] border border-gray-300 overflow-hidden after:content-[''] after:absolute after:left-0 after:top-0 after:w-full after:h-full after:bg-black after:opacity-25">
+					<Link to="/" className={ "flex flex-col mx-2 gap-y-2 relative group " + (scrollable ? "min-w-[170px] md:min-w-[240px]" : "")}>
+						<div className={ "border border-gray-300 overflow-hidden after:content-[''] after:absolute after:left-0 after:top-0 after:w-full after:h-full after:bg-black after:opacity-25 " + (scrollable ? "h-[330px] md:h-[450px]" : "h-[400px]")} >
 							<img
 								src={img}
 								alt={title}
@@ -41,20 +42,14 @@ const MovieSlide = ({
 						</div>
 						<FaRegCirclePlay className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-5xl text-white group-hover:text-yellow-400 duration-100" />
 						<div className="absolute bottom-0 left-0 p-3 text-white">
-							<p className="">{title}</p>
+							<p className="line-clamp-1">{title}</p>
 							<p className="text-sm">2024</p>
-							<div className="text-sm w-[80%] max-lg:hidden">{description}</div>
+							<div className={ "text-sm w-[80%] max-lg:hidden " + (scrollable ? "hidden" : "") }>{description}</div>
 						</div>
 						<div
 							className={
 								"absolute top-0 left-0 text-black w-[27px] h-[27px] rounded flex justify-center items-center m-2 " +
-								(pegi === 12
-									? "bg-yellow-400"
-									: pegi === 16
-										? "bg-orange-400"
-										: pegi === 18
-											? "bg-red-500"
-											: null)
+								(pegi === 12 ? "bg-yellow-400" : pegi === 16 ? "bg-orange-400" : pegi === 18 ? "bg-red-500" : null)
 							}
 						>
 							<p className="text-xl text-white font-bold flex justify-center items-center">

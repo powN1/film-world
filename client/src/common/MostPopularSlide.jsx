@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { CiHeart } from "react-icons/ci";
 
-const MostPopularSlide = ({ title, img, actor, role, ranking, character }) => {
+const MostPopularSlide = ({ title, img, actor, role, ranking, character, gameName}) => {
 	return (
 		<Link
 			to=""
@@ -9,8 +9,9 @@ const MostPopularSlide = ({ title, img, actor, role, ranking, character }) => {
 		>
 			<div
 				className={
-					"overflow-hidden border border-gray-700 " +
-					(actor ? "aspect-square" : character ? "h-[220px]" : "")
+					"overflow-hidden border " +
+          (gameName ? "border-gray-400 ": "border-gray-700 ") +
+					(actor ? "aspect-square" : character || gameName ? "h-[220px]" : "")
 				}
 			>
 				<img
@@ -25,7 +26,7 @@ const MostPopularSlide = ({ title, img, actor, role, ranking, character }) => {
 					(actor ? "group-hover:bg-gray-200/15" : null)
 				}
 			>
-				<p>{actor ? `${actor} as ${role}` : `${character}`}</p>
+				<p>{actor ? `${actor} as ${role}` : (character ? `${character}` : `${gameName}`)}</p>
 				{actor && <p className="line-clamp-2 text-gray-500 text-sm">{title}</p>}
 			</div>
 			{role && (

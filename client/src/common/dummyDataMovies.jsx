@@ -22,7 +22,9 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		pegi: 12,
-		description: "A movie about two guys struggling for life",
+		description: "A movie about two guys struggling for life. Obcy: Romulus rozgrywa się na odległej kolonii górniczej, skąd Rain (Cailee Spaeny) pragnie uciec wraz ze swoim ",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "Armand",
@@ -40,6 +42,8 @@ export const dummyDataMovies = [
 		pegi: 12,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "Civil War",
@@ -57,6 +61,8 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "I am legend 2",
@@ -74,6 +80,8 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "Armand",
@@ -91,6 +99,8 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "Civil War",
@@ -108,6 +118,8 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "Civil War",
@@ -125,6 +137,8 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "Civil War",
@@ -142,6 +156,8 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "Civil War",
@@ -159,6 +175,8 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "Civil War",
@@ -176,6 +194,8 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "Civil War",
@@ -193,6 +213,8 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "Civil War",
@@ -210,6 +232,8 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "Civil War",
@@ -227,6 +251,8 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "Civil War",
@@ -244,6 +270,8 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "Civil War",
@@ -261,6 +289,8 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 	{
 		title: "Civil War",
@@ -278,5 +308,7 @@ export const dummyDataMovies = [
 		peopleAwaiting: 562,
 		comments: 15,
 		description: "A movie about two guys struggling for life",
+    year: 2022,
+    length: 128,
 	},
 ];

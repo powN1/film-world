@@ -5,7 +5,7 @@ import MovieSlide from "../common/MovieSlide";
 import { MediaQueriesContext } from "../App";
 import { dummyDataMovies } from "../common/dummyDataMovies";
 
-const WideTrailerSlider = ({showCategories = true}) => {
+const WideTrailerSlider = ({ showCategories = true }) => {
 	const [currentMovieCategory, setCurrentMovieCategory] = useState("movies");
 
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
@@ -27,7 +27,6 @@ const WideTrailerSlider = ({showCategories = true}) => {
 		{ title: "Games" },
 	];
 
-
 	const handleShowUnderline = (e) => {
 		const category = e.target.innerText.toLowerCase();
 		console.log(e.target, category);
@@ -42,33 +41,32 @@ const WideTrailerSlider = ({showCategories = true}) => {
 			<h2 className="uppercase text-4xl font-bold text-center tracking-tighter font-sansNarrow">
 				Trailers
 			</h2>
-      {showCategories ? (
-
-			<ul
-				className={
-					"w-[55%] max-lg:w-auto mx-auto list-none flex justify-center relative after:absolute after:content-[''] after:bottom-0 after:left-0 after:h-[1px] after:w-full after:-translate-y-[50%] after:bg-gray-300"
-				}
-			>
-				{categories.map((category, i) => {
-					return (
-						<li key={i}>
-							<Link
-								path="/"
-								className={
-									"block px-5 py-2 relative duration-300 after:content-[''] after:z-10 after:absolute after:bottom-0 after:h-[3px] after:bg-yellow-400 after:duration-300 after:transition-[width_left] " +
-									(currentMovieCategory === category.title.toLowerCase()
-										? "after:w-[100%] after:left-0 "
-										: "after:w-[0%] after:left-[50%] text-gray-400 hover:text-black")
-								}
-								onClick={handleShowUnderline}
-							>
-								{category.title}
-							</Link>
-						</li>
-					);
-				})}
-			</ul>
-      ) : null}
+			{showCategories ? (
+				<ul
+					className={
+						"w-[55%] max-lg:w-auto mx-auto list-none flex justify-center relative after:absolute after:content-[''] after:bottom-0 after:left-0 after:h-[1px] after:w-full after:-translate-y-[50%] after:bg-gray-300"
+					}
+				>
+					{categories.map((category, i) => {
+						return (
+							<li key={i}>
+								<Link
+									path="/"
+									className={
+										"block px-5 py-2 relative duration-300 after:content-[''] after:z-10 after:absolute after:bottom-0 after:h-[3px] after:bg-yellow-400 after:duration-300 after:transition-[width_left] " +
+										(currentMovieCategory === category.title.toLowerCase()
+											? "after:w-[100%] after:left-0 "
+											: "after:w-[0%] after:left-[50%] text-gray-400 hover:text-black")
+									}
+									onClick={handleShowUnderline}
+								>
+									{category.title}
+								</Link>
+							</li>
+						);
+					})}
+				</ul>
+			) : null}
 			<div className="w-[95%] self-center">
 				<Slider {...settings}>
 					{dummyDataMovies.map((movie, i) => {

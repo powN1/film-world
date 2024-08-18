@@ -1,9 +1,3 @@
-import deadpool from "../imgs/deadpool.jpg";
-import mcu from "../imgs/mcu.jpg";
-import rdj from "../imgs/rdj.jpg";
-import batman from "../imgs/batman.jpg";
-import giancarlo from "../imgs/giancarlo.jpg";
-import dexter from "../imgs/dexter.jpg";
 import Slider from "react-slick";
 import ReviewSlide from "../common/ReviewSlide";
 import { useContext } from "react";
