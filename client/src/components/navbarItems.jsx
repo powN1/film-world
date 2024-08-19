@@ -29,8 +29,8 @@ export const navbarItems = [
 		],
 	},
 	{
-		title: "Rankings",
-		path: "/rankings",
+		title: "Ranking",
+		path: "/ranking",
 		submenu: [
 			{ title: "New movies ranking", path: "/" },
 			{ title: "Top 500 ranking", path: "/" },
