@@ -95,7 +95,7 @@ const RankingFilter = () => {
 	const [currentCategory, setCurrentCategory] = useState("movies");
 	const [currentSubCategory, setCurrentSubCategory] = useState("top 500");
 
-	const [filterModalVisible, setFilterModalVisible] = useState(true);
+	const [filterModalVisible, setFilterModalVisible] = useState(false);
 
 	const [currentGenre, setCurrentGenre] = useState(null);
 	const [currentCountry, setCurrentCountry] = useState(null);
