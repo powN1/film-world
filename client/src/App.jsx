@@ -7,12 +7,15 @@ import MoviesPage from "./pages/MoviesPage";
 import SeriesPage from "./pages/SeriesPage";
 import GamesPage from "./pages/GamesPage";
 import RankingPage from "./pages/RankingPage";
+import MyMoviesPage from "./components/MyMoviesPage";
 
+export const UserContext = createContext({});
 export const MediaQueriesContext = createContext({});
 
 function App() {
 	const [mobileView, setMobileView] = useState(false);
 	const [tabletView, setTabletView] = useState(false);
+	const [userAuth, setUserAuth] = useState({});
 
 	const checkDevice = () => {
 		if (window.innerWidth < 768) {
@@ -46,15 +49,18 @@ function App() {
 
 	return (
 		<MediaQueriesContext.Provider value={{ mobileView, tabletView }}>
-			<Routes>
-				<Route path="/" element={<Navbar />}>
-					<Route index element={<HomePage />} />
-					<Route path="/movies" element={<MoviesPage />} />
-					<Route path="/series" element={<SeriesPage />} />
-					<Route path="/games" element={<GamesPage />} />
-					<Route path="/ranking" element={<RankingPage />} />
-				</Route>
-			</Routes>
+			<UserContext.Provider value={{ userAuth, setUserAuth }}>
+				<Routes>
+					<Route path="/" element={<Navbar />}>
+						<Route index element={<HomePage />} />
+						<Route path="/movies" element={<MoviesPage />} />
+						<Route path="/series" element={<SeriesPage />} />
+						<Route path="/games" element={<GamesPage />} />
+						<Route path="/ranking" element={<RankingPage />} />
+						<Route path="/my" element={<MyMoviesPage />} />
+					</Route>
+				</Routes>
+			</UserContext.Provider>
 		</MediaQueriesContext.Provider>
 	);
 }

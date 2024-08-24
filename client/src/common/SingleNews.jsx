@@ -30,7 +30,7 @@ const SingleNews = ({ title, description, comments, date, img, type, gridarea = 
 							<p className="text-white text-sm line-clamp-2 text-ellipsis group-hover:text-yellow-400 duration-300 [text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)]">
 								{description}
 							</p>
-							<span className="text-xs text-gray-400">13 komentarzy</span>
+							<span className="text-xs text-gray-400">{comments} comments</span>
 						</div>
 					</article>
 				);

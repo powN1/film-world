@@ -4,9 +4,13 @@ import Slider from "react-slick";
 import { useContext } from "react";
 import { MediaQueriesContext } from "../App";
 import { dummyDataMovies } from "../common/dummyDataMovies";
+import { DataContext } from "../pages/HomePage";
 
 const Games = () => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
+
+	const { articles } = useContext(DataContext);
+  console.log(articles)
 	// Slider settings
 	const settings = {
 		dots: true,
@@ -25,7 +29,7 @@ const Games = () => {
 				</h2>
 				<Link to="" className="relative h-[45vh] group overflow-hidden">
 					<img
-						src={dummyDataMovies[2].img}
+						src={articles[0].banner}
 						alt=""
 						className="h-full w-full object-cover group-hover:scale-110 duration-700"
 					/>
@@ -35,12 +39,12 @@ const Games = () => {
 				</Link>
 				<div className="w-[95%] self-center mt-[-13%] md:mt-[-6%] lg:mt-[-5%]">
 					<Slider {...settings}>
-						{dummyDataMovies.slice(1).map((movie, i) => {
+						{articles.slice(1).map((movie, i) => {
 							return (
 								<GameSlide
 									key={i + 1}
 									title={movie.title}
-									img={movie.img}
+									img={movie.banner}
 									comments={movie.comments}
 								/>
 							);

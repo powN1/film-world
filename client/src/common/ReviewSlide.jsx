@@ -8,8 +8,7 @@ const ReviewSlide = ({
 	category,
 	rating,
 	description,
-	likes,
-	author,
+	// author,
 }) => {
 
 	return (
@@ -34,12 +33,12 @@ const ReviewSlide = ({
 				<div className="flex gap-x-2">
 					<Link className="relative h-[70px] w-[70px] border-2 border-green-600 rounded-full p-1">
 						<img
-							src={author.profile_img}
+							src=""
 							alt="user picutre"
 							className="h-full w-full object-cover rounded-full"
 						/>
 					</Link>
-					<Link>{author.fullname}</Link>
+					<Link>{}</Link>
 				</div>
 				{/* Review rating */}
 				<div className="flex items-center gap-x-1">

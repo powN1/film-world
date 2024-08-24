@@ -3,13 +3,16 @@ import ReviewSlide from "../common/ReviewSlide";
 import { useContext } from "react";
 import { MediaQueriesContext } from "../App";
 import { dummyDataMovies } from "../common/dummyDataMovies";
+import { DataContext } from "../pages/HomePage";
 
 const Reviews = () => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
+	const { reviews } = useContext(DataContext);
+
 	const settings = {
 		dots: true,
-    arrows: mobileView || tabletView ? false : true,
+		arrows: mobileView || tabletView ? false : true,
 		infinite: true,
 		speed: 500,
 		slidesToShow: mobileView ? 1 : tabletView ? 2 : 3,
@@ -24,20 +27,18 @@ const Reviews = () => {
 				</h2>
 				<div className="w-[95%] self-center">
 					<Slider {...settings}>
-						{dummyDataMovies.map((review, i) => {
-							let {
-								author: { personal_info },
-							} = review;
+						{reviews.map((review, i) => {
+							// let { author: { personal_info }, } = review;
+
 							return (
 								<ReviewSlide
 									key={i}
-									title={review.title}
+									// author={personal_info}
 									category={review.category}
-									img={review.img}
-									author={personal_info}
-									rating={review.rating}
 									description={review.description}
-									likes={review.likes}
+									img={review.banner}
+									rating={review.activity.rating}
+									title={review.title}
 									type="horizontal"
 								/>
 							);

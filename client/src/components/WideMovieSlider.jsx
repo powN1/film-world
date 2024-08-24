@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import MovieSlide from "../common/MovieSlide";
 import { MediaQueriesContext } from "../App";
-import { dummyDataMovies } from "../common/dummyDataMovies";
+import { DataContext } from "../pages/HomePage";
 
 const WideSlider = () => {
-	const [currentMovieCategory, setCurrentMovieCategory] =
-		useState("movies of the day");
+	const [currentMovieCategory, setCurrentMovieCategory] = useState("movies of the day");
+
+  const { movies } = useContext(DataContext)
 
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
@@ -73,12 +74,12 @@ const WideSlider = () => {
 			</ul>
 			<div className="w-[95%] self-center">
 				<Slider {...settings}>
-					{dummyDataMovies.map((movie, i) => {
+					{movies.map((movie, i) => {
 						return (
 							<MovieSlide
 								key={i}
 								title={movie.title}
-								img={movie.img}
+								img={movie.banner}
 								ranking={movie.ranking ? movie.ranking : null}
 								type="movie"
 							/>

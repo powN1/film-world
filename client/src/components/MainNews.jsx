@@ -1,13 +1,14 @@
-import { Link } from "react-router-dom";
+import { useContext } from "react";
 import SingleNews from "../common/SingleNews";
-import { dummyDataMovies } from "../common/dummyDataMovies";
+import { DataContext } from "../pages/HomePage";
 
 const MainNews = () => {
+  const { articles } = useContext(DataContext)
 
 	return (
 		<div className="bg-white">
 			<div className="lg:w-[55%] mx-auto bg-black grid grid-rows-[80px_80px_80px_80px_80px_80px] grid-cols-[3fr_3fr_4fr] max-md:grid-rows-[70px_70px_70px_70px_70px_70px_70px_70px_70px_70px_70px] max-md:grid-cols-[1fr_1fr] gap-7 max-md:gap-5 p-4">
-				{dummyDataMovies.slice(0,9).map((movie, i) => {
+				{articles.slice(0, 9).map((article, i) => {
 					let gridarea = {};
 					if (i === 0) {
 						gridarea["row-start"] = "row-start-1";
@@ -29,9 +30,9 @@ const MainNews = () => {
 					return (
 						<SingleNews
 							key={i}
-							description={movie.description}
-							comments={movie.comments}
-							img={movie.img}
+							description={article.description}
+							comments={article.comments}
+							img={article.banner}
 							type={i === 0 ? "gigantic" : i === 1 || i === 2 ? "big" : "small"}
 							gridarea={i <= 2 ? gridarea : null}
 						/>

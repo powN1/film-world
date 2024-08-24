@@ -1,7 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import SingleNews from "../common/SingleNews";
-import { useState } from "react";
-import { dummyDataMovies } from "../common/dummyDataMovies";
+import { useState, useEffect, useContext } from "react";
+import { DataContext } from "../pages/HomePage";
 
 const categories = [
 	{ title: "Suggested" },
@@ -14,9 +14,10 @@ const categories = [
 	{ title: "Videos" },
 ];
 
-
 const LastestNews = () => {
 	const [currentCategory, setCurrentCategory] = useState("suggested");
+
+  const { articles } = useContext(DataContext)
 
 	const handleShowUnderline = (e) => {
 		const category = e.target.innerText.toLowerCase();
@@ -56,7 +57,7 @@ const LastestNews = () => {
 							})}
 						</ul>
 						<div className="grid md:grid-rows-[190px_190px_190px_190px_190px_190px] grid-cols-3 max-md:grid-rows-16rows70px max-md:grid-cols-1 gap-3">
-							{dummyDataMovies.slice(0,15).map((article, i) => {
+							{articles.slice(0, 15).map((article, i) => {
 								let gridarea = {};
 								if (i === 3) {
 									gridarea["row-start"] = "row-start-2";
@@ -69,7 +70,7 @@ const LastestNews = () => {
 										key={i}
 										description={article.description}
 										comments={article.comments}
-										img={article.img}
+										img={article.banner}
 										type={i === 3 ? "large" : "medium"}
 										gridarea={i === 3 ? gridarea : null}
 									/>
@@ -87,7 +88,7 @@ const LastestNews = () => {
 						<h3 className="w-full font-bold uppercase tracking-wider">
 							Most popular
 						</h3>
-						{dummyDataMovies.map((article, i) => {
+						{articles.map((article, i) => {
 							return (
 								<SingleNews
 									key={i}

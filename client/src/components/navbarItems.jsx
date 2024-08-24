@@ -37,25 +37,25 @@ export const navbarItems = [
 			{ title: "Top 500 series", path: "/" },
 		],
 	},
-	{
-		title: "In cinemas",
-		path: "/cinemas",
-	},
-	{
-		title: "VOD",
-		path: "/vod",
-	},
-	{
-		title: "TV Program",
-		path: "/tv",
-		submenu: [
-			{ title: "TV programs", path: "/" },
-			{ title: "Top 500 tv programs", path: "/" },
-			{ title: "Best programs", path: "/" },
-		],
-	},
+	// {
+	// 	title: "In cinemas",
+	// 	path: "/cinemas",
+	// },
+	// {
+	// 	title: "VOD",
+	// 	path: "/vod",
+	// },
+	// {
+	// 	title: "TV Program",
+	// 	path: "/tv",
+	// 	submenu: [
+	// 		{ title: "TV programs", path: "/" },
+	// 		{ title: "Top 500 tv programs", path: "/" },
+	// 		{ title: "Best programs", path: "/" },
+	// 	],
+	// },
 	{
 		title: "My movies",
-		path: "/",
+		path: "/my",
 	},
 ];

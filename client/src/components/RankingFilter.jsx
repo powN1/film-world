@@ -253,7 +253,6 @@ const RankingFilter = () => {
 			</div>
 
 			{/* NOTE: MODAL HERE */}
-
       
       <div className={"inset-0 bg-black z-30 duration-100 ease-in-out " + (filterModalVisible ? "fixed bg-opacity-80 backdrop-blur-sm " : "invisible bg-opacity-0")}></div>
 			<div

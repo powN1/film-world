@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import RankingPoster from "../common/RankingPoster";
-import { dummyDataMovies } from "../common/dummyDataMovies";
+import { DataContext } from "../pages/HomePage";
 
 const Ranking = ({ showCategories = true, anticipated = false }) => {
-	const [currentMovieCategory, setCurrentMovieCategory] =
-		useState("most anticipated");
+	const [currentMovieCategory, setCurrentMovieCategory] = useState("most anticipated");
+
+	const { movies } = useContext(DataContext);
 
 	// Slider settings
 	const categories = [
@@ -23,10 +24,15 @@ const Ranking = ({ showCategories = true, anticipated = false }) => {
 	};
 
 	return (
-		<div className={ anticipated ? "bg-gray-100" : "bg-white"}>
+		<div className={anticipated ? "bg-gray-100" : "bg-white"}>
 			<div className="lg:w-[55%] py-10 mx-auto flex flex-col gap-y-5 bg-transparent text-black">
-				<h2 className={ "uppercase text-4xl text-center tracking-tighter font-sansNarrow " + (anticipated ? "font-thin" : "font-bold ")}>
-          {anticipated ? "Most anticipated" : "Ranking"}
+				<h2
+					className={
+						"uppercase text-4xl text-center tracking-tighter font-sansNarrow " +
+						(anticipated ? "font-thin" : "font-bold ")
+					}
+				>
+					{anticipated ? "Most anticipated" : "Ranking"}
 				</h2>
 				{showCategories && (
 					<ul className="w-full max-lg:w-auto mx-auto list-none flex text-center justify-center relative after:absolute after:content-[''] after:bottom-0 after:left-0 after:h-[1px] after:w-full after:-translate-y-[50%] after:bg-gray-300">
@@ -51,12 +57,12 @@ const Ranking = ({ showCategories = true, anticipated = false }) => {
 					</ul>
 				)}
 				<div className="w-full self-center flex gap-x-6 max-lg:gap-4 max-lg:px-4 justify-center max-lg:flex-wrap">
-					{dummyDataMovies.slice(0, 6).map((movie, i) => {
+					{movies.slice(0, 6).map((movie, i) => {
 						return (
 							<RankingPoster
 								key={i}
 								title={movie.title}
-								img={movie.img}
+								img={movie.banner}
 								rating={anticipated ? null : movie.rating ? movie.rating : null}
 								peopleAwaiting={
 									movie.peopleAwaiting ? movie.peopleAwaiting : null
@@ -65,12 +71,12 @@ const Ranking = ({ showCategories = true, anticipated = false }) => {
 						);
 					})}
 				</div>
-        <Link
-          path="/"
-          className="w-[90%] lg:w-1/3 self-center py-3 text-center max-lg:px-10 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
-        >
-          See ranking
-        </Link>
+				<Link
+					path="/"
+					className="w-[90%] lg:w-1/3 self-center py-3 text-center max-lg:px-10 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
+				>
+					See ranking
+				</Link>
 			</div>
 		</div>
 	);
