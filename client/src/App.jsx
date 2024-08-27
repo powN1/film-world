@@ -45,7 +45,6 @@ function App() {
 
 	useEffect(() => {
     if(Object.keys(userAuth).length === 0) {
-      console.log('checking user auth')
       let userInSession = lookInSession("user");
       userInSession ? setUserAuth(JSON.parse(userInSession)) : setUserAuth({ access_token: null });
     }

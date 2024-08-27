@@ -1,13 +1,15 @@
 import React, { useContext, useState } from "react";
-import { FaGoogle } from "react-icons/fa";
+import { FaGoogle, FaFacebook } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { IoMdClose } from "react-icons/io";
 import { FaEye } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
 import { UserContext } from "../App";
+import filmwebLogoSmall from "../imgs/filmweb-logo-small.png";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
 import { storeInSession } from "../common/session";
+import { authWithGoogle, authWithFacebook } from "../common/firebase";
 
 const LoginModal = ({ setLoginModalVisible }) => {
 	let {
@@ -50,19 +52,51 @@ const LoginModal = ({ setLoginModalVisible }) => {
 			.then(({ data }) => {
 				storeInSession("user", JSON.stringify(data));
 				setUserAuth(data);
-        console.log(data)
 
 				handleInputsClear();
-        serverRoute === "/signin" ? toast.success("Successfully logged in") : toast.success("Successfully created account")
 
-				setTimeout(() => {
-					setNormalLoginClicked(false);
-					setNewAccountClicked(false);
-					setLoginModalVisible(false);
-				}, 1000);
+				// setTimeout(() => {
+				setNormalLoginClicked(false);
+				setNewAccountClicked(false);
+				setLoginModalVisible(false);
+				// }, 1000);
 			})
 			.catch(({ response }) => {
 				toast.error(response.data.error);
+			});
+	};
+
+	const handleGoogleAuth = (e) => {
+		e.preventDefault();
+
+		authWithGoogle()
+			.then((user) => {
+				let serverRoute = "/google-auth";
+
+				let formData = { access_token: user.accessToken };
+
+				userAuthThroughServer(serverRoute, formData);
+			})
+			.catch((err) => {
+				toast.error("Trouble loggin in through google");
+				return console.log(err);
+			});
+	};
+
+	const handleFacebookAuth = (e) => {
+		e.preventDefault();
+
+		authWithFacebook()
+			.then((user) => {
+				let serverRoute = "/facebook-auth";
+
+				let formData = { access_token: user.accessToken };
+
+				userAuthThroughServer(serverRoute, formData);
+			})
+			.catch((err) => {
+				toast.error("Trouble loggin in through facebook");
+				return console.log(err);
 			});
 	};
 
@@ -79,7 +113,7 @@ const LoginModal = ({ setLoginModalVisible }) => {
 		for (let [key, value] of form.entries()) {
 			formData[key] = value;
 		}
-    console.log(formData)
+		console.log(formData);
 
 		const { firstName, surname, username, email, password } = formData;
 
@@ -102,7 +136,7 @@ const LoginModal = ({ setLoginModalVisible }) => {
 		}
 
 		if (!email.length) {
-      console.log("hello?")
+			console.log("hello?");
 			return toast.error("Enter email");
 		}
 
@@ -130,23 +164,29 @@ const LoginModal = ({ setLoginModalVisible }) => {
 						</button>
 						<p className="text-2xl">Log in or create account</p>
 						<div className="flex flex-col justify-center items-center gap-y-5 w-full">
-							<Link className="w-[90%] py-3 border border-gray-300 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium">
+							<button
+								className="w-[90%] py-3 border border-gray-300 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium"
+								onClick={handleGoogleAuth}
+							>
 								<FaGoogle className="text-yellow-400 text-lg" />
 								<p className="">
 									Sign in through <span className="font-bold">google</span>
 								</p>
-							</Link>
-							<Link className="w-[90%] py-3 border border-gray-300 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium">
-								<FaGoogle className="text-yellow-400 text-lg" />
+							</button>
+							<button
+								className="w-[90%] py-3 border border-gray-300 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium"
+								onClick={handleFacebookAuth}
+							>
+								<FaFacebook className="text-blue-600 text-xl" />
 								<p className="">
 									Sign in through <span className="font-bold">facebook</span>
 								</p>
-							</Link>
+							</button>
 							<button
 								className="w-[90%] py-3 border border-gray-300 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium"
 								onClick={() => setNormalLoginClicked(true)}
 							>
-								<FaGoogle className="text-yellow-400 text-lg" />
+                <img src={filmwebLogoSmall} alt="" className="h-[20px] w-[20px]"/>
 								<p className="">
 									Sign in through{" "}
 									<span className="font-bold">filmweb account</span>
@@ -205,7 +245,9 @@ const LoginModal = ({ setLoginModalVisible }) => {
 								)}
 							</div>
 							<button
-								className={ "py-2 w-[90%] bg-yellow-400 text-gray-600 rounded-sm" }
+								className={
+									"py-2 w-[90%] bg-yellow-400 text-gray-600 rounded-sm"
+								}
 								disabled={!email || !password ? true : false}
 								onClick={(e) => {
 									e.preventDefault();
@@ -377,7 +419,16 @@ const LoginModal = ({ setLoginModalVisible }) => {
 							<button
 								className={"py-2 w-[90%] bg-yellow-400 text-black rounded-sm"}
 								type="submit"
-								disabled={ !firstName || !surname || !username || !password || !email || !sex ? true : false }
+								disabled={
+									!firstName ||
+									!surname ||
+									!username ||
+									!password ||
+									!email ||
+									!sex
+										? true
+										: false
+								}
 								onClick={(e) => {
 									e.preventDefault();
 									handleSubmit("sign-up");

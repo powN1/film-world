@@ -70,6 +70,10 @@ const userSchema = mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
+		facebook_auth: {
+			type: Boolean,
+			default: false,
+		},
 		articles: {
 			type: [Schema.Types.ObjectId],
 			ref: "articles",

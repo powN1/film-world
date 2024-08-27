@@ -13,19 +13,27 @@ import { navbarItems } from "./navbarItems";
 import { useContext, useEffect, useRef, useState } from "react";
 import SearchPoster from "../common/SearchPoster";
 import { MediaQueriesContext, UserContext } from "../App";
-import { dummyDataMovies } from "../common/dummyDataMovies";
 import LoginModal from "./LoginModal";
+import { removeFromSession, storeInSession } from "../common/session";
+import { authWithGoogle } from "../common/firebase";
+import { Toaster, toast } from "react-hot-toast";
+import axios from "axios";
 
 const Navbar = () => {
-	let {
-		userAuth: { access_token, profile_img, firstName, surname },
-		setUserAuth,
-	} = useContext(UserContext);
+	let { userAuth, userAuth: { access_token, profile_img, firstName, surname }, setUserAuth, } = useContext(UserContext);
+
+	const fetchMovies = () => {
+		axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies")
+    .then(res => { console.log(res.data.movies); setMovies(res.data.movies) })
+    .catch(err => console.error(err))
+	};
+
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
 	const [navbarSize, setNavbarSize] = useState("big");
 	const [searchModalVisible, setSearchModalVisible] = useState(false);
 	const [modalInputValue, setModalInputValue] = useState("");
+  const [movies, setMovies] = useState([]);
 	const [foundMovies, setFoundMovies] = useState([]);
 	const [showMobileMenu, setShowMobileMenu] = useState(false);
 	const [showMobileNavbar, setShowMobileNavbar] = useState(true);
@@ -33,6 +41,10 @@ const Navbar = () => {
 	const [showProfilePanel, setShowProfilePanel] = useState(false);
 
 	const [loginModalVisible, setLoginModalVisible] = useState(false);
+
+	const prevSearchModalVisibleRef = useRef();
+	const prevShowMobileMenuRef = useRef();
+	const prevLoginModalVisibleRef = useRef();
 
 	const modalInputRef = useRef(null);
 
@@ -110,6 +122,7 @@ const Navbar = () => {
 			document.body.style.width = "";
 		}
 	};
+
 	const handleLoginModal = () => {
 		if (loginModalVisible) {
 			document.body.style.overflow = "hidden";
@@ -130,20 +143,55 @@ const Navbar = () => {
 		setShowProfilePanel(false);
 	};
 
+	const signOutUser = () => {
+		removeFromSession("user");
+		setUserAuth({ access_token: null });
+	};
+
+	const userAuthThroughServer = (serverRoute, formData) => {
+		axios
+			.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData)
+			.then(({ data }) => {
+				console.log("storing");
+				console.log(data);
+				storeInSession("user", JSON.stringify(data));
+				setUserAuth(data);
+			})
+			.catch((err) => {
+				toast.error(err);
+			});
+	};
+
+	const handleGoogleAuth = (e) => {
+		e.preventDefault();
+
+		authWithGoogle()
+			.then((user) => {
+				let serverRoute = "/google-auth";
+
+				let formData = { access_token: user.accessToken };
+
+				userAuthThroughServer(serverRoute, formData);
+			})
+			.catch((err) => {
+				toast.error("Trouble loggin in through google");
+				return console.log(err);
+			});
+	};
+
 	useEffect(() => {
 		window.addEventListener("scroll", resizeNavbar);
 		window.addEventListener("scroll", showOrHideNavbarMobile);
 
-		if (searchModalVisible) handleSearchModal();
-		if (showMobileMenu) handleMobileMenu();
-		if (loginModalVisible) handleLoginModal();
+    if(foundMovies.length === 0) fetchMovies();
+
+		// Check for specific state change and invoke related function
+		if (prevSearchModalVisibleRef.current !== searchModalVisible) handleSearchModal();
+		if (prevShowMobileMenuRef.current !== searchModalVisible) handleMobileMenu();
+		if (prevLoginModalVisibleRef.current !== searchModalVisible) handleLoginModal();
 
 		if (modalInputValue) {
-			setFoundMovies(
-				dummyDataMovies.filter((movie) =>
-					movie.title.toLowerCase().includes(modalInputValue),
-				),
-			);
+			setFoundMovies(movies.filter((movie) => movie.title.toLowerCase().includes(modalInputValue)));
 		}
 
 		return () => {
@@ -161,10 +209,10 @@ const Navbar = () => {
 
 	return (
 		<>
-			<div className={"bg-black overflow-hidden"}>
+			<div className="bg-black overflow-hidden">
 				<nav
 					className={
-						"sticky w-full top-0 z-20 font-lato bg-black flex flex-col justify-between items-center gap-y-3 text-white duration-300 " +
+						"fixed w-full top-0 z-20 font-lato bg-black flex flex-col justify-between items-center gap-y-3 text-white duration-300 " +
 						(mobileView ? (showMobileNavbar ? "" : "translate-y-[-100%]") : "")
 					}
 				>
@@ -172,7 +220,7 @@ const Navbar = () => {
 						className={
 							"flex items-center gap-y-2 w-[55%] max-lg:w-full max-lg:gap-x-6 max-lg:px-4 max-lg:py-3 " +
 							(navbarSize === "small"
-								? "gap-x-2"
+								? "gap-x-5"
 								: "flex-wrap justify-evenly lg:gap-x-4 lg:pt-3 max-lg:flex-nowrap max-lg:justify-end")
 						}
 					>
@@ -203,8 +251,8 @@ const Navbar = () => {
 							className={
 								"relative text-black text-sm self-stretch w-[40px] " +
 								(navbarSize === "small"
-									? "self-stretch w-[40px] cursor-pointer group"
-									: "self-stretch grow max-lg:grow-0")
+									? "w-[40px] cursor-pointer group"
+									: "grow max-lg:grow-0")
 							}
 							onClick={() => {
 								setSearchModalVisible(true);
@@ -236,7 +284,7 @@ const Navbar = () => {
 									"py-2 px-7 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium max-lg:hidden " +
 									(navbarSize === "small" ? "" : "self-stretch")
 								}
-								onClick={() => setLoginModalVisible((prevVal) => !prevVal)}
+								onClick={handleGoogleAuth}
 							>
 								<FaGoogle className="text-yellow-400 text-lg" />
 								Sign in through google
@@ -245,7 +293,7 @@ const Navbar = () => {
 						{/* Sign in button */}
 						{access_token ? (
 							<div
-								className="relative flex items-center gap-x-3 cursor-pointer"
+								className="relative flex items-center gap-x-3 cursor-pointer max-h-[40px]"
 								onClick={handleUserPanel}
 								onBlur={handleUserPanelBlur}
 								tabIndex={0}
@@ -276,13 +324,14 @@ const Navbar = () => {
 											<HiOutlineCog6Tooth className="text-2xl" />
 											<p className="font-bold">Settings</p>
 										</Link>
-										<Link
+										<div
 											to="/"
 											className="flex items-center gap-x-2 p-3 hover:bg-gray-200 duration-300"
+											onClick={signOutUser}
 										>
 											<IoMdExit className="text-2xl" />
 											<p className="font-bold">Log out</p>
-										</Link>
+										</div>
 									</div>
 								) : null}
 							</div>
@@ -416,11 +465,11 @@ const Navbar = () => {
 								<div className="flex flex-col gap-y-10">
 									<div className="grid grid-rows-1 grid-cols-6 gap-x-5">
 										{/* SLIDES */}
-										{foundMovies.map((movie, i) => (
+										{foundMovies.slice(0,6).map((movie, i) => (
 											<SearchPoster
 												key={i}
 												title={movie.title}
-												img={movie.img}
+												img={movie.banner}
 												year={movie.year}
 												type="searchResult"
 											/>
@@ -451,11 +500,11 @@ const Navbar = () => {
 										</div>
 										<div className="flex gap-x-5">
 											{/* SLIDES */}
-											{dummyDataMovies.slice(3).map((movie, i) => (
+											{movies.slice(0, 3).map((movie, i) => (
 												<SearchPoster
 													key={i}
 													title={movie.title}
-													img={movie.img}
+													img={movie.banner}
 													type="poster"
 												/>
 											))}
@@ -476,11 +525,11 @@ const Navbar = () => {
 										</div>
 										<div className="grid grid-rows-1 grid-cols-3 gap-x-5">
 											{/* SLIDES */}
-											{dummyDataMovies.slice(3).map((movie, i) => (
+											{movies.slice(0, 3).map((movie, i) => (
 												<SearchPoster
 													key={i}
 													title={movie.title}
-													img={movie.img}
+													img={movie.banner}
 													type="poster"
 												/>
 											))}
@@ -573,6 +622,7 @@ const Navbar = () => {
 					<LoginModal setLoginModalVisible={setLoginModalVisible} />
 				)}
 
+				<Toaster />
 				<Outlet />
 			</div>
 		</>

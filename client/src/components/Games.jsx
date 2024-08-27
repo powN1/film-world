@@ -10,7 +10,6 @@ const Games = () => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
 	const { articles } = useContext(DataContext);
-  console.log(articles)
 	// Slider settings
 	const settings = {
 		dots: true,
