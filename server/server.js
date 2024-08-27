@@ -2,6 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import aws from "aws-sdk";
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 import "dotenv/config";
 
 // Schemas
@@ -50,11 +52,31 @@ app.get("/get-movies", (req, res) => {
 		});
 });
 
-app.post("/signup", (req, res) => {
-	const { fullname, email, password } = req.body;
+const formatDataToSend = (user) => {
+	const access_token = jwt.sign( { id: user._id, admin: user.admin }, process.env.JWT_SECRET_ACCESS_KEY ,);
 
-	if (fullname.length < 3) {
-		return res .status(403) .json({ error: "Fullname must be at least 3 letters long" });
+	return {
+		access_token,
+		profile_img: user.personal_info.profile_img,
+    firstName: user.personal_info.firstName,
+    surname: user.personal_info.surname,
+		username: user.personal_info.username,
+		isAdmin: user.admin,
+	};
+};
+
+// Handle "/signup" post request
+app.post("/signup", (req, res) => {
+	const { firstName, surname, username, email, password } = req.body;
+
+	if (firstName.length < 2) {
+		return res .status(403) .json({ error: "First name must be at least 2 letters long" });
+	}
+	if (surname.length < 3) {
+		return res .status(403) .json({ error: "Surname must be at least 3 letters long" });
+	}
+	if (username.length < 3) {
+		return res .status(403) .json({ error: "Username must be at least 3 letters long" });
 	}
 	if (!email.length) {
 		return res.status(403).json({ error: "Enter email" });
@@ -63,35 +85,77 @@ app.post("/signup", (req, res) => {
 		return res.status(403).json({ error: "Email is invalid" });
 	}
 	if (!passwordRegex.test(password)) {
-		return res.status(403).json({ error: "Password should be 6-20 characters long with a numeric, 1 lowercase and 1 uppercase letters" });
+		return res.status(403).json({ error: "Password should be 6-20 characters long with a numeric, 1 lowercase and 1 uppercase letters", });
 	}
 
 	// Use bcrypt to hash the password
 	bcrypt.hash(password, 10, async (_err, hashed_password) => {
-		const username = await generateUsername(email);
-
 		const user = new User({
 			personal_info: {
-				fullname,
+        firstName,
+        surname,
+        username,
 				email,
 				password: hashed_password,
-				username,
 			},
 		});
 
-		user
-			.save()
-			.then((u) => {
+		user.save()
+      .then((u) => {
 				return res.status(200).json(formatDataToSend(u));
 			})
 			.catch((err) => {
 				if (err.code === 11000) {
-					return res.status(500).json({ error: "Email already exists" });
+          const duplicateField = Object.keys(err.keyValue)[0];
+
+          if (duplicateField === 'personal_info.email') {
+            return res.status(500).json({ error: "Email already exists" });
+          } else if (duplicateField === 'personal_info.username') {
+            return res.status(500).json({ error: "Username already exists" });
+          }
+
 				}
 				return res.status(500).json({ error: err.message });
 			});
 	});
 });
+
+app.post("/signin", (req, res) => {
+	let { email, password } = req.body;
+
+	User.findOne({ "personal_info.email": email })
+		.then((user) => {
+			if (!user) {
+				return res.status(403).json({ error: "Email not found" });
+			}
+
+			if (!user.google_auth) {
+				bcrypt.compare(password, user.personal_info.password, (err, result) => {
+					if (err) {
+						return res.status(403).json({
+							error: "Error occured while logging in. Please try again.",
+						});
+					}
+
+					if (!result) {
+						return res.status(403).json({ error: "Incorrect password" });
+					} else {
+						return res.status(200).json(formatDataToSend(user));
+					}
+				});
+			} else {
+				return res.status(403).json({
+					error:
+						"Account was created using google. Try logging in with google.",
+				});
+			}
+		})
+		.catch((err) => {
+			console.log(err);
+			return res.status(500).json({ error: err.message });
+		});
+});
+
 app.listen(PORT, () => {
 	console.log(`listening on port: ${PORT}`);
 });

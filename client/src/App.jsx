@@ -8,6 +8,7 @@ import SeriesPage from "./pages/SeriesPage";
 import GamesPage from "./pages/GamesPage";
 import RankingPage from "./pages/RankingPage";
 import MyMoviesPage from "./components/MyMoviesPage";
+import { lookInSession } from "./common/session";
 
 export const UserContext = createContext({});
 export const MediaQueriesContext = createContext({});
@@ -43,6 +44,12 @@ function App() {
 	};
 
 	useEffect(() => {
+    if(Object.keys(userAuth).length === 0) {
+      console.log('checking user auth')
+      let userInSession = lookInSession("user");
+      userInSession ? setUserAuth(JSON.parse(userInSession)) : setUserAuth({ access_token: null });
+    }
+
 		checkDevice();
 		window.addEventListener("resize", checkDevice);
 	}, [mobileView, tabletView]);

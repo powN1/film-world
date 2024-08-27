@@ -5,16 +5,22 @@ import { CiUser } from "react-icons/ci";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoMdClose } from "react-icons/io";
 import { IoChevronDown } from "react-icons/io5";
+import { IoMdExit } from "react-icons/io";
+import { HiOutlineCog6Tooth } from "react-icons/hi2";
 import filmwebLogo from "../imgs/filmweb-logo.png";
 import filmwebLogoSmall from "../imgs/filmweb-logo-small.png";
 import { navbarItems } from "./navbarItems";
 import { useContext, useEffect, useRef, useState } from "react";
 import SearchPoster from "../common/SearchPoster";
-import { MediaQueriesContext } from "../App";
+import { MediaQueriesContext, UserContext } from "../App";
 import { dummyDataMovies } from "../common/dummyDataMovies";
 import LoginModal from "./LoginModal";
 
 const Navbar = () => {
+	let {
+		userAuth: { access_token, profile_img, firstName, surname },
+		setUserAuth,
+	} = useContext(UserContext);
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
 	const [navbarSize, setNavbarSize] = useState("big");
@@ -24,6 +30,7 @@ const Navbar = () => {
 	const [showMobileMenu, setShowMobileMenu] = useState(false);
 	const [showMobileNavbar, setShowMobileNavbar] = useState(true);
 	const [lastScrollY, setLastScrollY] = useState(0);
+	const [showProfilePanel, setShowProfilePanel] = useState(false);
 
 	const [loginModalVisible, setLoginModalVisible] = useState(false);
 
@@ -113,6 +120,14 @@ const Navbar = () => {
 			document.body.style.position = "";
 			document.body.style.width = "";
 		}
+	};
+
+	const handleUserPanel = () => {
+		setShowProfilePanel((prevVal) => !prevVal);
+	};
+
+	const handleUserPanelBlur = () => {
+		setShowProfilePanel(false);
 	};
 
 	useEffect(() => {
@@ -215,41 +230,88 @@ const Navbar = () => {
 							/>
 						</div>
 						{/* Sign in google button */}
-						<button
-							className={
-								"py-2 px-7 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium max-lg:hidden " +
-								(navbarSize === "small" ? "" : "self-stretch")
-							}
-							onClick={() => setLoginModalVisible((prevVal) => !prevVal)}
-						>
-							<FaGoogle className="text-yellow-400 text-lg" />
-							Sign in through google
-						</button>
-						{/* Sign in button */}
-						<button
-							className={
-								"flex justify-center items-center gap-x-2 h-full lg:hover:text-yellow-400 duration-200 max-lg:flex-col " +
-								(navbarSize === "small" ? "flex-col" : "")
-							}
-							onClick={() => setLoginModalVisible((prevVal) => !prevVal)}
-						>
-							<CiUser
+						{access_token ? null : (
+							<button
 								className={
-									mobileView || tabletView
-										? "text-2xl max-lg:text-2xl"
-										: navbarSize === "small"
-											? "text-xl"
-											: "text-2xl max-lg:text-2xl"
+									"py-2 px-7 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium max-lg:hidden " +
+									(navbarSize === "small" ? "" : "self-stretch")
 								}
-							/>
-							<p
-								className={
-									navbarSize === "small" ? "text-xs" : "max-lg:text-xs"
-								}
+								onClick={() => setLoginModalVisible((prevVal) => !prevVal)}
 							>
-								Sign in
-							</p>
-						</button>
+								<FaGoogle className="text-yellow-400 text-lg" />
+								Sign in through google
+							</button>
+						)}
+						{/* Sign in button */}
+						{access_token ? (
+							<div
+								className="relative flex items-center gap-x-3 cursor-pointer"
+								onClick={handleUserPanel}
+								onBlur={handleUserPanelBlur}
+								tabIndex={0}
+							>
+								<div className="rounded-full border border-gray-400 p-[1px]">
+									<img
+										src={profile_img}
+										alt="user image"
+										className="h-[40px] w-[40px] object-cover rounded-full"
+									/>
+								</div>
+								<div className="hidden lg:block capitalize">
+									{firstName} {surname}
+								</div>
+								{showProfilePanel ? (
+									<div className="absolute top-0 right-0 translate-y-[50%] translate-x-[35%] lg:translate-x-[0] -mt-3 bg-gray-100 text-gray-600 w-36 lg:w-80 flex flex-col [box-shadow:_1px_1px_6px_rgb(0_0_0_/_100%)]">
+										<Link
+											to="/"
+											className="flex items-center gap-x-2 p-3 hover:bg-gray-200 duration-300"
+										>
+											<CiUser className="text-2xl" />
+											<p className="font-bold">Profile</p>
+										</Link>
+										<Link
+											to="/"
+											className="flex items-center gap-x-2 p-3 hover:bg-gray-200 duration-300"
+										>
+											<HiOutlineCog6Tooth className="text-2xl" />
+											<p className="font-bold">Settings</p>
+										</Link>
+										<Link
+											to="/"
+											className="flex items-center gap-x-2 p-3 hover:bg-gray-200 duration-300"
+										>
+											<IoMdExit className="text-2xl" />
+											<p className="font-bold">Log out</p>
+										</Link>
+									</div>
+								) : null}
+							</div>
+						) : (
+							<button
+								className={
+									"flex justify-center items-center gap-x-2 h-full lg:hover:text-yellow-400 duration-200 max-lg:flex-col " +
+									(navbarSize === "small" ? "flex-col" : "")
+								}
+								onClick={() => setLoginModalVisible((prevVal) => !prevVal)}
+							>
+								<CiUser
+									className={
+										mobileView || tabletView
+											? "text-2xl max-lg:text-2xl"
+											: navbarSize === "small"
+												? "text-xl"
+												: "text-2xl max-lg:text-2xl"
+									}
+								/>
+								<p
+									className={
+										navbarSize === "small" ? "text-xs" : "max-lg:text-xs"
+									}
+								>
+									Sign in
+								</p>
+							</button>
+						)}
 
 						{/* Mobile menu button */}
 						<button

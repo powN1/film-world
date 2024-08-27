@@ -1,14 +1,22 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { IoMdClose } from "react-icons/io";
 import { FaEye } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
+import { UserContext } from "../App";
+import axios from "axios";
+import { Toaster, toast } from "react-hot-toast";
+import { storeInSession } from "../common/session";
 
 const LoginModal = ({ setLoginModalVisible }) => {
+	let {
+		userAuth: { access_token },
+		setUserAuth,
+	} = useContext(UserContext);
+
 	const [normalLoginClicked, setNormalLoginClicked] = useState(false);
 	const [newAccountClicked, setNewAccountClicked] = useState(false);
-	const [secondStepClicked, setSecondStepClicked] = useState(false);
 
 	const [firstName, setFirstName] = useState("");
 	const [surname, setSurname] = useState("");
@@ -36,9 +44,29 @@ const LoginModal = ({ setLoginModalVisible }) => {
 		}
 	};
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
+	const userAuthThroughServer = (serverRoute, formData) => {
+		axios
+			.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData)
+			.then(({ data }) => {
+				storeInSession("user", JSON.stringify(data));
+				setUserAuth(data);
+        console.log(data)
 
+				handleInputsClear();
+        serverRoute === "/signin" ? toast.success("Successfully logged in") : toast.success("Successfully created account")
+
+				setTimeout(() => {
+					setNormalLoginClicked(false);
+					setNewAccountClicked(false);
+					setLoginModalVisible(false);
+				}, 1000);
+			})
+			.catch(({ response }) => {
+				toast.error(response.data.error);
+			});
+	};
+
+	const handleSubmit = (type) => {
 		const serverRoute = type === "sign-in" ? "/signin" : "/signup";
 
 		// Regex for identifying whether the email and password are correctly formatted
@@ -51,20 +79,37 @@ const LoginModal = ({ setLoginModalVisible }) => {
 		for (let [key, value] of form.entries()) {
 			formData[key] = value;
 		}
+    console.log(formData)
 
-		const { fullname, email, password } = formData;
+		const { firstName, surname, username, email, password } = formData;
 
-		if (fullname) {
-			if (fullname.length < 3) {
-				return toast.error("Fullname must be at least 3 letters long");
+		if (firstName) {
+			if (firstName.length < 2) {
+				return toast.error("First name must be at least 2 letters long");
 			}
 		}
+
+		if (surname) {
+			if (surname.length < 3) {
+				return toast.error("Surname must be at least 3 letters long");
+			}
+		}
+
+		if (username) {
+			if (username.length < 3) {
+				return toast.error("Username must be at least 3 letters long");
+			}
+		}
+
 		if (!email.length) {
+      console.log("hello?")
 			return toast.error("Enter email");
 		}
+
 		if (!emailRegex.test(email)) {
 			return toast.error("Email is invalid");
 		}
+
 		if (!passwordRegex.test(password)) {
 			return toast.error(
 				"Password should be 6-20 characters long with a numeric, 1 lowercase and 1 uppercase letters",
@@ -77,6 +122,7 @@ const LoginModal = ({ setLoginModalVisible }) => {
 	return (
 		<>
 			<div className="w-[95%] md:w-[50%] lg:w-[20%] fixed top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%] bg-white z-30 flex flex-col items-center gap-y-5">
+				<Toaster />
 				{!normalLoginClicked && !newAccountClicked ? (
 					<div className="w-full flex flex-col items-center gap-y-5 py-10">
 						<button onClick={() => setLoginModalVisible((prevVal) => !prevVal)}>
@@ -96,7 +142,7 @@ const LoginModal = ({ setLoginModalVisible }) => {
 									Sign in through <span className="font-bold">facebook</span>
 								</p>
 							</Link>
-							<Link
+							<button
 								className="w-[90%] py-3 border border-gray-300 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium"
 								onClick={() => setNormalLoginClicked(true)}
 							>
@@ -105,7 +151,7 @@ const LoginModal = ({ setLoginModalVisible }) => {
 									Sign in through{" "}
 									<span className="font-bold">filmweb account</span>
 								</p>
-							</Link>
+							</button>
 							<Link
 								className="w-[90%] py-3 border border-gray-300 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium"
 								onClick={() => setNewAccountClicked(true)}
@@ -129,11 +175,11 @@ const LoginModal = ({ setLoginModalVisible }) => {
 						>
 							<div className="w-full flex justify-center">
 								<input
-									type="text"
-									name="login"
-									placeholder="Username or email"
-									value={username}
-									onChange={(e) => setUsername(e.target.value)}
+									type="email"
+									name="email"
+									placeholder="Email"
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
 									className="w-[90%] p-2 border-b border-b-gray-400/50 focus:outline-none focus:border-b-yellow-400 focus:border-b-2"
 								/>
 							</div>
@@ -159,10 +205,12 @@ const LoginModal = ({ setLoginModalVisible }) => {
 								)}
 							</div>
 							<button
-								className={
-									"py-2 w-[90%] bg-yellow-400 text-gray-600 rounded-sm"
-								}
-								disabled={!username || !password ? true : false}
+								className={ "py-2 w-[90%] bg-yellow-400 text-gray-600 rounded-sm" }
+								disabled={!email || !password ? true : false}
+								onClick={(e) => {
+									e.preventDefault();
+									handleSubmit("sign-in");
+								}}
 							>
 								Log in
 							</button>
@@ -276,35 +324,64 @@ const LoginModal = ({ setLoginModalVisible }) => {
 								)}
 							</div>
 
-							<div className="flex w-full px-2 gap-x-2">
-								<button
-									className={
-										"py-4 w-1/2 mx-2 hover:text-black duration-300 " +
-										(sex === "male" ? "bg-yellow-400 text-black" : "bg-gray-200 text-gray-400")
-									}
-									onClick={(e) => {
-										e.preventDefault();
-										setSex("male");
-									}}
-								>
-									Male
-								</button>
-								<button
-									className={
-										"py-4 w-1/2 mx-2 hover:text-black duration-300 " +
-										(sex === "female" ? "bg-yellow-400 text-black" : "bg-gray-200 text-gray-400")
-									}
-									onClick={(e) => {
-										e.preventDefault();
-										setSex("female");
-									}}
-								>
-									Female
-								</button>
+							<div className="flex w-full px-2 gap-x-5">
+								<div className="flex flex-col w-full ml-2">
+									<label
+										htmlFor="sex1"
+										className={
+											"py-4 w-full text-center cursor-pointer hover:text-black duration-300 " +
+											(sex === "male"
+												? "bg-yellow-400 text-black"
+												: "bg-gray-200 text-gray-400")
+										}
+									>
+										Male
+									</label>
+									<input
+										type="radio"
+										name="sex"
+										id="sex1"
+										value="male"
+										checked={sex === "male"}
+										className="hidden"
+										onChange={(e) => {
+											setSex(e.target.value);
+										}}
+									/>
+								</div>
+								<div className="flex flex-col w-full mr-2">
+									<label
+										htmlFor="sex2"
+										className={
+											"py-4 w-full mr-6 text-center cursor-pointer hover:text-black duration-300 " +
+											(sex === "female"
+												? "bg-yellow-400 text-black"
+												: "bg-gray-200 text-gray-400")
+										}
+									>
+										Female
+									</label>
+									<input
+										type="radio"
+										name="sex"
+										id="sex2"
+										value="female"
+										className="hidden"
+										checked={sex === "female"}
+										onChange={(e) => {
+											setSex(e.target.value);
+										}}
+									/>
+								</div>
 							</div>
 							<button
 								className={"py-2 w-[90%] bg-yellow-400 text-black rounded-sm"}
-								disabled={!firstName || !surname || !username || !password || !email || !sex ? true : false}
+								type="submit"
+								disabled={ !firstName || !surname || !username || !password || !email || !sex ? true : false }
+								onClick={(e) => {
+									e.preventDefault();
+									handleSubmit("sign-up");
+								}}
 							>
 								Sign up
 							</button>

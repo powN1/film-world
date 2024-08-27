@@ -24,4 +24,5 @@ dist-ssr
 *.sw?
 *.vim
 
-Session.vim
+./server/node_modules
+./Session.vim
