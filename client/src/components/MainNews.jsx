@@ -1,13 +1,15 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import SingleNews from "../common/SingleNews";
 import { DataContext } from "../pages/HomePage";
 
 const MainNews = () => {
-  const { articles } = useContext(DataContext)
+	const { articles } = useContext(DataContext);
 
 	return (
 		<div className="bg-white">
-			<div className="lg:w-[55%] mx-auto bg-black grid grid-rows-[80px_80px_80px_80px_80px_80px] grid-cols-[3fr_3fr_4fr] max-md:grid-rows-[70px_70px_70px_70px_70px_70px_70px_70px_70px_70px_70px] max-md:grid-cols-[1fr_1fr] gap-7 max-md:gap-5 p-4">
+			<div
+				className="lg:w-[55%] mx-auto bg-black grid grid-rows-[80px_80px_80px_80px_80px_80px] grid-cols-[3fr_3fr_4fr] max-md:grid-rows-[70px_70px_70px_70px_70px_70px_70px_70px_70px_70px_70px] max-md:grid-cols-[1fr_1fr] gap-7 max-md:gap-5 p-4"
+			>
 				{articles.slice(0, 9).map((article, i) => {
 					let gridarea = {};
 					if (i === 0) {

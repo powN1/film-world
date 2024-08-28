@@ -20,20 +20,28 @@ import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 
 const Navbar = () => {
-	let { userAuth, userAuth: { access_token, profile_img, firstName, surname }, setUserAuth, } = useContext(UserContext);
+	let {
+		userAuth: { access_token, profile_img, firstName, surname },
+		setUserAuth,
+	} = useContext(UserContext);
 
 	const fetchMovies = () => {
-		axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies")
-    .then(res => { console.log(res.data.movies); setMovies(res.data.movies) })
-    .catch(err => console.error(err))
+		axios
+			.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies")
+			.then((res) => {
+				console.log(res.data.movies);
+				setMovies(res.data.movies);
+			})
+			.catch((err) => console.error(err));
 	};
 
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
+
 	const [navbarSize, setNavbarSize] = useState("big");
 	const [searchModalVisible, setSearchModalVisible] = useState(false);
 	const [modalInputValue, setModalInputValue] = useState("");
-  const [movies, setMovies] = useState([]);
+	const [movies, setMovies] = useState([]);
 	const [foundMovies, setFoundMovies] = useState([]);
 	const [showMobileMenu, setShowMobileMenu] = useState(false);
 	const [showMobileNavbar, setShowMobileNavbar] = useState(true);
@@ -152,8 +160,6 @@ const Navbar = () => {
 		axios
 			.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData)
 			.then(({ data }) => {
-				console.log("storing");
-				console.log(data);
 				storeInSession("user", JSON.stringify(data));
 				setUserAuth(data);
 			})
@@ -183,15 +189,37 @@ const Navbar = () => {
 		window.addEventListener("scroll", resizeNavbar);
 		window.addEventListener("scroll", showOrHideNavbarMobile);
 
-    if(foundMovies.length === 0) fetchMovies();
+		if (movies.length === 0) fetchMovies();
 
 		// Check for specific state change and invoke related function
-		if (prevSearchModalVisibleRef.current !== searchModalVisible) handleSearchModal();
-		if (prevShowMobileMenuRef.current !== searchModalVisible) handleMobileMenu();
-		if (prevLoginModalVisibleRef.current !== searchModalVisible) handleLoginModal();
+		if (
+			prevSearchModalVisibleRef.current !== undefined &&
+			prevSearchModalVisibleRef.current !== searchModalVisible
+		) {
+			handleSearchModal();
+		}
+		if (
+			prevShowMobileMenuRef.current !== undefined &&
+			prevShowMobileMenuRef.current !== showMobileMenu
+		) {
+			handleMobileMenu();
+		}
+		if (
+			prevLoginModalVisibleRef.current !== undefined &&
+			prevLoginModalVisibleRef.current !== loginModalVisible
+		) {
+			handleLoginModal();
+		}
+		prevSearchModalVisibleRef.current = searchModalVisible;
+		prevShowMobileMenuRef.current = showMobileMenu;
+		prevLoginModalVisibleRef.current = loginModalVisible;
 
 		if (modalInputValue) {
-			setFoundMovies(movies.filter((movie) => movie.title.toLowerCase().includes(modalInputValue)));
+			setFoundMovies(
+				movies.filter((movie) =>
+					movie.title.toLowerCase().includes(modalInputValue),
+				),
+			);
 		}
 
 		return () => {
@@ -209,10 +237,10 @@ const Navbar = () => {
 
 	return (
 		<>
-			<div className="bg-black overflow-hidden">
+			<div className="bg-black">
 				<nav
 					className={
-						"fixed w-full top-0 z-20 font-lato bg-black flex flex-col justify-between items-center gap-y-3 text-white duration-300 " +
+						"sticky w-full top-0 z-20 font-lato bg-black flex flex-col justify-between items-center gap-y-3 text-white duration-300 " +
 						(mobileView ? (showMobileNavbar ? "" : "translate-y-[-100%]") : "")
 					}
 				>
@@ -429,6 +457,7 @@ const Navbar = () => {
 						</ul>
 					</div>
 				</nav>
+
 				{searchModalVisible ? (
 					<div className="w-screen h-screen fixed top-0 left-0 bg-white z-30 flex justify-center overflow-hidden">
 						<div className="w-[55%] flex flex-col py-8 gap-y-8">
@@ -465,7 +494,7 @@ const Navbar = () => {
 								<div className="flex flex-col gap-y-10">
 									<div className="grid grid-rows-1 grid-cols-6 gap-x-5">
 										{/* SLIDES */}
-										{foundMovies.slice(0,6).map((movie, i) => (
+										{foundMovies.slice(0, 6).map((movie, i) => (
 											<SearchPoster
 												key={i}
 												title={movie.title}
@@ -621,10 +650,9 @@ const Navbar = () => {
 				{loginModalVisible && (
 					<LoginModal setLoginModalVisible={setLoginModalVisible} />
 				)}
-
-				<Toaster />
 				<Outlet />
 			</div>
+			<Toaster />
 		</>
 	);
 };

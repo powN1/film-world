@@ -1,5 +1,10 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup, } from "firebase/auth";
+import {
+	getAuth,
+	GoogleAuthProvider,
+	FacebookAuthProvider,
+	signInWithPopup,
+} from "firebase/auth";
 
 const firebaseConfig = {
 	apiKey: "AIzaSyBH9zPUlJkP6l92helxMGLmcslDKK6aRWQ",
@@ -32,6 +37,11 @@ export const authWithFacebook = async () => {
 	let user = null;
 	await signInWithPopup(auth, facebookProvider)
 		.then((res) => {
+
+			// This gives you a Facebook Access Token. You can use it to access the Facebook API.
+			const credential = FacebookAuthProvider.credentialFromResult(res);
+			res.user.facebookAccessToken = credential.accessToken;
+
 			user = res.user;
 		})
 		.catch((err) => console.log(err));

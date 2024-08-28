@@ -90,7 +90,7 @@ const LoginModal = ({ setLoginModalVisible }) => {
 			.then((user) => {
 				let serverRoute = "/facebook-auth";
 
-				let formData = { access_token: user.accessToken };
+				let formData = { access_token: user.accessToken, facebook_access_token: user.facebookAccessToken };
 
 				userAuthThroughServer(serverRoute, formData);
 			})

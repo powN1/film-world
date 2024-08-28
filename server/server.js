@@ -4,6 +4,8 @@ import cors from "cors";
 import aws from "aws-sdk";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { nanoid } from "nanoid";
+import axios from "axios";
 import "dotenv/config";
 // firebase
 import admin from "firebase-admin";
@@ -51,6 +53,69 @@ mongoose.connect(process.env.DB_LOCATION, { autoIndex: true });
 // Regex for identifying whether the email and password are correctly formatted
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
+
+const generateUploadUrl = async () => {
+	const date = new Date();
+	const imageName = `${nanoid()}-${date.getTime()}.jpeg`;
+
+	return await s3.getSignedUrlPromise("putObject", {
+		Bucket: "movie-database-project",
+		Key: imageName,
+		Expires: 1000,
+		ContentType: "image/jpeg",
+	});
+};
+
+const uploadFileToAWSfromUrl = async (fileUrl) => {
+	try {
+		const imageResponse = await axios.get(fileUrl, {
+			responseType: "arraybuffer",
+		});
+
+		const date = new Date();
+		const imageName = `${nanoid()}-${date.getTime()}.jpeg`;
+
+		const uploadParams = {
+			Bucket: "movie-database-project",
+			Key: imageName,
+			Body: Buffer.from(imageResponse.data, "binary"),
+			ContentType: "image/jpeg",
+		};
+
+		const s3Response = await s3.upload(uploadParams).promise();
+
+		return s3Response.Location;
+	} catch (err) {
+		console.error("Error uploading file: ", err);
+		throw new Error("Failed to upload file to S3");
+	}
+};
+
+app.get("/aws", async (req, res) => {
+	const imageUrl =
+		"https://lh3.googleusercontent.com/a/ACg8ocLcigctbdVmKSfa_-1EmTY2zeHMj48TujAVIr1MC7DvYT3zO3Q=s384-c";
+
+	const imageResponse = await axios.get(imageUrl, {
+		responseType: "arraybuffer",
+	});
+
+	const date = new Date();
+	const imageName = `${nanoid()}-${date.getTime()}.jpeg`;
+
+	const uploadParams = {
+		Bucket: "movie-database-project",
+		Key: imageName,
+		Body: Buffer.from(imageResponse.data, "binary"),
+		ContentType: "image/jpeg",
+	};
+
+	const s3Response = await s3.upload(uploadParams).promise();
+
+	console.log(s3Response.Location);
+
+	// const awsRes = await generateUploadUrl();
+	// res.status(200).json({ imageResponse });
+});
 
 app.get("/get-movies", (req, res) => {
 	// https://i.imgur.com/0TMqAjM.jpeg
@@ -118,12 +183,10 @@ app.post("/signup", (req, res) => {
 		return res.status(403).json({ error: "Email is invalid" });
 	}
 	if (!passwordRegex.test(password)) {
-		return res
-			.status(403)
-			.json({
-				error:
-					"Password should be 6-20 characters long with a numeric, 1 lowercase and 1 uppercase letters",
-			});
+		return res.status(403).json({
+			error:
+				"Password should be 6-20 characters long with a numeric, 1 lowercase and 1 uppercase letters",
+		});
 	}
 
 	// Use bcrypt to hash the password
@@ -231,13 +294,22 @@ app.post("/google-auth", async (req, res) => {
 				const firstName = splitName[0];
 				const surname = splitName[1];
 
-        // TODO: Get the picture from google or facebook and upload it to S3 AWS server so you don't
-        // TODO: use the external link therefore you won't run into avatar not being rendered because the external api throws
-        // TODO:too many requests error
+				// TODO: Get the picture from google or facebook and upload it to S3 AWS server so you don't
+				// TODO: use the external link therefore you won't run into avatar not being rendered because the external api throws
+				// TODO:too many requests error
+
+				// Download the picture from Google
+				const awsImageUrl = await uploadFileToAWSfromUrl(picture);
 
 				user = new User({
-          // personal_info: { firstName, surname, email, username, profile_img: picture },
-          personal_info: { firstName, surname, email, username, },
+					personal_info: {
+						firstName,
+						surname,
+						email,
+						username,
+						profile_img: awsImageUrl,
+					},
+					// personal_info: { firstName, surname, email, username },
 					google_auth: true,
 				});
 
@@ -260,7 +332,7 @@ app.post("/google-auth", async (req, res) => {
 });
 
 app.post("/facebook-auth", async (req, res) => {
-	let { access_token } = req.body;
+	let { access_token, facebook_access_token } = req.body;
 
 	getAuth()
 		.verifyIdToken(access_token)
@@ -270,7 +342,7 @@ app.post("/facebook-auth", async (req, res) => {
 			picture = picture.replace("s96-c", "s384-c");
 
 			let user = await User.findOne({ "personal_info.email": email })
-				.select( "personal_info.firstName personal_info.surname personal_info.username personal_info.profile_img google_auth",)
+				.select( "personal_info.firstName personal_info.surname personal_info.username personal_info.profile_img facebook_auth",)
 				.then((u) => {
 					return u || null;
 				})
@@ -294,13 +366,26 @@ app.post("/facebook-auth", async (req, res) => {
 				const firstName = splitName[0];
 				const surname = splitName[1];
 
-        // TODO: Get the picture from google or facebook and upload it to S3 AWS server so you don't
-        // TODO: use the external link therefore you won't run into avatar not being rendered because the external api throws
-        // TODO:too many requests error
+				// Make the request to the Facebook Graph API
+				const url = `https://graph.facebook.com/me?fields=id,name,picture.type(large)&access_token=${facebook_access_token}`;
+				const facebookPictureRequest = await fetch(url);
+				const facebookResponse = await facebookPictureRequest.json();
+				const picture = facebookResponse.picture.data.url;
+
+				const awsImageUrl = await uploadFileToAWSfromUrl(picture);
+
+				// TODO: Get the picture from google or facebook and upload it to S3 AWS server so you don't
+				// TODO: use the external link therefore you won't run into avatar not being rendered because the external api throws
+				// TODO:too many requests error
 
 				user = new User({
-          // personal_info: { firstName, surname, email, username, profile_img: picture },
-          personal_info: { firstName, surname, email, username, },
+					personal_info: {
+						firstName,
+						surname,
+						email,
+						username,
+						profile_img: awsImageUrl,
+					},
 					facebook_auth: true,
 				});
 

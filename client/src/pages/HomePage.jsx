@@ -30,11 +30,11 @@ const HomePage = () => {
 				setMovies(moviesResponse.data.movies);
 				setArticles(articlesResponse.data.movies);
 				setReviews(reviewsResponse.data.movies);
-				setLoading(false); 
+				setLoading(false);
 			})
 			.catch((err) => {
 				console.log(err);
-				setLoading(false); 
+				setLoading(false);
 			});
 	}, []);
 
@@ -44,7 +44,7 @@ const HomePage = () => {
 				<Loader />
 			) : (
 				<>
-					<DataContext.Provider value={{ movies, articles, reviews}} >
+					<DataContext.Provider value={{ movies, articles, reviews }}>
 						<MainNews />
 						<LatestNews />
 						<WideMovieSlider />
