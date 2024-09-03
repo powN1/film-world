@@ -4,7 +4,7 @@ import Slider from "react-slick";
 import { useContext } from "react";
 import { MediaQueriesContext } from "../App";
 import { dummyDataMovies } from "../common/dummyDataMovies";
-import { DataContext } from "../pages/HomePage";
+import { DataContext } from "../App";
 
 const Games = () => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);

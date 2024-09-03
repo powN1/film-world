@@ -113,7 +113,6 @@ const LoginModal = ({ setLoginModalVisible }) => {
 		for (let [key, value] of form.entries()) {
 			formData[key] = value;
 		}
-		console.log(formData);
 
 		const { firstName, surname, username, email, password } = formData;
 

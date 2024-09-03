@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import SingleNews from "../common/SingleNews";
-import { DataContext } from "../pages/HomePage";
+import { DataContext } from "../App";
 
 const MainNews = () => {
 	const { articles } = useContext(DataContext);

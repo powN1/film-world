@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import RankingPoster from "../common/RankingPoster";
-import { DataContext } from "../pages/HomePage";
+import { DataContext } from "../App";
 
 const Ranking = ({ showCategories = true, anticipated = false }) => {
 	const [currentMovieCategory, setCurrentMovieCategory] = useState("most anticipated");

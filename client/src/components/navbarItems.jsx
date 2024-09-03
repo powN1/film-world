@@ -55,7 +55,12 @@ export const navbarItems = [
 	// 	],
 	// },
 	{
-		title: "My movies",
+		title: "My filmweb",
 		path: "/my",
 	},
+  {
+    title: "Create news",
+    path: "/create-news",
+    adminOnly: true
+  }
 ];

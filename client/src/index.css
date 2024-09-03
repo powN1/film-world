@@ -11,6 +11,10 @@
   .input-box {
     @apply rounded-sm p-2 pl-10 outline-none;
   }
+
+  .input-box2 {
+    @apply rounded-sm p-2 pl-4 outline-none;
+  }
 }
 
 .slick-prev:before,

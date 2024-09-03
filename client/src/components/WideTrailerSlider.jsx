@@ -4,7 +4,7 @@ import Slider from "react-slick";
 import MovieSlide from "../common/MovieSlide";
 import { MediaQueriesContext } from "../App";
 import { dummyDataMovies } from "../common/dummyDataMovies";
-import { DataContext } from "../pages/HomePage";
+import { DataContext } from "../App";
 
 const WideTrailerSlider = ({ showCategories = true }) => {
 	const [currentMovieCategory, setCurrentMovieCategory] = useState("movies");

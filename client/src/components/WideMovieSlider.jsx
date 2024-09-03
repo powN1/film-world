@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import MovieSlide from "../common/MovieSlide";
 import { MediaQueriesContext } from "../App";
-import { DataContext } from "../pages/HomePage";
+import { DataContext } from "../App";
 
 const WideSlider = () => {
 	const [currentMovieCategory, setCurrentMovieCategory] = useState("movies of the day");

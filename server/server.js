@@ -66,6 +66,7 @@ const generateUploadUrl = async () => {
 	});
 };
 
+
 const uploadFileToAWSfromUrl = async (fileUrl) => {
 	try {
 		const imageResponse = await axios.get(fileUrl, {
@@ -89,6 +90,51 @@ const uploadFileToAWSfromUrl = async (fileUrl) => {
 		console.error("Error uploading file: ", err);
 		throw new Error("Failed to upload file to S3");
 	}
+};
+
+const formatDataToSend = (user) => {
+	const access_token = jwt.sign( { id: user._id, admin: user.admin }, process.env.JWT_SECRET_ACCESS_KEY,);
+
+	return {
+		access_token,
+		admin: user.admin,
+		profile_img: user.personal_info.profile_img,
+		firstName: user.personal_info.firstName,
+		surname: user.personal_info.surname,
+		username: user.personal_info.username,
+	};
+};
+
+const generateUsername = async (email) => {
+	let username = email.split("@")[0];
+
+	let usernameExists = await User.exists({
+		"personal_info.username": username,
+	}).then((res) => res);
+
+	usernameExists ? (username += nanoid().substring(0, 5)) : "";
+
+	return username;
+};
+
+const verifyJWT = (req, res, next) => {
+	const authHeader = req.headers["authorization"];
+
+	// const token = authHeader && authHeader.split(" ")[1];
+	const token = authHeader;
+
+	if (token === null) {
+		return res.status(401).json({ error: "No access token" });
+	}
+	jwt.verify(token, process.env.SECRET_ACCESS_KEY, (err, user) => {
+		if (err) {
+			return res.status(403).json({ error: "Access token is invalid" });
+		}
+
+		req.user = user.id;
+		req.admin = user.admin;
+		next();
+	});
 };
 
 app.get("/aws", async (req, res) => {
@@ -117,8 +163,16 @@ app.get("/aws", async (req, res) => {
 	// res.status(200).json({ imageResponse });
 });
 
+// upload img url route
+app.get("/get-upload-url", (req, res) => {
+	generateUploadUrl()
+		.then((url) => res.status(200).json({ uploadUrl: url }))
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
 app.get("/get-movies", (req, res) => {
-	// https://i.imgur.com/0TMqAjM.jpeg
 
 	Movie.find()
 		.then((movies) => {
@@ -129,33 +183,17 @@ app.get("/get-movies", (req, res) => {
 		});
 });
 
-const formatDataToSend = (user) => {
-	const access_token = jwt.sign(
-		{ id: user._id, admin: user.admin },
-		process.env.JWT_SECRET_ACCESS_KEY,
-	);
+app.get("/get-articles", (req, res) => {
 
-	return {
-		access_token,
-		profile_img: user.personal_info.profile_img,
-		firstName: user.personal_info.firstName,
-		surname: user.personal_info.surname,
-		username: user.personal_info.username,
-		isAdmin: user.admin,
-	};
-};
+	Article.find()
+		.then((articles) => {
+			return res.status(200).json({ articles });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
 
-const generateUsername = async (email) => {
-	let username = email.split("@")[0];
-
-	let usernameExists = await User.exists({
-		"personal_info.username": username,
-	}).then((res) => res);
-
-	usernameExists ? (username += nanoid().substring(0, 5)) : "";
-
-	return username;
-};
 
 // Handle "/signup" post request
 app.post("/signup", (req, res) => {
@@ -245,10 +283,7 @@ app.post("/signin", (req, res) => {
 					}
 				});
 			} else {
-				return res.status(403).json({
-					error:
-						"Account was created using google. Try logging in with google.",
-				});
+				return res.status(403).json({ error: "Account was created using google. Try logging in with google.", });
 			}
 		})
 		.catch((err) => {
@@ -268,9 +303,7 @@ app.post("/google-auth", async (req, res) => {
 			picture = picture.replace("s96-c", "s384-c");
 
 			let user = await User.findOne({ "personal_info.email": email })
-				.select(
-					"personal_info.firstName personal_info.surname personal_info.username personal_info.profile_img google_auth",
-				)
+				.select( "personal_info.firstName personal_info.surname personal_info.username personal_info.profile_img google_auth admin",)
 				.then((u) => {
 					return u || null;
 				})
@@ -294,10 +327,6 @@ app.post("/google-auth", async (req, res) => {
 				const firstName = splitName[0];
 				const surname = splitName[1];
 
-				// TODO: Get the picture from google or facebook and upload it to S3 AWS server so you don't
-				// TODO: use the external link therefore you won't run into avatar not being rendered because the external api throws
-				// TODO:too many requests error
-
 				// Download the picture from Google
 				const awsImageUrl = await uploadFileToAWSfromUrl(picture);
 
@@ -313,8 +342,7 @@ app.post("/google-auth", async (req, res) => {
 					google_auth: true,
 				});
 
-				await user
-					.save()
+				await user .save()
 					.then((u) => {
 						user = u;
 					})
@@ -322,6 +350,7 @@ app.post("/google-auth", async (req, res) => {
 						return res.status(500).json({ error: err.message });
 					});
 			}
+      console.log(user)
 			return res.status(200).json(formatDataToSend(user));
 		})
 		.catch((_err) => {
@@ -342,7 +371,7 @@ app.post("/facebook-auth", async (req, res) => {
 			picture = picture.replace("s96-c", "s384-c");
 
 			let user = await User.findOne({ "personal_info.email": email })
-				.select( "personal_info.firstName personal_info.surname personal_info.username personal_info.profile_img facebook_auth",)
+				.select( "personal_info.firstName personal_info.surname personal_info.username personal_info.profile_img facebook_auth admin",)
 				.then((u) => {
 					return u || null;
 				})

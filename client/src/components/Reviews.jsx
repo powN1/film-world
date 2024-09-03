@@ -3,7 +3,7 @@ import ReviewSlide from "../common/ReviewSlide";
 import { useContext } from "react";
 import { MediaQueriesContext } from "../App";
 import { dummyDataMovies } from "../common/dummyDataMovies";
-import { DataContext } from "../pages/HomePage";
+import { DataContext } from "../App";
 
 const Reviews = () => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);

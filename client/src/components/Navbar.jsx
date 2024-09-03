@@ -21,7 +21,8 @@ import axios from "axios";
 
 const Navbar = () => {
 	let {
-		userAuth: { access_token, profile_img, firstName, surname },
+    userAuth,
+		userAuth: { access_token, admin, profile_img, firstName, surname },
 		setUserAuth,
 	} = useContext(UserContext);
 
@@ -29,14 +30,12 @@ const Navbar = () => {
 		axios
 			.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies")
 			.then((res) => {
-				console.log(res.data.movies);
 				setMovies(res.data.movies);
 			})
 			.catch((err) => console.error(err));
 	};
 
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
-
 
 	const [navbarSize, setNavbarSize] = useState("big");
 	const [searchModalVisible, setSearchModalVisible] = useState(false);
@@ -148,7 +147,7 @@ const Navbar = () => {
 	};
 
 	const handleUserPanelBlur = () => {
-		setShowProfilePanel(false);
+		setTimeout(() => setShowProfilePanel(false), 100);
 	};
 
 	const signOutUser = () => {
@@ -320,41 +319,49 @@ const Navbar = () => {
 						)}
 						{/* Sign in button */}
 						{access_token ? (
-							<div
-								className="relative flex items-center gap-x-3 cursor-pointer max-h-[40px]"
-								onClick={handleUserPanel}
-								onBlur={handleUserPanelBlur}
-								tabIndex={0}
-							>
-								<div className="rounded-full border border-gray-400 p-[1px]">
+							<div className="relative flex items-center gap-x-3 max-h-[40px]">
+								<Link
+									to="/"
+									className="rounded-full border border-gray-400 p-[1px] cursor-pointer"
+								>
 									<img
 										src={profile_img}
 										alt="user image"
 										className="h-[40px] w-[40px] object-cover rounded-full"
 									/>
-								</div>
-								<div className="hidden lg:block capitalize">
+								</Link>
+								<Link
+									to="/"
+									className="hidden lg:block capitalize cursor-pointer"
+								>
 									{firstName} {surname}
+								</Link>
+								<div
+									className="hidden lg:block p-2 rounded-sm hover:bg-gray-400/25 cursor-pointer"
+									onClick={handleUserPanel}
+									onBlur={handleUserPanelBlur}
+									tabIndex={0}
+								>
+									<IoChevronDown />
 								</div>
 								{showProfilePanel ? (
 									<div className="absolute top-0 right-0 translate-y-[50%] translate-x-[35%] lg:translate-x-[0] -mt-3 bg-gray-100 text-gray-600 w-36 lg:w-80 flex flex-col [box-shadow:_1px_1px_6px_rgb(0_0_0_/_100%)]">
 										<Link
-											to="/"
+											to="/asddd"
 											className="flex items-center gap-x-2 p-3 hover:bg-gray-200 duration-300"
 										>
 											<CiUser className="text-2xl" />
 											<p className="font-bold">Profile</p>
 										</Link>
 										<Link
-											to="/"
+											to="/settings"
 											className="flex items-center gap-x-2 p-3 hover:bg-gray-200 duration-300"
 										>
 											<HiOutlineCog6Tooth className="text-2xl" />
 											<p className="font-bold">Settings</p>
 										</Link>
 										<div
-											to="/"
-											className="flex items-center gap-x-2 p-3 hover:bg-gray-200 duration-300"
+											className="flex items-center gap-x-2 p-3 hover:bg-gray-200 duration-300 cursor-pointer"
 											onClick={signOutUser}
 										>
 											<IoMdExit className="text-2xl" />
@@ -421,38 +428,77 @@ const Navbar = () => {
 							}
 						>
 							{navbarItems.map((item, itemIndex) => {
-								return (
-									<li
-										key={itemIndex}
-										className="relative float-left group hover:text-yellow-500 duration-200 hover:before:content-[''] hover:before:absolute hover:before:bottom-0 hover:before:left-0 hover:before:bg-yellow-500 hover:before:w-full hover:before:h-[4px]"
-									>
-										<Link
-											to={item.path}
-											className={
-												"relative block " +
-												(navbarSize === "small"
-													? "text-xs py-5 px-2"
-													: "py-3 px-5")
-											}
+								if (item.adminOnly) {
+									if (admin) {
+										return (
+											<li
+												key={itemIndex}
+												className="relative float-left group hover:text-yellow-500 duration-200 hover:before:content-[''] hover:before:absolute hover:before:bottom-0 hover:before:left-0 hover:before:bg-yellow-500 hover:before:w-full hover:before:h-[4px]"
+											>
+												<Link
+													to={item.path}
+													className={
+														"relative block " +
+														(navbarSize === "small"
+															? "text-xs py-5 px-2"
+															: "py-3 px-5")
+													}
+												>
+													{item.title.toUpperCase()}
+												</Link>
+												{item.submenu ? (
+													<ul className="absolute left-0 list-none group-hover:block hidden z-10">
+														{item.submenu.map((submenu, submenuIndex) => (
+															<li
+																key={submenuIndex}
+																className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
+															>
+																<Link className="block py-2 px-7 uppercase font-medium hover:text-yellow-500">
+																	{submenu.title}
+																</Link>
+															</li>
+														))}
+													</ul>
+												) : null}
+											</li>
+										);
+									} else {
+										return null;
+									}
+								} else {
+									return (
+										<li
+											key={itemIndex}
+											className="relative float-left group hover:text-yellow-500 duration-200 hover:before:content-[''] hover:before:absolute hover:before:bottom-0 hover:before:left-0 hover:before:bg-yellow-500 hover:before:w-full hover:before:h-[4px]"
 										>
-											{item.title.toUpperCase()}
-										</Link>
-										{item.submenu ? (
-											<ul className="absolute left-0 list-none group-hover:block hidden z-10">
-												{item.submenu.map((submenu, submenuIndex) => (
-													<li
-														key={submenuIndex}
-														className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
-													>
-														<Link className="block py-2 px-7 uppercase font-medium hover:text-yellow-500">
-															{submenu.title}
-														</Link>
-													</li>
-												))}
-											</ul>
-										) : null}
-									</li>
-								);
+											<Link
+												to={item.path}
+												className={
+													"relative block " +
+													(navbarSize === "small"
+														? "text-xs py-5 px-2"
+														: "py-3 px-5")
+												}
+											>
+												{item.title.toUpperCase()}
+											</Link>
+											{item.submenu ? (
+												<ul className="absolute left-0 list-none group-hover:block hidden z-10">
+													{item.submenu.map((submenu, submenuIndex) => (
+														<li
+															key={submenuIndex}
+															className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
+														>
+															<Link className="block py-2 px-7 uppercase font-medium hover:text-yellow-500">
+																{submenu.title}
+															</Link>
+														</li>
+													))}
+												</ul>
+											) : null}
+										</li>
+									);
+								}
 							})}
 						</ul>
 					</div>
@@ -573,14 +619,41 @@ const Navbar = () => {
 				{showMobileMenu ? (
 					<div className="flex flex-col w-screen h-screen fixed top-0 left-0 bg-white z-30 overflow-hidden">
 						<div className="bg-gradient-to-r from-[#4D2F3B] from-10% via-[#1D2236] via-40% to-[#6B949A] px-3 py-4 flex flex-col gap-y-2">
-							<div className="flex items-center justify-between">
-								<Link to="/" className="h-[32px]">
-									<img
-										src={filmwebLogo}
-										alt="website logo"
-										className="h-full w-full object-cover block mx-auto select-none"
-									/>
-								</Link>
+							<div
+								className={
+									"flex items-center justify-between " +
+									(access_token ? "pb-2 border-b border-gray-400" : "")
+								}
+							>
+								{access_token ? (
+									<div className="flex items-center gap-x-2">
+										<Link
+											to="/"
+											className="rounded-full border border-gray-400 p-[1px] cursor-pointer"
+										>
+											<img
+												src={profile_img}
+												alt="user image"
+												className="h-[40px] w-[40px] object-cover rounded-full"
+											/>
+										</Link>
+										<Link
+											to="/"
+											className="capitalize cursor-pointer text-white text-xl"
+										>
+											{firstName} {surname}
+										</Link>
+									</div>
+								) : (
+									<Link to="/" className="h-[32px]">
+										<img
+											src={filmwebLogo}
+											alt="website logo"
+											className="h-full w-full object-cover block mx-auto select-none"
+										/>
+									</Link>
+								)}
+
 								<button className="" onClick={handleMobileMenu}>
 									<IoMdClose
 										className="text-white text-4xl"
@@ -588,16 +661,24 @@ const Navbar = () => {
 									/>
 								</button>
 							</div>
-							<div className="flex flex-col gap-y-2">
-								<button className="h-[36px] py-2 px-7 flex justify-center items-center gap-x-2 rounded bg-white text-gray-600 font-bold text-sm">
-									<FaGoogle className="text-yellow-400 text-lg" />
-									Sign in through google
-								</button>
-								<button className="h-[36px] py-2 px-7 flex justify-center items-center gap-x-2 rounded bg-transparent text-white text-sm border border-gray-200">
-									<CiUser className="text-xl" />
-									Sign in
-								</button>
-							</div>
+							{!access_token && (
+								<div className="flex flex-col gap-y-2">
+									<button
+										className="h-[36px] py-2 px-7 flex justify-center items-center gap-x-2 rounded bg-white text-gray-600 font-bold text-sm"
+										onClick={handleGoogleAuth}
+									>
+										<FaGoogle className="text-yellow-400 text-lg" />
+										Sign in through google
+									</button>
+									<button
+										className="h-[36px] py-2 px-7 flex justify-center items-center gap-x-2 rounded bg-transparent text-white text-sm border border-gray-200"
+										onClick={() => setLoginModalVisible((prevVal) => !prevVal)}
+									>
+										<CiUser className="text-xl" />
+										Sign in
+									</button>
+								</div>
+							)}
 						</div>
 
 						<ul className="list-none flex flex-col">
@@ -613,11 +694,11 @@ const Navbar = () => {
 											className="relative flex justify-between items-center py-3 px-5 bg-white"
 										>
 											{item.title}
-											{item.submenu ? (
+											{item.submenu && (
 												<IoChevronDown className="text-gray-400 text-xl duration-300 origin-center" />
-											) : null}
+											)}
 										</Link>
-										{item.submenu ? (
+										{item.submenu && (
 											<ul className="w-full list-none block transition-all duration-500 max-h-0 invisible sliding relative after:content-[''] after:w-[4px] after:h-full after:absolute after:left-0 after:top-0 after:bg-yellow-400 ">
 												{item.submenu.map((submenu, submenuIndex) => (
 													<li
@@ -630,11 +711,31 @@ const Navbar = () => {
 													</li>
 												))}
 											</ul>
-										) : null}
+										)}
 									</li>
 								);
 							})}
 						</ul>
+
+						{access_token ? (
+							<div className="flex flex-col text-gray-600 border-t border-gray-400/25 pt-1">
+								<Link
+									to="/"
+									className="flex items-center gap-x-2 p-3 hover:bg-gray-200 duration-300"
+								>
+									<HiOutlineCog6Tooth className="text-2xl" />
+									<p>Settings</p>
+								</Link>
+								<div
+									to="/"
+									className="flex items-center gap-x-2 p-3 hover:bg-gray-200 duration-300 cursor-pointer"
+									onClick={signOutUser}
+								>
+									<IoMdExit className="text-2xl" />
+									<p>Log out</p>
+								</div>
+							</div>
+						) : null}
 					</div>
 				) : null}
 

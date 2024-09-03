@@ -1,7 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import SingleNews from "../common/SingleNews";
 import { useState, useEffect, useContext } from "react";
-import { DataContext } from "../pages/HomePage";
+import { DataContext } from "../App";
 
 const categories = [
 	{ title: "Suggested" },
