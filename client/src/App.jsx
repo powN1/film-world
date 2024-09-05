@@ -10,7 +10,8 @@ import RankingPage from "./pages/RankingPage";
 import MyFilmwebPage from "./pages/MyFilmwebPage";
 import { lookInSession } from "./common/session";
 import axios from "axios";
-import CreateNewsPage from "./pages/CreateNewsPage";
+import CreateArticlePage from "./pages/CreateArticlePage";
+import Loader from "./components/Loader";
 
 export const UserContext = createContext({});
 export const MediaQueriesContext = createContext({});
@@ -51,9 +52,9 @@ function App() {
 		}
 	};
 
-	const fetchMovies = () => axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-	const fetchArticles = () => axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-	const fetchReviews = () => axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchMovies = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchArticles = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles");
+	const fetchReviews = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
 
 	useEffect(() => {
 		checkDevice();
@@ -66,13 +67,15 @@ function App() {
 
 	useEffect(() => {
 		let userInSession = lookInSession("user");
-		userInSession ? setUserAuth(JSON.parse(userInSession)) : setUserAuth({ access_token: null });
+		userInSession
+			? setUserAuth(JSON.parse(userInSession))
+			: setUserAuth({ access_token: null });
 
 		// Use Promise.all to wait for all fetches to complete
 		Promise.all([fetchMovies(), fetchArticles(), fetchReviews()])
 			.then(([moviesResponse, articlesResponse, reviewsResponse]) => {
 				setMovies(moviesResponse.data.movies);
-				setArticles(articlesResponse.data.movies);
+				setArticles(articlesResponse.data.articles);
 				setReviews(reviewsResponse.data.movies);
 				setLoading(false);
 			})
@@ -82,7 +85,9 @@ function App() {
 			});
 	}, []);
 
-	return (
+	return loading ? (
+		<Loader />
+	) : (
 		<MediaQueriesContext.Provider value={{ mobileView, tabletView }}>
 			<UserContext.Provider value={{ userAuth, setUserAuth }}>
 				<DataContext.Provider value={{ movies, articles, reviews, loading }}>
@@ -94,7 +99,7 @@ function App() {
 							<Route path="/games" element={<GamesPage />} />
 							<Route path="/ranking" element={<RankingPage />} />
 							<Route path="/my" element={<MyFilmwebPage />} />
-							<Route path="/create-news" element={<CreateNewsPage />} />
+							<Route path="/create-article" element={<CreateArticlePage />} />
 						</Route>
 					</Routes>
 				</DataContext.Provider>

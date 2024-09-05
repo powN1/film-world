@@ -19,6 +19,9 @@ const movieSchema = mongoose.Schema({
 		ratedByCount: {
 			type: Number,
 		},
+    peopleAwaiting: {
+      type: Number,
+    },
 	},
 	genre: {
 		type: String,

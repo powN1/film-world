@@ -1,25 +1,24 @@
 import { useContext } from "react";
-import { EditorContext } from "../pages/CreateNewsPage";
+import { EditorContext } from "../pages/CreateArticlePage";
 
-const Tag = ({ tag, tagIndex }) => {
+const Tag = ({ tag }) => {
 	let {
-		news,
-		news: { tags },
-		setNews,
+		article,
+		article: { tags },
+		setArticle,
 	} = useContext(EditorContext);
 
 	const handleTagEvent = (e) => {
-    e.preventDefault()
-		console.log(tag);
-
-		setNews({ ...news, tags: tags.push(tag) });
+		e.preventDefault();
+		const newTags = tags.includes(tag) ? tags.filter((element) => element !== tag) : [...tags, tag]; 
+		setArticle({ ...article, tags: newTags });
 	};
 
 	return (
 		<button
 			className={
 				"rounded inline-block cursor-pointer py-2 px-5 " +
-				(tags.includes(tag) ? "bg-gray-700" : "bg-gray-300")
+				(tags.includes(tag) ? "bg-yellow-400" : "bg-gray-200")
 			}
 			onClick={handleTagEvent}
 		>

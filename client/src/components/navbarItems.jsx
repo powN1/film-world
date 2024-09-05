@@ -59,8 +59,8 @@ export const navbarItems = [
 		path: "/my",
 	},
   {
-    title: "Create news",
-    path: "/create-news",
+    title: "Create article",
+    path: "/create-article",
     adminOnly: true
   }
 ];

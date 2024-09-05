@@ -1,10 +1,20 @@
-const PreviewSlide = ({ movie, movie:{title,img}, activeSlide, movieIndex}) => {
+const PreviewSlide = ({ movie, movie: { title, banner }, activeSlide, movieIndex }) => {
 	return (
-		<div className="mx-3 px-1 flex flex-col gap-y-3 cursor-pointer box-order" onClick={() => setSelectedMovie(movie)}>
+		<div
+			className="mx-3 px-1 flex flex-col gap-y-3 cursor-pointer box-order"
+			onClick={() => setSelectedMovie(movie)}
+		>
 			<div>
-				<div className={"h-[200px] relative after:content-[''] after:h-full after:w-full after:top-0 after:left-0 after:absolute after:border-yellow-400 after:transition-all after:duration-100 " + (activeSlide === movieIndex ? "after:border-[3px]" : "after:border-0")}>
+				<div
+					className={
+						"h-[200px] relative after:content-[''] after:h-full after:w-full after:top-0 after:left-0 after:absolute after:border-yellow-400 after:transition-all after:duration-100 " +
+						(activeSlide === movieIndex
+							? "after:border-[3px]"
+							: "after:border-0")
+					}
+				>
 					<img
-						src={img}
+						src={banner}
 						alt={`${title} image`}
 						className="h-full w-full object-cover"
 					/>

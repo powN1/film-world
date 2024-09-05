@@ -50,7 +50,6 @@ const s3 = new aws.S3({
 // Connect mongoose to the database
 mongoose.connect(process.env.DB_LOCATION, { autoIndex: true });
 
-// Regex for identifying whether the email and password are correctly formatted
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
@@ -65,7 +64,6 @@ const generateUploadUrl = async () => {
 		ContentType: "image/jpeg",
 	});
 };
-
 
 const uploadFileToAWSfromUrl = async (fileUrl) => {
 	try {
@@ -93,7 +91,10 @@ const uploadFileToAWSfromUrl = async (fileUrl) => {
 };
 
 const formatDataToSend = (user) => {
-	const access_token = jwt.sign( { id: user._id, admin: user.admin }, process.env.JWT_SECRET_ACCESS_KEY,);
+	const access_token = jwt.sign(
+		{ id: user._id, admin: user.admin },
+		process.env.JWT_SECRET_ACCESS_KEY,
+	);
 
 	return {
 		access_token,
@@ -126,7 +127,7 @@ const verifyJWT = (req, res, next) => {
 	if (token === null) {
 		return res.status(401).json({ error: "No access token" });
 	}
-	jwt.verify(token, process.env.SECRET_ACCESS_KEY, (err, user) => {
+	jwt.verify(token, process.env.JWT_SECRET_ACCESS_KEY, (err, user) => {
 		if (err) {
 			return res.status(403).json({ error: "Access token is invalid" });
 		}
@@ -173,7 +174,6 @@ app.get("/get-upload-url", (req, res) => {
 });
 
 app.get("/get-movies", (req, res) => {
-
 	Movie.find()
 		.then((movies) => {
 			return res.status(200).json({ movies });
@@ -184,7 +184,6 @@ app.get("/get-movies", (req, res) => {
 });
 
 app.get("/get-articles", (req, res) => {
-
 	Article.find()
 		.then((articles) => {
 			return res.status(200).json({ articles });
@@ -194,8 +193,111 @@ app.get("/get-articles", (req, res) => {
 		});
 });
 
+app.post("/create-article", verifyJWT, (req, res) => {
+	const authorId = req.user;
 
-// Handle "/signup" post request
+	let { title, description, banner, tags, content, draft, id } = req.body;
+
+	// validation
+	if (!title.length) {
+		return res.status(403).json({ error: "You must provide a title" });
+	}
+
+	if (!draft) {
+		if (!description.length || description.length > 80) {
+			return res.status(403).json({
+				error: "You must provide article description under 80 characters",
+			});
+		}
+
+		if (!banner.length) {
+			return res
+				.status(403)
+				.json({
+					error: "You must provide article banner in order to publish it",
+				});
+		}
+
+		if (!content.blocks.length) {
+			return res
+				.status(403)
+				.json({ error: "There must be some article content to publish it" });
+		}
+
+		if (!tags.length || tags.length > 3) {
+			return res.status(403).json({
+				error: "You must provide max 3 article tags in order to publish it",
+			});
+		}
+	}
+
+	tags = tags.map((tag) => tag.toLowerCase());
+
+	let article_id =
+		id ||
+		title
+			.replace(/[^a-zA-Z0-9]/g, " ")
+			.replace(/\s+/g, "-")
+			.trim() + nanoid();
+
+	if (id) {
+		Article.findOneAndUpdate(
+			{ article_id },
+			{
+				title,
+				description,
+				banner,
+				content,
+				tags,
+				draft: draft ? draft : false,
+			},
+		)
+			.then(() => {
+				return res.status(200).json({ id: article_id });
+			})
+			.catch((err) => {
+				return res.status(500).json({ error: err.message });
+			});
+	} else {
+		let article = new Article({
+			title,
+			description,
+			banner,
+			content,
+			tags,
+			author: authorId,
+			article_id,
+			draft: Boolean(draft),
+		});
+
+		article
+			.save()
+			.then((article) => {
+				let incrementVal = draft ? 0 : 1;
+
+				User.findOneAndUpdate(
+					{ _id: authorId },
+					{
+						$inc: { "account_info.total_posts": incrementVal },
+						$push: { articles: article._id },
+					},
+				)
+					.then((_user) => {
+						return res.status(200).json({ id: article.article_id });
+					})
+					.catch((_err) => {
+						return res
+							.status(500)
+							.json({ error: "Failed to update total posts number" });
+					});
+			})
+			.catch((err) => {
+				return res.status(500).json({ error: err.message });
+			});
+	}
+});
+
+// Login related routes
 app.post("/signup", (req, res) => {
 	const { firstName, surname, username, email, password } = req.body;
 
@@ -283,7 +385,12 @@ app.post("/signin", (req, res) => {
 					}
 				});
 			} else {
-				return res.status(403).json({ error: "Account was created using google. Try logging in with google.", });
+				return res
+					.status(403)
+					.json({
+						error:
+							"Account was created using google. Try logging in with google.",
+					});
 			}
 		})
 		.catch((err) => {
@@ -303,7 +410,9 @@ app.post("/google-auth", async (req, res) => {
 			picture = picture.replace("s96-c", "s384-c");
 
 			let user = await User.findOne({ "personal_info.email": email })
-				.select( "personal_info.firstName personal_info.surname personal_info.username personal_info.profile_img google_auth admin",)
+				.select(
+					"personal_info.firstName personal_info.surname personal_info.username personal_info.profile_img google_auth admin",
+				)
 				.then((u) => {
 					return u || null;
 				})
@@ -342,7 +451,8 @@ app.post("/google-auth", async (req, res) => {
 					google_auth: true,
 				});
 
-				await user .save()
+				await user
+					.save()
 					.then((u) => {
 						user = u;
 					})
@@ -350,7 +460,7 @@ app.post("/google-auth", async (req, res) => {
 						return res.status(500).json({ error: err.message });
 					});
 			}
-      console.log(user)
+			console.log(user);
 			return res.status(200).json(formatDataToSend(user));
 		})
 		.catch((_err) => {
@@ -371,7 +481,9 @@ app.post("/facebook-auth", async (req, res) => {
 			picture = picture.replace("s96-c", "s384-c");
 
 			let user = await User.findOne({ "personal_info.email": email })
-				.select( "personal_info.firstName personal_info.surname personal_info.username personal_info.profile_img facebook_auth admin",)
+				.select(
+					"personal_info.firstName personal_info.surname personal_info.username personal_info.profile_img facebook_auth admin",
+				)
 				.then((u) => {
 					return u || null;
 				})

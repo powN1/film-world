@@ -1,8 +1,26 @@
 import { Link } from "react-router-dom";
 import SingleNews from "../common/SingleNews";
 import { dummyDataArticles } from "../common/dummyDataArticles";
+import { useContext } from "react";
+import { DataContext } from "../App";
 
 const News = () => {
+	const { articles } = useContext(DataContext);
+  // Get articles that have tag "movies" in the and then move that tag to the very beggining.
+  // If there's more tags than 1, nicely format it
+	const movieArticles = articles
+		.filter((article) => article.tags.includes("movies"))
+		.map((article) => ({
+			...article,
+			tags: article.tags.sort((a, b) =>
+				a === "movies" ? -1 : b === "movies" ? 1 : 0,
+			),
+		}))
+		.map((article) => ({
+			...article,
+			tags: article.tags.length > 1 ? article.tags.join(", ") : article.tags,
+		}));
+
 	return (
 		<div className="bg-white">
 			<div className="w-full lg:w-[55%] mx-auto flex flex-col py-10 gap-y-5 text-black bg-white">
@@ -10,12 +28,12 @@ const News = () => {
 					News
 				</h2>
 				<div className="w-full self-center grid grid-cols-1 md:grid-cols-2 md:w-[90%] lg:grid-cols-3 gap-y-5 md:gap-y-10 md:gap-x-8">
-					{dummyDataArticles.slice(0,6).map((article, i) => (
+					{movieArticles.slice(0, 6).map((article, i) => (
 						<SingleNews
 							key={i}
 							type="categorized"
-							img={article.img}
-							category={article.category}
+							img={article.banner}
+							category={article.tags}
 							title={article.title}
 							description={article.description}
 							date={article.date}

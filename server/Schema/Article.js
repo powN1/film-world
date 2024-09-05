@@ -28,6 +28,10 @@ const articleSchema = mongoose.Schema(
 			type: [String],
 			// required: true
 		},
+		draft: {
+			type: Boolean,
+			default: false,
+		},
 		author: {
 			type: Schema.Types.ObjectId,
 			required: true,
