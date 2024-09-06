@@ -23,7 +23,10 @@ function App() {
 	const [userAuth, setUserAuth] = useState({});
 
 	const [movies, setMovies] = useState([]);
+	const [series, setSeries] = useState([]);
+	const [animes, setAnimes] = useState([]);
 	const [articles, setArticles] = useState([]);
+	const [actors, setActors] = useState([]);
 	const [reviews, setReviews] = useState([]);
 	const [loading, setLoading] = useState(true);
 
@@ -53,8 +56,11 @@ function App() {
 	};
 
 	const fetchMovies = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchSeries = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-animes");
+	const fetchAnimes = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-animes");
 	const fetchArticles = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles");
 	const fetchReviews = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchActors = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
 
 	useEffect(() => {
 		checkDevice();
@@ -72,13 +78,17 @@ function App() {
 			: setUserAuth({ access_token: null });
 
 		// Use Promise.all to wait for all fetches to complete
-		Promise.all([fetchMovies(), fetchArticles(), fetchReviews()])
-			.then(([moviesResponse, articlesResponse, reviewsResponse]) => {
-				setMovies(moviesResponse.data.movies);
-				setArticles(articlesResponse.data.articles);
-				setReviews(reviewsResponse.data.movies);
-				setLoading(false);
-			})
+		Promise.all([ fetchMovies(), fetchSeries(), fetchAnimes(), fetchArticles(), fetchReviews(), fetchActors(),])
+			.then( ([ moviesResponse, seriesResponse, animesResponse, articlesResponse, reviewsResponse, actorsResponse ]) => {
+					setMovies(moviesResponse.data.movies);
+					setSeries(seriesResponse.data.series);
+					setAnimes(animesResponse.data.animes);
+					setArticles(articlesResponse.data.articles);
+					setReviews(reviewsResponse.data.movies);
+					setActors(actorsResponse.data.actors);
+					setLoading(false);
+				},
+			)
 			.catch((err) => {
 				console.log(err);
 				setLoading(false);
@@ -90,7 +100,7 @@ function App() {
 	) : (
 		<MediaQueriesContext.Provider value={{ mobileView, tabletView }}>
 			<UserContext.Provider value={{ userAuth, setUserAuth }}>
-				<DataContext.Provider value={{ movies, articles, reviews, loading }}>
+				<DataContext.Provider value={{ movies, series, animes, articles, reviews, actors, loading }}>
 					<Routes>
 						<Route path="/" element={<Navbar />}>
 							<Route index element={<HomePage />} />

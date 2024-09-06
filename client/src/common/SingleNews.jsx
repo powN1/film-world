@@ -1,4 +1,5 @@
-const SingleNews = ({ title, description, comments, date, img, type, gridarea = null, category}) => {
+import { getDay } from "../common/date";
+const SingleNews = ({ title, description, comments, date, img, type, gridarea = null, category, }) => {
 	const renderArticle = () => {
 		switch (type) {
 			case "tiny":
@@ -123,11 +124,15 @@ const SingleNews = ({ title, description, comments, date, img, type, gridarea = 
 							/>
 						</div>
 						<div className="flex flex-col py-1 md:items-center md:py-3 md:px-3 ">
-              <p className="text-yellow-400 uppercase text-xs font-bold">{category}</p>
+							<p className="text-yellow-400 uppercase text-xs font-bold">
+								{category}
+							</p>
 							<p className="py-1 text-ellipsis overflow-hidden line-clamp-3 md:text-center">
 								{description}
 							</p>
-							<span className="text-gray-400 text-xs mt-auto">{date} / {comments} comments</span>
+							<span className="text-gray-400 text-xs mt-auto">
+								{getDay(date)} / {comments.length} comments
+							</span>
 						</div>
 					</article>
 				);

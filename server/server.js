@@ -50,6 +50,7 @@ const s3 = new aws.S3({
 // Connect mongoose to the database
 mongoose.connect(process.env.DB_LOCATION, { autoIndex: true });
 
+// Regex for identifying whether the email and password are correctly formatted
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
@@ -64,6 +65,54 @@ const generateUploadUrl = async () => {
 		ContentType: "image/jpeg",
 	});
 };
+
+// WARNING:DELETE THIS AFTER U R DONE WITH IT
+async function copyMoviesToSeries() {
+	try {
+		// Step 1: Fetch all documents from the 'movies' collection
+		const movies = await Movie.find({});
+
+		// Step 2: Remove the `_id` field from each document to avoid conflicts
+		const moviesWithoutId = movies.map((movie) => {
+			const movieObj = movie.toObject(); // Convert to plain JS object
+			delete movieObj._id; // Remove the original _id
+			return movieObj;
+		});
+
+		// Step 3: Insert the documents into the 'series' collection
+		await Serie.insertMany(moviesWithoutId);
+		await Anime.insertMany(moviesWithoutId);
+
+		console.log("Movies copied to Series collection successfully.");
+	} catch (error) {
+		console.error("Error copying movies to series:", error);
+	}
+}
+async function changeCollection() {
+	try {
+		// Step 1: Fetch all documents from the 'movies' collection
+		const animes = await Anime.find({});
+		const series = await Serie.find({});
+		for (const anime of animes) {
+			anime.set("year", undefined, { strict: false });
+			anime.set("length", undefined, { strict: false });
+			anime.year = undefined;
+			anime.length = undefined;
+			await anime.save();
+		}
+		for (const anime of series) {
+			anime.set("year", undefined, { strict: false });
+			anime.set("length", undefined, { strict: false });
+			anime.year = undefined;
+			anime.length = undefined;
+			await anime.save();
+		}
+		console.log("Movies copied to Series collection successfully.");
+	} catch (error) {
+		console.error("Error copying movies to series:", error);
+	}
+}
+// changeCollection();
 
 const uploadFileToAWSfromUrl = async (fileUrl) => {
 	try {
@@ -183,6 +232,45 @@ app.get("/get-movies", (req, res) => {
 		});
 });
 
+app.get("/get-series", (req, res) => {
+	Serie.find()
+		.then((series) => {
+			return res.status(200).json({ series });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.get("/get-animes", (req, res) => {
+	Anime.find()
+		.then((animes) => {
+			return res.status(200).json({ animes });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.get("/get-actors", (req, res) => {
+	const { ratingSorted, production } = req.body;
+  console.log(production)
+  if(production !== "movieName" || production !== "serieName" || production !== "animeName") return res.status(500).json({error: "Wrong production. Choose movies, series or animes"})
+
+	let findQuery = {};
+
+  // Chose only movies or series or animes
+	if (production) findQuery = { roles: { $elemMatch: { [production]: { $exists: true }, }, }, };
+
+	Actor.find(findQuery)
+		.then((actors) => {
+			return res.status(200).json({ actors });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
 app.get("/get-articles", (req, res) => {
 	Article.find()
 		.then((articles) => {
@@ -211,11 +299,9 @@ app.post("/create-article", verifyJWT, (req, res) => {
 		}
 
 		if (!banner.length) {
-			return res
-				.status(403)
-				.json({
-					error: "You must provide article banner in order to publish it",
-				});
+			return res.status(403).json({
+				error: "You must provide article banner in order to publish it",
+			});
 		}
 
 		if (!content.blocks.length) {
@@ -295,6 +381,42 @@ app.post("/create-article", verifyJWT, (req, res) => {
 				return res.status(500).json({ error: err.message });
 			});
 	}
+});
+
+app.post("/create-actor", async (req, res) => {
+	let { name, banner, roles, activity } = req.body;
+	const charactersBanners = roles.map((role) => role.characterBanner);
+	const uploadedAWSLinks = [];
+
+	// Upload multiple images of all the roles to S3
+	for (const banner of charactersBanners) {
+		try {
+			const uploadedLink = await uploadFileToAWSfromUrl(banner); // Await the upload and get the returned link
+			uploadedAWSLinks.push(uploadedLink); // Push the returned link to the array
+		} catch (error) {
+			return res.status(500).json({ error: err.message });
+		}
+	}
+
+	roles.forEach((role, i) => (role.characterBanner = uploadedAWSLinks[i]));
+
+	const awsImageUrl = await uploadFileToAWSfromUrl(banner);
+
+	let actor = new Actor({
+		name,
+		banner: awsImageUrl,
+		roles,
+		activity,
+	});
+
+	actor
+		.save()
+		.then((actor) => {
+			return res.status(200).json({ actor });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
 });
 
 // Login related routes
@@ -385,12 +507,10 @@ app.post("/signin", (req, res) => {
 					}
 				});
 			} else {
-				return res
-					.status(403)
-					.json({
-						error:
-							"Account was created using google. Try logging in with google.",
-					});
+				return res.status(403).json({
+					error:
+						"Account was created using google. Try logging in with google.",
+				});
 			}
 		})
 		.catch((err) => {
@@ -460,7 +580,6 @@ app.post("/google-auth", async (req, res) => {
 						return res.status(500).json({ error: err.message });
 					});
 			}
-			console.log(user);
 			return res.status(200).json(formatDataToSend(user));
 		})
 		.catch((_err) => {
