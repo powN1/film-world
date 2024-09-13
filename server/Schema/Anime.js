@@ -24,7 +24,7 @@ const animeSchema = mongoose.Schema({
 		},
 	},
 	genre: {
-		type: String,
+		type: [String],
 		required: true,
 	},
   seasons: {

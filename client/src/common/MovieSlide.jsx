@@ -44,7 +44,7 @@ const MovieSlide = ({
 						<div className="absolute bottom-0 left-0 p-3 text-white">
 							<p className="line-clamp-1">{title}</p>
 							<p className="text-sm">2024</p>
-							<div className={ "text-sm w-[80%] max-lg:hidden " + (scrollable ? "hidden" : "") }>{description}</div>
+							<div className={ "text-sm w-[85%] max-lg:hidden line-clamp-3 " + (scrollable ? "hidden" : "") }>{description}</div>
 						</div>
 						<div
 							className={

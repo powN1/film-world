@@ -7,7 +7,7 @@ const Ranking = ({ showCategories = true, anticipated = false }) => {
 	const [currentMovieCategory, setCurrentMovieCategory] = useState("most anticipated");
 
 	const { movies } = useContext(DataContext);
-  const mostAnticipatedMovies = movies.sort((movie1, movie2) => movie2.activity.peopleAwaiting - movie1.activity.peopleAwaiting)
+  // const mostAnticipatedMovies = movies.sort((movie1, movie2) => movie2.activity.peopleAwaiting - movie1.activity.peopleAwaiting)
 
 	// Slider settings
 	const categories = [
@@ -58,7 +58,7 @@ const Ranking = ({ showCategories = true, anticipated = false }) => {
 					</ul>
 				)}
 				<div className="w-full self-center flex gap-x-6 max-lg:gap-4 max-lg:px-4 justify-center max-lg:flex-wrap">
-					{mostAnticipatedMovies.slice(0, 6).map((movie, i) => {
+					{movies.slice(0, 6).map((movie, i) => {
 						return (
 							<RankingPoster
 								key={i}

@@ -9,6 +9,10 @@ const movieSchema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	cover: {
+		type: String,
+		required: true,
+	},
 	description: {
 		type: String,
 	},
@@ -19,12 +23,12 @@ const movieSchema = mongoose.Schema({
 		ratedByCount: {
 			type: Number,
 		},
-    peopleAwaiting: {
-      type: Number,
-    },
+		peopleAwaiting: {
+			type: Number,
+		},
 	},
 	genre: {
-		type: String,
+		type: [String],
 		required: true,
 	},
 	length: {
@@ -33,7 +37,18 @@ const movieSchema = mongoose.Schema({
 	year: {
 		type: Number,
 	},
+	originCountry: {
+		type: [String],
+	},
+	director: {
+		type: [String],
+	},
+	screenplay: {
+		type: [String],
+	},
+  status: {
+    type: String
+  }
 });
-
 
 export default mongoose.model("movies", movieSchema);

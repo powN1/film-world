@@ -24,7 +24,7 @@ const serieSchema = mongoose.Schema({
     },
 	},
 	genre: {
-		type: String,
+		type: [String],
 		required: true,
 	},
   seasons: {

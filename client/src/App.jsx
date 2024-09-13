@@ -56,11 +56,16 @@ function App() {
 	};
 
 	const fetchMovies = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-	const fetchSeries = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-animes");
-	const fetchAnimes = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-animes");
-	const fetchArticles = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles");
-	const fetchReviews = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-	const fetchActors = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
+	const fetchSeries = async () =>
+		await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-animes");
+	const fetchAnimes = async () =>
+		await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-animes");
+	const fetchArticles = async () =>
+		await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles");
+	const fetchReviews = async () =>
+		await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchActors = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
 
 	useEffect(() => {
 		checkDevice();
@@ -78,8 +83,16 @@ function App() {
 			: setUserAuth({ access_token: null });
 
 		// Use Promise.all to wait for all fetches to complete
-		Promise.all([ fetchMovies(), fetchSeries(), fetchAnimes(), fetchArticles(), fetchReviews(), fetchActors(),])
-			.then( ([ moviesResponse, seriesResponse, animesResponse, articlesResponse, reviewsResponse, actorsResponse ]) => {
+		Promise.all([ fetchMovies(), fetchSeries(), fetchAnimes(), fetchArticles(), fetchReviews(), fetchActors(), ])
+			.then(
+				([
+					moviesResponse,
+					seriesResponse,
+					animesResponse,
+					articlesResponse,
+					reviewsResponse,
+					actorsResponse,
+				]) => {
 					setMovies(moviesResponse.data.movies);
 					setSeries(seriesResponse.data.series);
 					setAnimes(animesResponse.data.animes);
@@ -100,7 +113,9 @@ function App() {
 	) : (
 		<MediaQueriesContext.Provider value={{ mobileView, tabletView }}>
 			<UserContext.Provider value={{ userAuth, setUserAuth }}>
-				<DataContext.Provider value={{ movies, series, animes, articles, reviews, actors, loading }}>
+				<DataContext.Provider
+					value={{ movies, series, animes, articles, reviews, actors, loading }}
+				>
 					<Routes>
 						<Route path="/" element={<Navbar />}>
 							<Route index element={<HomePage />} />

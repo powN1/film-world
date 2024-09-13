@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
+import { getYear } from "./date";
 
-const ActorBirthdaySlide = ({ img, name, age }) => {
+const ActorBirthdaySlide = ({ img, firstName, surname, age }) => {
+  let date = new Date();
+  const actorsAge = date.getYear() - getYear(age)
+
 	return (
 		<Link
 			to=""
@@ -9,13 +13,13 @@ const ActorBirthdaySlide = ({ img, name, age }) => {
 			<div className="h-[220px] overflow-hidden border border-gray-400">
 				<img
 					src={img}
-					alt={`${name} image`}
+					alt={`${surname} image`}
 					className="relative h-full w-full object-cover group-hover:scale-110 duration-300"
 				/>
 			</div>
 			<div className="flex flex-col gap-y-1 py-3 items-center text-center">
-				<p className="text-xl">{name}</p>
-				<p>{age} years old</p>
+				<p className="text-xl">{firstName} {surname}</p>
+				<p>{actorsAge} years old</p>
 			</div>
 		</Link>
 	);

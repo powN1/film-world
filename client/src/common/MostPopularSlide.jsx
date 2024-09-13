@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { CiHeart } from "react-icons/ci";
 
-const MostPopularSlide = ({ title, img, actor, role, ranking, character, gameName}) => {
+const MostPopularSlide = ({ title, img, actor, role, ranking, character, gameName, }) => {
 	return (
 		<Link
 			to=""
@@ -10,13 +10,13 @@ const MostPopularSlide = ({ title, img, actor, role, ranking, character, gameNam
 			<div
 				className={
 					"overflow-hidden border " +
-          (gameName ? "border-gray-400 ": "border-gray-700 ") +
+					(gameName ? "border-gray-400 " : "border-gray-700 ") +
 					(actor ? "aspect-square" : character || gameName ? "h-[220px]" : "")
 				}
 			>
 				<img
 					src={img}
-					alt={`${title} image`}
+					alt={`image`}
 					className="relative h-full w-full object-cover group-hover:scale-110 duration-300"
 				/>
 			</div>
@@ -26,10 +26,16 @@ const MostPopularSlide = ({ title, img, actor, role, ranking, character, gameNam
 					(actor ? "group-hover:bg-gray-200/15" : null)
 				}
 			>
-				<p>{actor ? `${actor} as ${role}` : (character ? `${character}` : `${gameName}`)}</p>
+				<p>
+					{actor
+						? `${actor.personal_info.firstName} ${actor.personal_info.surname} as ${role}`
+						: character
+							? `${character}`
+							: `${gameName}`}
+				</p>
 				{actor && <p className="line-clamp-2 text-gray-500 text-sm">{title}</p>}
 			</div>
-			{role && (
+			{(role && ranking) && (
 				<div className="absolute top-2 right-0 lg:right-0 translate-x-2 uppercase bg-gray-300 text-black p-1 font-sansNarrow hover:bg-gray-200 duration-300">
 					#{ranking} top
 				</div>

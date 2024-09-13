@@ -18,10 +18,12 @@ import serviceAccountKey from "./movie-database-project-c228a-firebase-adminsdk-
 import Actor from "./Schema/Actor.js";
 import Anime from "./Schema/Anime.js";
 import Article from "./Schema/Article.js";
+import Character from "./Schema/Character.js";
 import Comment from "./Schema/Comment.js";
 import Game from "./Schema/Game.js";
 import Movie from "./Schema/Movie.js";
 import Review from "./Schema/Review.js";
+import Role from "./Schema/Role.js";
 import Serie from "./Schema/Serie.js";
 import User from "./Schema/User.js";
 
@@ -113,6 +115,276 @@ async function changeCollection() {
 	}
 }
 // changeCollection();
+
+async function printActors() {
+	let acc;
+	try {
+		Actor.find().then((actors) => (acc = actors));
+		console.log(acc);
+	} catch (error) {
+		console.error("No actors", error);
+	}
+}
+
+async function addActivity() {
+	const newActivity = {
+		rating: 8.4,
+		ratedByCount: 12521,
+	};
+	try {
+		Role.updateMany({}, { $set: { activity: newActivity } }).then((movie) =>
+			console.log(movie),
+		);
+		console.log(acc);
+	} catch (error) {
+		console.error("No actors", error);
+	}
+}
+
+async function getMoviesFromThemoviedb() {
+	const urlTopRatedMovies =
+		"https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=3";
+
+	const options = {
+		method: "GET",
+		headers: {
+			accept: "application/json",
+			Authorization:
+				"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjOWQ2YmZjMzcyY2ZlZjg0YjgyODgwNzE1M2ZhZDY0YiIsIm5iZiI6MTcyNjI1OTU3Ni45MzE4MTIsInN1YiI6IjYyOWM5NGI5Y2FhNTA4MWFlZjdkMzI1MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rLbp_pNyYzYdtEkKypNecCMCkTz7F-_-M5Nachm7fw8",
+		},
+	};
+
+	axios
+		.get(urlTopRatedMovies, options)
+		.then(async (res) => {
+			res.data.results.forEach(async (result) => {
+				const {
+					id,
+					title,
+					poster_path,
+					backdrop_path,
+					overview: description,
+					vote_average,
+					vote_count: ratedByCount,
+					release_date,
+				} = result;
+
+				const year = release_date.split("-")[0] * 1;
+				const genreArray = [];
+				let length;
+				const coverUrl = `https://image.tmdb.org/t/p/w342${poster_path}`;
+				const bannerUrl = `https://image.tmdb.org/t/p/original${backdrop_path}`;
+
+				console.log(cover);
+
+				const rating = vote_average.toFixed(1) * 1;
+
+				const urlMovieDetails = `https://api.themoviedb.org/3/movie/${id}?language=en-US`;
+				await axios
+					.get(urlMovieDetails, options)
+					.then((res) => {
+						res.data.genres.forEach((genre) => genreArray.push(genre.name));
+						length = res.data.runtime;
+					})
+					.catch((err) => console.log(err));
+
+				// Check if movie with the same title already exists
+				const existingMovie = await Movie.findOne({ title });
+				if (existingMovie) {
+					console.log(`Movie '${title}' already exists, skipping...`);
+					return; // Skip if movie already exists
+				}
+
+				const cover = await uploadFileToAWSfromUrl(coverUrl);
+				const banner = await uploadFileToAWSfromUrl(bannerUrl);
+
+				const movie = new Movie({
+					title,
+					cover,
+					banner,
+					description,
+					genre: genreArray,
+					year,
+					length,
+					activity: {
+						rating,
+						ratedByCount,
+					},
+				});
+
+				movie
+					.save()
+					.then(console.log("movie saved in the db"))
+					.catch((err) => console.log(err));
+			});
+		})
+		.catch((err) => console.log(err));
+}
+// getMoviesFromThemoviedb();
+
+async function getMovieFromTheMovieDBById(movieId) {
+	const urlMovie = `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`;
+	const urlMovieCredits = `https://api.themoviedb.org/3/movie/${movieId}/credits?language=en-US`;
+
+	const options = {
+		method: "GET",
+		headers: {
+			accept: "application/json",
+			Authorization:
+				"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjOWQ2YmZjMzcyY2ZlZjg0YjgyODgwNzE1M2ZhZDY0YiIsIm5iZiI6MTcyNjI1OTU3Ni45MzE4MTIsInN1YiI6IjYyOWM5NGI5Y2FhNTA4MWFlZjdkMzI1MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rLbp_pNyYzYdtEkKypNecCMCkTz7F-_-M5Nachm7fw8",
+		},
+	};
+
+	axios
+		.get(urlMovie, options)
+		.then(async (res) => {
+			const {
+				title,
+				poster_path,
+				backdrop_path,
+				overview: description,
+				vote_average,
+				vote_count: ratedByCount,
+				release_date,
+				origin_country,
+				status,
+			} = res.data;
+
+			const year = release_date.split("-")[0] * 1;
+			const genreArray = [];
+			let length;
+
+			const coverUrl = `https://image.tmdb.org/t/p/w342${poster_path}`;
+			const bannerUrl = `https://image.tmdb.org/t/p/original${backdrop_path}`;
+
+			const rating = vote_average.toFixed(1) * 1;
+			res.data.genres.forEach((genre) => genreArray.push(genre.name));
+			length = res.data.runtime;
+
+			let director;
+			let screenplay;
+
+			// Check if movie with the same title already exists
+			const existingMovie = await Movie.findOne({ title });
+			if (existingMovie) {
+				console.log(`Movie '${title}' already exists, skipping...`);
+				return; // Skip if movie already exists
+			}
+
+			await axios
+				.get(urlMovieCredits, options)
+				.then((res) => {
+					director = res.data.crew
+						.filter((crew) => crew.job === "Director")
+						.map((director) => director.name);
+					screenplay = res.data.crew
+						.filter((crew) => crew.job === "Screenplay")
+						.map((screenplay) => screenplay.name);
+				})
+				.catch((err) => console.log(err));
+
+			const cover = await uploadFileToAWSfromUrl(coverUrl);
+			const banner = await uploadFileToAWSfromUrl(bannerUrl);
+
+			const movie = new Movie({
+				title,
+				cover,
+				banner,
+				description,
+				genre: genreArray,
+				year,
+				length,
+				originCountry: origin_country,
+				status,
+				director,
+				screenplay,
+				activity: {
+					rating,
+					ratedByCount,
+				},
+			});
+
+			movie
+				.save()
+				.then(console.log("movie saved in the db"))
+				.catch((err) => console.log(err));
+		})
+		.catch((err) => console.log(err));
+}
+
+const listOfMoviesByIdToFetch = [
+	8681, 152532, 9800, 14, 103663, 347123, 203801, 889737,
+];
+
+// listOfMoviesByIdToFetch.forEach(async (movie) => {
+// 	await getMovieFromTheMovieDBById(movie);
+// });
+
+async function getActorFromTheMovieDBById(actorId) {
+	const urlActor = `https://api.themoviedb.org/3/person/${actorId}?language=en-US`;
+
+	const options = {
+		method: "GET",
+		headers: {
+			accept: "application/json",
+			Authorization:
+				"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjOWQ2YmZjMzcyY2ZlZjg0YjgyODgwNzE1M2ZhZDY0YiIsIm5iZiI6MTcyNjI1OTU3Ni45MzE4MTIsInN1YiI6IjYyOWM5NGI5Y2FhNTA4MWFlZjdkMzI1MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rLbp_pNyYzYdtEkKypNecCMCkTz7F-_-M5Nachm7fw8",
+		},
+	};
+
+	axios
+		.get(urlActor, options)
+		.then(async (res) => {
+			const {
+				name,
+				biography: bio,
+				birthday,
+				deathday,
+				place_of_birth: placeOfBirth,
+				profile_path,
+				known_for_department: knownFor,
+			} = res.data;
+
+			const pictureUrl = `https://image.tmdb.org/t/p/w342${profile_path}`;
+
+			// Check if actor with the same name already exists
+			// const existingActor = await Actor.findOne({ name });
+			// if (existingActor) {
+			// 	console.log(`Actor '${name}' already exists, skipping...`);
+			// 	return;
+			// }
+
+			const banner = await uploadFileToAWSfromUrl(pictureUrl);
+
+			const actor = new Actor({
+				personal_info: {
+					name,
+					bio,
+					dateOfBirth: birthday !== null ? new Date(birthday) : null,
+					dateOfDeath: deathday !== null ? new Date(deathday) : null,
+					placeOfBirth,
+					knownFor,
+				},
+				banner,
+				activity: {
+					rating: 0,
+					ratedByCount: 0,
+				},
+			});
+
+			actor
+				.save()
+				.then(console.log("actor saved in the db"))
+				.catch((err) => console.log(err));
+		})
+		.catch((err) => console.log(err));
+}
+
+const listOfActorsByIdToFetch = [26723];
+
+listOfActorsByIdToFetch.forEach(async (actor) => {
+	await getActorFromTheMovieDBById(actor);
+});
 
 const uploadFileToAWSfromUrl = async (fileUrl) => {
 	try {
@@ -207,8 +479,6 @@ app.get("/aws", async (req, res) => {
 
 	const s3Response = await s3.upload(uploadParams).promise();
 
-	console.log(s3Response.Location);
-
 	// const awsRes = await generateUploadUrl();
 	// res.status(200).json({ imageResponse });
 });
@@ -252,23 +522,45 @@ app.get("/get-animes", (req, res) => {
 		});
 });
 
-app.get("/get-actors", (req, res) => {
-	const { ratingSorted, production } = req.body;
-  console.log(production)
-  if(production !== "movieName" || production !== "serieName" || production !== "animeName") return res.status(500).json({error: "Wrong production. Choose movies, series or animes"})
+app.post("/get-actors", (req, res) => {
+	const { ratingSorted } = req.body;
 
-	let findQuery = {};
-
-  // Chose only movies or series or animes
-	if (production) findQuery = { roles: { $elemMatch: { [production]: { $exists: true }, }, }, };
-
-	Actor.find(findQuery)
+	Actor.find()
 		.then((actors) => {
 			return res.status(200).json({ actors });
 		})
 		.catch((err) => {
 			return res.status(500).json({ error: err.message });
 		});
+});
+
+app.post("/get-roles", (req, res) => {
+	const { sortByRating } = req.body;
+
+	if (sortByRating === true) {
+		Role.find()
+			.populate("actor", "personal_info.firstName personal_info.surname")
+			.sort({ "activity.rating": -1 })
+			.then((roles) => {
+				return res.status(200).json({ roles });
+			})
+			.catch((err) => res.status(500).json({ error: err.message }));
+	} else {
+		Role.find()
+			.populate("actor", "personal_info.firstName personal_info.surname")
+			.then((roles) => {
+				return res.status(200).json({ roles });
+			})
+			.catch((err) => res.status(500).json({ error: err.message }));
+	}
+});
+
+app.post("/get-characters", (req, res) => {
+	Character.find()
+		.then((characters) => {
+			return res.status(200).json({ characters });
+		})
+		.catch((err) => res.status(500).json({ error: err.message }));
 });
 
 app.get("/get-articles", (req, res) => {
@@ -383,30 +675,16 @@ app.post("/create-article", verifyJWT, (req, res) => {
 	}
 });
 
-app.post("/create-actor", async (req, res) => {
-	let { name, banner, roles, activity } = req.body;
-	const charactersBanners = roles.map((role) => role.characterBanner);
-	const uploadedAWSLinks = [];
-
-	// Upload multiple images of all the roles to S3
-	for (const banner of charactersBanners) {
-		try {
-			const uploadedLink = await uploadFileToAWSfromUrl(banner); // Await the upload and get the returned link
-			uploadedAWSLinks.push(uploadedLink); // Push the returned link to the array
-		} catch (error) {
-			return res.status(500).json({ error: err.message });
-		}
-	}
-
-	roles.forEach((role, i) => (role.characterBanner = uploadedAWSLinks[i]));
+app.post("/add-actor", async (req, res) => {
+	let { personal_info, banner, activity, roles } = req.body;
 
 	const awsImageUrl = await uploadFileToAWSfromUrl(banner);
 
 	let actor = new Actor({
-		name,
+		personal_info,
 		banner: awsImageUrl,
-		roles,
 		activity,
+		roles,
 	});
 
 	actor
@@ -419,6 +697,154 @@ app.post("/create-actor", async (req, res) => {
 		});
 });
 
+app.post("/add-character", async (req, res) => {
+	let { personal_info, banner, activity, roles, adversaries } = req.body;
+
+	const awsImageUrl = await uploadFileToAWSfromUrl(banner);
+
+	let character = new Character({
+		personal_info,
+		banner: awsImageUrl,
+		activity,
+		roles,
+		adversaries,
+	});
+
+	character
+		.save()
+		.then((character) => {
+			Role.updateMany(
+				{ _id: { $in: roles } },
+				{ $set: { character: character._id } },
+			)
+				.then((character) => {
+					return res.status(200).json({ character });
+				})
+				.catch((err) => {
+					return res.status(500).json({ error: err.message });
+				});
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/add-role", async (req, res) => {
+	let {
+		filmTitle,
+		characterName,
+		characterBanner,
+		actor,
+		movie,
+		serie,
+		anime,
+	} = req.body;
+
+	const awsImageUrl = await uploadFileToAWSfromUrl(characterBanner);
+
+	let role = new Role({
+		filmTitle,
+		characterName,
+		characterBanner: awsImageUrl,
+		actor,
+	});
+
+	if (movie) role.movie = movie;
+	else if (serie) role.serie = serie;
+	else if (anime) role.anime = anime;
+
+	role
+		.save()
+		.then((role) => {
+			Actor.findByIdAndUpdate(actor, { $push: { roles: role._id } })
+				.then((user) => res.status(200).json({ role }))
+				.catch((err) => res.status(500).json({ error: err.message }));
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/add-movie", async (req, res) => {
+	let { title, banner, description, genre, length, year } = req.body;
+
+	const awsImageUrl = await uploadFileToAWSfromUrl(banner);
+
+	let movie = new Movie({
+		title,
+		banner: awsImageUrl,
+		description,
+		genre,
+		length,
+		year,
+	});
+
+	movie
+		.save()
+		.then((movie) => {
+			return res.status(200).json({ movie });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/add-serie", async (req, res) => {
+	let {
+		title,
+		banner,
+		description,
+		genre,
+		seasons,
+		yearBeginning,
+		yearEnding,
+	} = req.body;
+
+	const awsImageUrl = await uploadFileToAWSfromUrl(banner);
+
+	let serie = new Serie({
+		title,
+		banner: awsImageUrl,
+		description,
+		genre,
+		seasons,
+		yearBeginning,
+		yearEnding,
+	});
+
+	serie
+		.save()
+		.then((serie) => {
+			return res.status(200).json({ serie });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/add-anime", async (req, res) => {
+	let { title, banner, description, genre, length, year } = req.body;
+
+	const awsImageUrl = await uploadFileToAWSfromUrl(banner);
+
+	let anime = new Anime({
+		title,
+		banner: awsImageUrl,
+		description,
+		genre,
+		length,
+		year,
+	});
+
+	anime
+		.save()
+		.then((anime) => {
+			return res.status(200).json({ anime });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
 // Login related routes
 app.post("/signup", (req, res) => {
 	const { firstName, surname, username, email, password } = req.body;
