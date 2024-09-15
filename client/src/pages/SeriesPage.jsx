@@ -9,10 +9,10 @@ import News from "../components/News";
 const SeriesPage = () => {
 	return (
 		<>
-			<MainPreview />
-			<Ranking anticipated={true} showCategories={false} />
-			<WideTrailerSlider showCategories={false} />
-			<MostPopular type="roles" />
+			<MainPreview type="series"/>
+			<Ranking type="series" anticipated={true} showCategories={false} />
+			<WideTrailerSlider type="series" showCategories={false} />
+			<MostPopular type="roles" category="series" />
       <News />
 			<Download />
 			<Footer />

@@ -6,12 +6,19 @@ import { MediaQueriesContext } from "../App";
 import { dummyDataMovies } from "../common/dummyDataMovies";
 import { DataContext } from "../App";
 
-const WideTrailerSlider = ({ showCategories = true }) => {
+const WideTrailerSlider = ({ type, showCategories = true }) => {
 	const [currentMovieCategory, setCurrentMovieCategory] = useState("movies");
 
-	const { movies } = useContext(DataContext);
+	const { movies, series } = useContext(DataContext);
 
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
+
+	const [films, setFilms] = useState(movies); // Slider settings
+
+	useEffect(() => {
+		if (type === "movies") setFilms(movies);
+		else if (type === "series") setFilms(series);
+	}, []);
 
 	// Slider settings
 	const settings = {
@@ -72,7 +79,7 @@ const WideTrailerSlider = ({ showCategories = true }) => {
 			) : null}
 			<div className="w-[95%] self-center">
 				<Slider {...settings}>
-					{movies.map((movie, i) => {
+					{films.map((movie, i) => {
 						return (
 							<MovieSlide
 								key={i}

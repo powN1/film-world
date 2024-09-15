@@ -18,15 +18,12 @@ const Birthday = () => {
 		await axios
 			.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors")
 			.then(({ data }) => {
-				setActors(data.actors);
-				console.log(data.actors);
 				const thisMonth = data.actors.filter((actor) => {
 					let date = new Date();
-					// console.log( getMonth(actor.personal_info.dateOfBirth) === getMonth(date),);
-					console.log( getMonth(actor.personal_info.dateOfBirth), getMonth(date));
+					console.log( getMonth(actor.personal_info.dateOfBirth) === getMonth(date),);
 					return getMonth(actor.personal_info.dateOfBirth) === getMonth(date);
 				});
-				console.log(thisMonth);
+      setActors(thisMonth)
 				setLoading(false);
 			})
 			.catch((err) => console.log(err));
@@ -60,8 +57,7 @@ const Birthday = () => {
 						<ActorBirthdaySlide
 							key={i}
 							img={actor.banner}
-							firstName={actor.personal_info.firstName}
-							surname={actor.personal_info.surname}
+							name={actor.personal_info.name}
 							age={actor.personal_info.dateOfBirth}
 						/>
 					))}

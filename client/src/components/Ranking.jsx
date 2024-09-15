@@ -1,18 +1,24 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import RankingPoster from "../common/RankingPoster";
 import { DataContext } from "../App";
 
-const Ranking = ({ showCategories = true, anticipated = false }) => {
-	const [currentMovieCategory, setCurrentMovieCategory] = useState("most anticipated");
+const Ranking = ({ type, showCategories = true, anticipated = false }) => {
+	const [currentMovieCategory, setCurrentMovieCategory] =
+		useState("most anticipated");
 
-	const { movies } = useContext(DataContext);
-  // const mostAnticipatedMovies = movies.sort((movie1, movie2) => movie2.activity.peopleAwaiting - movie1.activity.peopleAwaiting)
+	const { movies, series } = useContext(DataContext);
+	// const mostAnticipatedMovies = movies.sort((movie1, movie2) => movie2.activity.peopleAwaiting - movie1.activity.peopleAwaiting)
+	//
+	const [films, setFilms] = useState(movies); // Slider settings
 
-	// Slider settings
+	useEffect(() => {
+		if (type === "movies") setFilms(movies);
+		else if (type === "series") setFilms(series);
+	}, []);
 	const categories = [
 		{ title: "Most anticipated" },
-		{ title: "Top movies" }, 
+		{ title: "Top movies" },
 		{ title: "Top series" },
 	];
 
@@ -58,14 +64,18 @@ const Ranking = ({ showCategories = true, anticipated = false }) => {
 					</ul>
 				)}
 				<div className="w-full self-center flex gap-x-6 max-lg:gap-4 max-lg:px-4 justify-center max-lg:flex-wrap">
-					{movies.slice(0, 6).map((movie, i) => {
+					{films.slice(0, 6).map((movie, i) => {
 						return (
 							<RankingPoster
 								key={i}
 								title={movie.title}
-								img={movie.banner}
+								img={movie.cover}
 								rating={anticipated ? null : movie.rating ? movie.rating : null}
-								peopleAwaiting={ movie.activity.peopleAwaiting ? movie.activity.peopleAwaiting : null }
+								peopleAwaiting={
+									movie.activity.peopleAwaiting
+										? movie.activity.peopleAwaiting
+										: null
+								}
 							/>
 						);
 					})}

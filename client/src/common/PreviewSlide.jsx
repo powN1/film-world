@@ -1,4 +1,4 @@
-const PreviewSlide = ({ movie, movie: { title, banner }, activeSlide, movieIndex }) => {
+const PreviewSlide = ({ movie, movie: { title, cover }, activeSlide, movieIndex }) => {
 	return (
 		<div
 			className="mx-3 px-1 flex flex-col gap-y-3 cursor-pointer box-order"
@@ -14,7 +14,7 @@ const PreviewSlide = ({ movie, movie: { title, banner }, activeSlide, movieIndex
 					}
 				>
 					<img
-						src={banner}
+						src={cover}
 						alt={`${title} image`}
 						className="h-full w-full object-cover"
 					/>

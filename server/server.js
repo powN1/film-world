@@ -248,6 +248,9 @@ async function getMovieFromTheMovieDBById(movieId) {
 				release_date,
 				origin_country,
 				status,
+				revenue,
+				original_title,
+				budget,
 			} = res.data;
 
 			const year = release_date.split("-")[0] * 1;
@@ -298,6 +301,9 @@ async function getMovieFromTheMovieDBById(movieId) {
 				status,
 				director,
 				screenplay,
+				revenue,
+				budget,
+				originalTitle: original_title,
 				activity: {
 					rating,
 					ratedByCount,
@@ -312,9 +318,7 @@ async function getMovieFromTheMovieDBById(movieId) {
 		.catch((err) => console.log(err));
 }
 
-const listOfMoviesByIdToFetch = [
-	8681, 152532, 9800, 14, 103663, 347123, 203801, 889737,
-];
+const listOfMoviesByIdToFetch = [8681, 152532, 9800, 14, 347123, 203801];
 
 // listOfMoviesByIdToFetch.forEach(async (movie) => {
 // 	await getMovieFromTheMovieDBById(movie);
@@ -348,11 +352,11 @@ async function getActorFromTheMovieDBById(actorId) {
 			const pictureUrl = `https://image.tmdb.org/t/p/w342${profile_path}`;
 
 			// Check if actor with the same name already exists
-			// const existingActor = await Actor.findOne({ name });
-			// if (existingActor) {
-			// 	console.log(`Actor '${name}' already exists, skipping...`);
-			// 	return;
-			// }
+			const existingActor = await Actor.findOne({ "personal_info.name": name });
+			if (existingActor) {
+				console.log(`Actor '${name}' already exists, skipping...`);
+				return;
+			}
 
 			const banner = await uploadFileToAWSfromUrl(pictureUrl);
 
@@ -380,11 +384,131 @@ async function getActorFromTheMovieDBById(actorId) {
 		.catch((err) => console.log(err));
 }
 
-const listOfActorsByIdToFetch = [26723];
+const listOfActorsByIdToFetch = [
+	51329, 73457, 72129, 60898, 3894, 1640, 2478, 4491, 1001657, 51072, 5472,
+	1427948, 1922, 56365, 53714, 1590797, 884, 12795, 10860, 84223, 40462, 1327,
+	3895, 8167, 8891, 22226, 776, 1003,
+];
 
-listOfActorsByIdToFetch.forEach(async (actor) => {
-	await getActorFromTheMovieDBById(actor);
-});
+// listOfActorsByIdToFetch.forEach(async (actor) => {
+// 	await getActorFromTheMovieDBById(actor);
+// });
+
+async function getSerieFromTheMovieDBById(serieId) {
+	const urlSerie = `https://api.themoviedb.org/3/tv/${serieId}?language=en-US`;
+
+	const options = {
+		method: "GET",
+		headers: {
+			accept: "application/json",
+			Authorization:
+				"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjOWQ2YmZjMzcyY2ZlZjg0YjgyODgwNzE1M2ZhZDY0YiIsIm5iZiI6MTcyNjI1OTU3Ni45MzE4MTIsInN1YiI6IjYyOWM5NGI5Y2FhNTA4MWFlZjdkMzI1MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rLbp_pNyYzYdtEkKypNecCMCkTz7F-_-M5Nachm7fw8",
+		},
+	};
+
+	axios
+		.get(urlSerie, options)
+		.then(async (res) => {
+			const {
+				name: title,
+				poster_path,
+				backdrop_path,
+				created_by,
+				overview: description,
+				vote_average,
+				vote_count: ratedByCount,
+				first_air_date,
+				last_air_date,
+				number_of_episodes: numberOfEpisodes,
+				number_of_seasons: numberOfSeasons,
+				origin_country,
+				status,
+				seasons,
+			} = res.data;
+
+			const genreArray = [];
+			const firstAirDate = new Date(first_air_date);
+			const lastAirDate = new Date(last_air_date);
+			const createdBy = created_by.map((creator) => creator.name);
+
+			const coverUrl = `https://image.tmdb.org/t/p/w342${poster_path}`;
+			const bannerUrl = `https://image.tmdb.org/t/p/original${backdrop_path}`;
+
+			const rating = vote_average.toFixed(1) * 1;
+			res.data.genres.forEach((genre) => genreArray.push(genre.name));
+
+			// Check if movie with the same title already exists
+			const existingSerie = await Serie.findOne({ title });
+			if (existingSerie) {
+				console.log(`Serie '${title}' already exists, skipping...`);
+				return; // Skip if movie already exists
+			}
+
+			const seasonsFormatted = await Promise.all(
+				seasons.map(async (season) => {
+					const {
+						air_date: airDate,
+						episode_count: episodeCount,
+						name: title,
+						overview: description,
+						poster_path,
+						season_number: seasonNumber,
+						vote_average,
+					} = season;
+
+					const coverUrl = `https://image.tmdb.org/t/p/w342${poster_path}`;
+					const cover = await uploadFileToAWSfromUrl(coverUrl);
+
+					return {
+						airDate,
+						episodeCount,
+						title,
+						description,
+						cover,
+						seasonNumber,
+						activity: {
+							rating: vote_average.toFixed(1) * 1,
+							ratedByCount: 0,
+						},
+					};
+				}),
+			);
+
+			const cover = await uploadFileToAWSfromUrl(coverUrl);
+			const banner = await uploadFileToAWSfromUrl(bannerUrl);
+
+			const serie = new Serie({
+				title,
+				cover,
+				banner,
+				createdBy,
+				description,
+				genre: genreArray,
+				originCountry: origin_country,
+				firstAirDate,
+				lastAirDate,
+				numberOfEpisodes,
+				numberOfSeasons,
+				status,
+				activity: {
+					rating,
+					ratedByCount,
+				},
+				seasons: seasonsFormatted,
+			});
+
+			serie
+				.save()
+				.then(console.log("serie saved in the db"))
+				.catch((err) => console.log(err));
+		})
+		.catch((err) => console.log(err));
+}
+const listOfSeriesByIdToFetch = [];
+// listOfSeriesByIdToFetch.forEach(async (serie) => {
+// 	await getSerieFromTheMovieDBById(serie);
+// });
+console.log("all series saved");
 
 const uploadFileToAWSfromUrl = async (fileUrl) => {
 	try {
@@ -535,24 +659,25 @@ app.post("/get-actors", (req, res) => {
 });
 
 app.post("/get-roles", (req, res) => {
-	const { sortByRating } = req.body;
+	const { sortByRating, type } = req.body;
 
-	if (sortByRating === true) {
-		Role.find()
-			.populate("actor", "personal_info.firstName personal_info.surname")
-			.sort({ "activity.rating": -1 })
-			.then((roles) => {
-				return res.status(200).json({ roles });
-			})
-			.catch((err) => res.status(500).json({ error: err.message }));
-	} else {
-		Role.find()
-			.populate("actor", "personal_info.firstName personal_info.surname")
-			.then((roles) => {
-				return res.status(200).json({ roles });
-			})
-			.catch((err) => res.status(500).json({ error: err.message }));
-	}
+	let fieldName;
+	if (type === "movies") fieldName = "movie";
+	else if (type === "series") fieldName = "serie";
+
+	const query = {};
+	if (fieldName) query[fieldName] = { $exists: true };
+
+	let sortOptions = {};
+	if (sortByRating) sortOptions = { "activity.rating": -1 };
+
+	Role.find(query)
+		.populate("actor", "personal_info.name")
+		.sort(sortOptions)
+		.then((roles) => {
+			return res.status(200).json({ roles });
+		})
+		.catch((err) => res.status(500).json({ error: err.message }));
 });
 
 app.post("/get-characters", (req, res) => {

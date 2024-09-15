@@ -6,7 +6,7 @@ import MostPopularSlide from "../common/MostPopularSlide";
 import axios from "axios";
 import Loader from "./Loader";
 
-const MostPopular = ({ type = "roles" }) => {
+const MostPopular = ({ type, category }) => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
 	const [roles, setRoles] = useState([]);
@@ -27,13 +27,16 @@ const MostPopular = ({ type = "roles" }) => {
 		slidesToScroll: slidesToShow,
 	};
 
-	const getRoles = async () => {
+	const getRoles = async (type) => {
+    console.log("getting roles")
 		await axios
 			.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles", {
 				sortByRating: true,
+        type
 			})
 			.then(({ data }) => {
-				setRoles(data.roles);
+				console.log("roles:", data.roles.length);
+				setRoles(data.roles.slice(0,15));
 			})
 			.catch((err) => console.log(err));
 	};
@@ -48,7 +51,10 @@ const MostPopular = ({ type = "roles" }) => {
 	};
 
 	useEffect(() => {
-		if (type === "roles") getRoles();
+		if (type === "roles") {
+      if(category === "movies") getRoles("movies");
+      else if(category === "series") getRoles("series");
+    };
 		if (type === "characters") getCharacters();
 		setLoading(false);
 	}, []);
@@ -56,9 +62,7 @@ const MostPopular = ({ type = "roles" }) => {
 	return (
 		<div
 			className={
-				"flex flex-col py-10 gap-y-5 text-white " +
-				(type !== "games" ? "bg-black" : "bg-white")
-			}
+				"flex flex-col py-10 gap-y-5 text-white " + (type !== "games" ? "bg-black" : "bg-white") }
 		>
 			<h2
 				className={
@@ -66,11 +70,7 @@ const MostPopular = ({ type = "roles" }) => {
 					(type !== "games" ? "text-gray-100" : "text-black")
 				}
 			>
-				{type === "roles"
-					? "Most popular roles"
-					: type === "characters"
-						? "Most popular characters"
-						: "Most popular"}
+				{type === "roles" ? `Most popular ${category} roles` : type === "characters" ? "Most popular characters" : "Most popular"}
 			</h2>
 			<div
 				className={

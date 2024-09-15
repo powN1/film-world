@@ -6,8 +6,12 @@ const actorSchema = mongoose.Schema({
 			type: String,
 			required: true,
 		},
+		fullname: {
+			type: String,
+		},
 		dateOfBirth: {
 			type: Date,
+      required: true,
 		},
 		dateOfDeath: {
 			type: Date,
@@ -17,6 +21,9 @@ const actorSchema = mongoose.Schema({
 		},
 		knownFor: {
 			type: String,
+		},
+		height: {
+			type: Number,
 		},
 		bio: {
 			type: String,

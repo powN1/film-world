@@ -9,36 +9,44 @@ import { dummyDataMovies } from "../common/dummyDataMovies";
 import { DataContext } from "../App";
 import Loader from "./Loader";
 
-const MainPreview = () => {
+const MainPreview = (type) => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
-	const { movies } = useContext(DataContext);
-
-	// const [movies, setMovies] = useState([...dummyDataMovies]);
+	const { movies, series } = useContext(DataContext);
 
 	// Slider states
 	const [oldSlide, setOldSlide] = useState(0);
 	const [activeSlide, setActiveSlide] = useState(0);
 	const [activeSlide2, setActiveSlide2] = useState(0);
+	const [films, setFilms] = useState(series);
 
 	const [currentSrc, setCurrentSrc] = useState(null);
 
 	const [fade, setFade] = useState(false);
 
-	useEffect(() => {
-		setCurrentSrc(movies[activeSlide].banner);
+	const changeSlideAnimation = () => {
+		setCurrentSrc(films[activeSlide].banner);
 
 		// Trigger fade-out animation
 		setFade(false);
 
 		// Wait for fade-out animation to complete before changing the image source
 		const timer = setTimeout(() => {
-			setCurrentSrc(movies[activeSlide].banner);
+			setCurrentSrc(films[activeSlide].banner);
 			setFade(true);
 		}, 9500); // Match this duration with the fade-out duration
 
 		return () => clearTimeout(timer);
+	};
+
+	useEffect(() => {
+		changeSlideAnimation();
 	}, [activeSlide]);
+
+	useEffect(() => {
+		if (type === "movies") setFilms(movies);
+		else if (type === "series") setFilms(series);
+	}, []);
 
 	const beforeChange = (prev, next) => {
 		setOldSlide(prev);
@@ -85,7 +93,7 @@ const MainPreview = () => {
 
 	return (
 		<>
-			{movies.length === 0 ? (
+			{films.length === 0 ? (
 				<Loader />
 			) : (
 				<section className="w-full mx-auto flex flex-col">
@@ -118,23 +126,23 @@ const MainPreview = () => {
 							}
 						>
 							<h2 className="text-4xl font-bold uppercase font-sansNarrow">
-								{movies[activeSlide].title}
+								{films[activeSlide].title}
 							</h2>
 							<div
 								className={
 									"gap-x-5 flex text-sm " + (mobileView ? "hidden" : "")
 								}
 							>
-								<p>{movies[activeSlide].title}</p>
-								<span className="">{movies[activeSlide].length} min.</span>
-								<span>{movies[activeSlide].year}</span>
+								<p>{films[activeSlide].title}</p>
+								<span className="">{films[activeSlide].length} min.</span>
+								<span>{films[activeSlide].year}</span>
 							</div>
 							<div className="flex gap-x-2 items-center">
 								<FaStar className="text-3xl text-yellow-400" />
-								<p className="text-3xl">{movies[activeSlide].activity.rating}</p>
+								<p className="text-3xl">{films[activeSlide].activity.rating}</p>
 								<p className="flex flex-col">
 									<span className="text-gray-400 text-sm">
-										{movies[activeSlide].activity.ratedByCount}
+										{films[activeSlide].activity.ratedByCount}
 									</span>
 									<span className="text-gray-400 text-sm mt-[-5px]">
 										community ratings
@@ -144,7 +152,7 @@ const MainPreview = () => {
 							<p
 								className={"line-clamp-2 w-1/2 " + (mobileView ? "hidden" : "")}
 							>
-								{movies[activeSlide].description}
+								{films[activeSlide].description}
 							</p>
 						</div>
 						<FaRegCirclePlay
@@ -158,7 +166,7 @@ const MainPreview = () => {
 					<div className="w-full bg-white pb-10">
 						<div className="lg:w-[55%] mx-auto -mt-16">
 							<Slider {...settings}>
-								{movies.map((movie, i) => {
+								{films.map((movie, i) => {
 									return (
 										<PreviewSlide
 											key={i}

@@ -10,10 +10,10 @@ import WideTrailerSlider from "../components/WideTrailerSlider";
 const MoviesPage = () => {
 	return (
 		<>
-			<MainPreview />
+			<MainPreview type="movies"/>
 			<WideTrailerSlider showCategories={false} />
 			<Ranking anticipated={true} showCategories={false} />
-			<MostPopular type="roles" />
+			<MostPopular type="roles" category="movies" />
 			<Birthday />
 			<MostPopular type="characters" />
       <News />

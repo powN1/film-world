@@ -56,16 +56,11 @@ function App() {
 	};
 
 	const fetchMovies = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-	const fetchSeries = async () =>
-		await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-animes");
-	const fetchAnimes = async () =>
-		await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-animes");
-	const fetchArticles = async () =>
-		await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles");
-	const fetchReviews = async () =>
-		await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-	const fetchActors = async () =>
-		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
+	const fetchSeries = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-series");
+	const fetchAnimes = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-animes");
+	const fetchArticles = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles");
+	const fetchReviews = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchActors = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
 
 	useEffect(() => {
 		checkDevice();

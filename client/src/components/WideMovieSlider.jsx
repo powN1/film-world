@@ -79,7 +79,7 @@ const WideSlider = () => {
 							<MovieSlide
 								key={i}
 								title={movie.title}
-								img={movie.banner}
+								img={movie.cover}
 								ranking={movie.ranking ? movie.ranking : null}
 								type="movie"
 							/>

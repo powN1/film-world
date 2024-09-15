@@ -28,7 +28,7 @@ const MostPopularSlide = ({ title, img, actor, role, ranking, character, gameNam
 			>
 				<p>
 					{actor
-						? `${actor.personal_info.firstName} ${actor.personal_info.surname} as ${role}`
+						? `${actor.personal_info.name} as ${role}`
 						: character
 							? `${character}`
 							: `${gameName}`}
@@ -36,7 +36,7 @@ const MostPopularSlide = ({ title, img, actor, role, ranking, character, gameNam
 				{actor && <p className="line-clamp-2 text-gray-500 text-sm">{title}</p>}
 			</div>
 			{(role && ranking) && (
-				<div className="absolute top-2 right-0 lg:right-0 translate-x-2 uppercase bg-gray-300 text-black p-1 font-sansNarrow hover:bg-gray-200 duration-300">
+				<div className={"absolute top-2 right-0 lg:right-0 translate-x-2 uppercase text-black p-1 font-sansNarrow duration-300 " + (ranking >= 9 ? "bg-yellow-400 hover:bg-yellow-300" : "bg-gray-300 hover:bg-gray-200")}>
 					#{ranking} top
 				</div>
 			)}

@@ -9,11 +9,29 @@ const movieSchema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	budget: {
+		type: Number,
+	},
 	cover: {
 		type: String,
 		required: true,
 	},
 	description: {
+		type: String,
+	},
+	originCountry: {
+		type: [String],
+	},
+	length: {
+		type: Number,
+	},
+	originalTitle: {
+		type: String,
+	},
+	revenue: {
+		type: Number,
+	},
+	status: {
 		type: String,
 	},
 	activity: {
@@ -31,14 +49,8 @@ const movieSchema = mongoose.Schema({
 		type: [String],
 		required: true,
 	},
-	length: {
-		type: Number,
-	},
 	year: {
 		type: Number,
-	},
-	originCountry: {
-		type: [String],
 	},
 	director: {
 		type: [String],
@@ -46,9 +58,18 @@ const movieSchema = mongoose.Schema({
 	screenplay: {
 		type: [String],
 	},
-  status: {
-    type: String
-  }
+	photos: {
+		type: [String],
+	},
+	videos: {
+		type: [String],
+	},
+	reviews: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: "reviews",
+		},
+	],
 });
 
 export default mongoose.model("movies", movieSchema);

@@ -9,7 +9,32 @@ const serieSchema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	cover: {
+		type: String,
+		required: true,
+	},
+	createdBy: {
+		type: [String],
+	},
 	description: {
+		type: String,
+	},
+	firstAirDate: {
+		type: Date,
+	},
+	lastAirDate: {
+		type: Date,
+	},
+	numberOfEpisodes: {
+		type: Number,
+	},
+	numberOfSeasons: {
+		type: Number,
+	},
+	originCountry: {
+		type: [String],
+	},
+	status: {
 		type: String,
 	},
 	activity: {
@@ -19,23 +44,49 @@ const serieSchema = mongoose.Schema({
 		ratedByCount: {
 			type: Number,
 		},
-    peopleAwaiting: {
-      type: Number,
-    },
+		peopleAwaiting: {
+			type: Number,
+		},
 	},
 	genre: {
 		type: [String],
 		required: true,
 	},
-  seasons: {
-    type: Number,
-  },
-	yearBeginning: {
-		type: Number,
+	seasons: {
+		type: [
+			{
+				airDate: String,
+				episodeCount: Number,
+				name: String,
+				description: String,
+				cover: String,
+				seasonNumber: Number,
+				activity: {
+					rating: {
+						type: Number,
+					},
+					ratedByCount: {
+						type: Number,
+					},
+					peopleAwaiting: {
+						type: Number,
+					},
+				},
+			},
+		],
 	},
-	yearEnding: {
-		type: Number,
+	photos: {
+		type: [String],
 	},
+	videos: {
+		type: [String],
+	},
+	reviews: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: "reviews",
+		},
+	],
 });
 
 export default mongoose.model("series", serieSchema);

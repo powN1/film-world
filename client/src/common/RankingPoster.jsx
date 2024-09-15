@@ -9,7 +9,7 @@ const RankingPoster = ({ title, img, rating, peopleAwaiting }) => {
 					<img
 						src={img}
 						alt={`${title} image`}
-						className="h-full object-cover group-hover:scale-110 duration-700"
+						className="h-full w-full object-cover group-hover:scale-110 duration-700"
 					/>
 				</div>
 				<div className="flex justify-center items-center gap-x-1 bg-black py-7 max-lg:py-4 duration-300 group-hover:bg-white">
