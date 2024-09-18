@@ -508,7 +508,148 @@ const listOfSeriesByIdToFetch = [];
 // listOfSeriesByIdToFetch.forEach(async (serie) => {
 // 	await getSerieFromTheMovieDBById(serie);
 // });
-console.log("all series saved");
+
+async function getGameFromTheIGDBById(gameId) {
+	const urlGame = `https://api.igdb.com/v4/games`;
+	const searchQuery = `fields category, checksum, collection, collections, cover.url, created_at, dlcs.name, expanded_games, expansions.name, expansions.cover.url, first_release_date, follows, forks, franchise.name, franchises.name, genres.name, hypes, involved_companies.company.name, involved_companies.developer, involved_companies.publisher, name, parent_game, platforms.name, rating, rating_count, screenshots.url, similar_games.name, standalone_expansions.name, status, storyline, summary, url, version_parent, version_title, videos.video_id;where id = ${gameId};`;
+
+	const options = {
+		method: "POST",
+		headers: {
+			"Content-Type": "text/plain",
+			"Client-ID": "7l5442ioowsl72nd3t8kcxom4nneu2",
+			Authorization: "Bearer qi0ucg8biwwrddmt2a81snmdq3gohf",
+		},
+	};
+
+	axios
+		.post(urlGame, searchQuery, options)
+		.then(async (res) => {
+			const [
+				{
+          id,
+					cover: { url: coverImg },
+					expansions,
+					first_release_date,
+					franchises,
+					genres,
+					hypes: peopleAwaiting,
+					involved_companies,
+					name: title,
+					platforms,
+					rating,
+					rating_count: ratedByCount,
+					screenshots,
+					similar_games,
+					summary,
+					videos,
+					status,
+				},
+			] = res.data;
+
+			// Check if movie with the same title already exists
+			const existingGame = await Game.findOne({ title });
+			if (existingGame) {
+				console.log(`Game '${title}' already exists, skipping...`);
+				return; // Skip if movie already exists
+			}
+
+			const genreArray = [];
+			const milliseconds = first_release_date * 1000;
+			const releaseDate = new Date(milliseconds);
+
+			const coverUrl = `https://images.igdb.com/igdb/image/upload/t_720p/${coverImg.split("/").pop()}`;
+			const bannerUrl = `https://images.igdb.com/igdb/image/upload/t_720p/${screenshots[0].url.split("/").pop()}`;
+
+			const ratingConverted = rating ? (rating.toFixed(0) / 10) : null;
+			genres.forEach((genre) => genreArray.push(genre.name));
+
+      let universe;
+      if (universe) universe = [franchises[0].name];
+
+      let updatedExpansions;
+			if (expansions) {
+				updatedExpansions = await Promise.all(
+					expansions.map(async (expansion) => {
+						delete expansion.id;
+						delete expansion.cover.id;
+						const coverUrlTrimmed = expansion.cover.url.split("/").pop();
+						const coverUrl = `https://images.igdb.com/igdb/image/upload/t_720p/${coverUrlTrimmed}`;
+						const cover = await uploadFileToAWSfromUrl(coverUrl);
+						expansion.cover.url = cover;
+						return expansion;
+					}),
+				);
+			}
+
+			const developers = involved_companies
+				.filter((company) => company.developer)
+				.map((developer) => developer.company.name);
+
+			const publishers = involved_companies
+				.filter((company) => company.publisher)
+				.map((publisher) => publisher.company.name);
+
+			const uploadedScreenshots = await Promise.all(
+				screenshots.map(async (screenshot) => {
+					const screenshotUrlTrimmed = screenshot.url.split("/").pop();
+					const screenshotUrl = `https://images.igdb.com/igdb/image/upload/t_720p/${screenshotUrlTrimmed}`;
+					const screenshotUploaded =
+						await uploadFileToAWSfromUrl(screenshotUrl);
+					screenshot.url = screenshotUploaded;
+					return screenshot.url;
+				}),
+			);
+
+			const videosLinks = videos.map(
+				(video) => `https://youtube.com/watch?v=${video.video_id}`,
+			);
+
+			const platformsTrimmed = platforms.map((platform) => platform.name);
+			const similarGames = similar_games.map((game) => game.name);
+
+			const cover = await uploadFileToAWSfromUrl(coverUrl);
+			const banner = await uploadFileToAWSfromUrl(bannerUrl);
+
+			const game = new Game({
+				title,
+				banner,
+				cover,
+				description: summary,
+				status,
+				activity: {
+					rating: ratingConverted,
+					ratedByCount,
+					peopleAwaiting,
+				},
+				genre: genreArray,
+				releaseDate,
+				dlcs: updatedExpansions,
+				platforms: platformsTrimmed,
+				similarGames,
+				universe,
+				developers,
+				publishers,
+				photos: uploadedScreenshots,
+				videos: videosLinks,
+			});
+
+			game
+				.save()
+				.then(console.log("game saved in the db"))
+				.catch((err) => console.log(err));
+		})
+		.catch((err) => console.log(err));
+}
+const listOfGamesToFetch = [
+	136879, 19560, 112875, 26472, 7194, 1009, 25076, 479, 7334, 72, 74,
+	7331, 76882, 11208, 116, 732, 1020, 2207, 434, 19686, 472, 733, 
+	19565, 239, 2155, 39,
+];
+listOfGamesToFetch.forEach(async (game) => {
+	await getGameFromTheIGDBById(game);
+	setTimeout(() => {}, 3500);
+});
 
 const uploadFileToAWSfromUrl = async (fileUrl) => {
 	try {
@@ -534,6 +675,19 @@ const uploadFileToAWSfromUrl = async (fileUrl) => {
 		throw new Error("Failed to upload file to S3");
 	}
 };
+const imagesUrl = [
+	"https://i.imgur.com/VfZYNV8.jpeg",
+	"https://i.imgur.com/p0N0mgx.jpeg",
+	"https://i.imgur.com/v8KAQsb.jpeg",
+	"https://i.imgur.com/NA3UbFp.jpeg",
+	"https://i.imgur.com/IywxNqG.jpeg",
+	"https://i.imgur.com/azjHqEy.jpeg",
+	"https://i.imgur.com/P2RobyE.jpeg",
+	"https://i.imgur.com/Y3e17oI.jpeg",
+];
+imagesUrl.forEach(async (image) => {
+	await uploadFileToAWSfromUrl(image);
+});
 
 const formatDataToSend = (user) => {
 	const access_token = jwt.sign(
@@ -607,29 +761,23 @@ app.get("/aws", async (req, res) => {
 	// res.status(200).json({ imageResponse });
 });
 
-// upload img url route
-app.get("/get-upload-url", (req, res) => {
-	generateUploadUrl()
-		.then((url) => res.status(200).json({ uploadUrl: url }))
-		.catch((err) => {
-			return res.status(500).json({ error: err.message });
-		});
-});
+app.post("/get-actors", (req, res) => {
+	const { ratingSorted } = req.body;
 
-app.get("/get-movies", (req, res) => {
-	Movie.find()
-		.then((movies) => {
-			return res.status(200).json({ movies });
+	Actor.find()
+		.then((actors) => {
+			return res.status(200).json({ actors });
 		})
 		.catch((err) => {
 			return res.status(500).json({ error: err.message });
 		});
 });
 
-app.get("/get-series", (req, res) => {
-	Serie.find()
-		.then((series) => {
-			return res.status(200).json({ series });
+app.get("/get-articles", (req, res) => {
+	const { type } = req.body;
+	Article.find()
+		.then((articles) => {
+			return res.status(200).json({ articles });
 		})
 		.catch((err) => {
 			return res.status(500).json({ error: err.message });
@@ -646,12 +794,26 @@ app.get("/get-animes", (req, res) => {
 		});
 });
 
-app.post("/get-actors", (req, res) => {
-	const { ratingSorted } = req.body;
+app.post("/get-characters", (req, res) => {
+	Character.find()
+		.then((characters) => {
+			return res.status(200).json({ characters });
+		})
+		.catch((err) => res.status(500).json({ error: err.message }));
+});
+// upload img url route
+app.get("/get-upload-url", (req, res) => {
+	generateUploadUrl()
+		.then((url) => res.status(200).json({ uploadUrl: url }))
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
 
-	Actor.find()
-		.then((actors) => {
-			return res.status(200).json({ actors });
+app.get("/get-movies", (req, res) => {
+	Movie.find()
+		.then((movies) => {
+			return res.status(200).json({ movies });
 		})
 		.catch((err) => {
 			return res.status(500).json({ error: err.message });
@@ -680,18 +842,10 @@ app.post("/get-roles", (req, res) => {
 		.catch((err) => res.status(500).json({ error: err.message }));
 });
 
-app.post("/get-characters", (req, res) => {
-	Character.find()
-		.then((characters) => {
-			return res.status(200).json({ characters });
-		})
-		.catch((err) => res.status(500).json({ error: err.message }));
-});
-
-app.get("/get-articles", (req, res) => {
-	Article.find()
-		.then((articles) => {
-			return res.status(200).json({ articles });
+app.get("/get-series", (req, res) => {
+	Serie.find()
+		.then((series) => {
+			return res.status(200).json({ series });
 		})
 		.catch((err) => {
 			return res.status(500).json({ error: err.message });
@@ -884,6 +1038,30 @@ app.post("/add-role", async (req, res) => {
 			Actor.findByIdAndUpdate(actor, { $push: { roles: role._id } })
 				.then((user) => res.status(200).json({ role }))
 				.catch((err) => res.status(500).json({ error: err.message }));
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/add-game", async (req, res) => {
+	let { title, banner, description, genre, length, year } = req.body;
+
+	const awsImageUrl = await uploadFileToAWSfromUrl(banner);
+
+	let movie = new Movie({
+		title,
+		banner: awsImageUrl,
+		description,
+		genre,
+		length,
+		year,
+	});
+
+	movie
+		.save()
+		.then((movie) => {
+			return res.status(200).json({ movie });
 		})
 		.catch((err) => {
 			return res.status(500).json({ error: err.message });

@@ -20,7 +20,7 @@ const Birthday = () => {
 			.then(({ data }) => {
 				const thisMonth = data.actors.filter((actor) => {
 					let date = new Date();
-					console.log( getMonth(actor.personal_info.dateOfBirth) === getMonth(date),);
+					// console.log( getMonth(actor.personal_info.dateOfBirth) === getMonth(date),);
 					return getMonth(actor.personal_info.dateOfBirth) === getMonth(date);
 				});
       setActors(thisMonth)

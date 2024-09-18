@@ -9,7 +9,14 @@ const gameSchema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	cover: {
+		type: String,
+		required: true,
+	},
 	description: {
+		type: String,
+	},
+	status: {
 		type: String,
 	},
 	activity: {
@@ -19,17 +26,52 @@ const gameSchema = mongoose.Schema({
 		ratedByCount: {
 			type: Number,
 		},
-    peopleAwaiting: {
-      type: Number,
-    },
+		peopleAwaiting: {
+			type: Number,
+		},
 	},
 	genre: {
-		type: String,
+		type: [String],
 		required: true,
 	},
-	year: {
-		type: Number,
+	releaseDate: {
+		type: Date,
 	},
+  dlcs: {
+    type: [{
+      name: String,
+      cover: {
+        url: String
+      }
+    }]
+  },
+  platforms: {
+    type: [String]
+  },
+  similarGames: {
+    type: [String]
+  },
+	universe: {
+		type: [String],
+	},
+	developers: {
+		type: [String],
+	},
+	publishers: {
+		type: [String],
+	},
+	photos: {
+		type: [String],
+	},
+	videos: {
+		type: [String],
+	},
+	reviews: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: "reviews",
+		},
+	],
 });
 
 export default mongoose.model("games", gameSchema);

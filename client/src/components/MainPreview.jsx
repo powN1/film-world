@@ -9,7 +9,7 @@ import { dummyDataMovies } from "../common/dummyDataMovies";
 import { DataContext } from "../App";
 import Loader from "./Loader";
 
-const MainPreview = (type) => {
+const MainPreview = ({ type }) => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
 	const { movies, series } = useContext(DataContext);
@@ -18,7 +18,7 @@ const MainPreview = (type) => {
 	const [oldSlide, setOldSlide] = useState(0);
 	const [activeSlide, setActiveSlide] = useState(0);
 	const [activeSlide2, setActiveSlide2] = useState(0);
-	const [films, setFilms] = useState(series);
+	const [films, setFilms] = useState([]);
 
 	const [currentSrc, setCurrentSrc] = useState(null);
 
@@ -40,8 +40,8 @@ const MainPreview = (type) => {
 	};
 
 	useEffect(() => {
-		changeSlideAnimation();
-	}, [activeSlide]);
+		if (films.length > 0) changeSlideAnimation();
+	}, [activeSlide, films]);
 
 	useEffect(() => {
 		if (type === "movies") setFilms(movies);
@@ -93,9 +93,7 @@ const MainPreview = (type) => {
 
 	return (
 		<>
-			{films.length === 0 ? (
-				<Loader />
-			) : (
+			{films.length > 0 ? (
 				<section className="w-full mx-auto flex flex-col">
 					<div className="h-[50vh] lg:w-[55%] w-full mx-auto relative text-white">
 						<Link
@@ -180,6 +178,8 @@ const MainPreview = (type) => {
 						</div>
 					</div>
 				</section>
+			) : (
+				<Loader />
 			)}
 		</>
 	);

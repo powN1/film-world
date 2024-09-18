@@ -8,12 +8,12 @@ const characterSchema = Schema({
 		surname: {
 			type: String,
 		},
-    fullname: {
-      type: String,
-    },
-    characterName: {
-      type: String,
-    },
+		fullname: {
+			type: String,
+		},
+		characterName: {
+			type: String,
+		},
 		dateOfBirth: {
 			type: Date,
 		},
@@ -26,16 +26,16 @@ const characterSchema = Schema({
 		bio: {
 			type: String,
 		},
-		creators: {
-			type: [String],
-		},
-		universe: {
-			type: [String],
-		},
 	},
 	banner: {
 		type: String,
 		required: true,
+	},
+	creators: {
+		type: [String],
+	},
+	universe: {
+		type: [String],
 	},
 	activity: {
 		likedByCount: {

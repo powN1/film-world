@@ -95,7 +95,7 @@ const ArticleEditor = () => {
 			<div className="lg:w-[55%] px-3 lg:px-0 mx-auto">
 				<Toaster />
 				<div className="flex items-center justify-between py-5">
-					<p className="max-md:hidden text-black text-lg">
+					<p className="max-md:hidden text-black text-lg block w-[75%]">
 						{title.length ? title : "New article"}
 					</p>
 					<div className="flex gap-x-4 ml-auto">
