@@ -28,7 +28,7 @@ const Navbar = () => {
 
 	const fetchMovies = () => {
 		axios
-			.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies")
+			.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies")
 			.then((res) => {
 				setMovies(res.data.movies);
 			})

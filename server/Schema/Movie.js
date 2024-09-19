@@ -28,6 +28,9 @@ const movieSchema = mongoose.Schema({
 	originalTitle: {
 		type: String,
 	},
+  releaseDate: {
+    type: Date
+  },
 	revenue: {
 		type: Number,
 	},

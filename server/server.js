@@ -253,6 +253,7 @@ async function getMovieFromTheMovieDBById(movieId) {
 				budget,
 			} = res.data;
 
+			const releaseDate = new Date(release_date);
 			const year = release_date.split("-")[0] * 1;
 			const genreArray = [];
 			let length;
@@ -304,6 +305,7 @@ async function getMovieFromTheMovieDBById(movieId) {
 				revenue,
 				budget,
 				originalTitle: original_title,
+				releaseDate,
 				activity: {
 					rating,
 					ratedByCount,
@@ -527,7 +529,7 @@ async function getGameFromTheIGDBById(gameId) {
 		.then(async (res) => {
 			const [
 				{
-          id,
+					id,
 					cover: { url: coverImg },
 					expansions,
 					first_release_date,
@@ -561,13 +563,13 @@ async function getGameFromTheIGDBById(gameId) {
 			const coverUrl = `https://images.igdb.com/igdb/image/upload/t_720p/${coverImg.split("/").pop()}`;
 			const bannerUrl = `https://images.igdb.com/igdb/image/upload/t_720p/${screenshots[0].url.split("/").pop()}`;
 
-			const ratingConverted = rating ? (rating.toFixed(0) / 10) : null;
+			const ratingConverted = rating ? rating.toFixed(0) / 10 : null;
 			genres.forEach((genre) => genreArray.push(genre.name));
 
-      let universe;
-      if (universe) universe = [franchises[0].name];
+			let universe;
+			if (universe) universe = [franchises[0].name];
 
-      let updatedExpansions;
+			let updatedExpansions;
 			if (expansions) {
 				updatedExpansions = await Promise.all(
 					expansions.map(async (expansion) => {
@@ -642,14 +644,133 @@ async function getGameFromTheIGDBById(gameId) {
 		.catch((err) => console.log(err));
 }
 const listOfGamesToFetch = [
-	136879, 19560, 112875, 26472, 7194, 1009, 25076, 479, 7334, 72, 74,
-	7331, 76882, 11208, 116, 732, 1020, 2207, 434, 19686, 472, 733, 
-	19565, 239, 2155, 39,
+	136879, 19560, 112875, 26472, 7194, 1009, 25076, 479, 7334, 72, 74, 7331,
+	76882, 11208, 116, 732, 1020, 2207, 434, 19686, 472, 733, 19565, 239, 2155,
+	39,
 ];
-listOfGamesToFetch.forEach(async (game) => {
-	await getGameFromTheIGDBById(game);
-	setTimeout(() => {}, 3500);
-});
+// listOfGamesToFetch.forEach(async (game) => {
+// 	await getGameFromTheIGDBById(game);
+// 	setTimeout(() => {}, 3500);
+// });
+
+async function pushReleaseDatesToMovie(movieId) {
+	const urlMovie = `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`;
+
+	const options = {
+		method: "GET",
+		headers: {
+			accept: "application/json",
+			Authorization:
+				"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjOWQ2YmZjMzcyY2ZlZjg0YjgyODgwNzE1M2ZhZDY0YiIsIm5iZiI6MTcyNjI1OTU3Ni45MzE4MTIsInN1YiI6IjYyOWM5NGI5Y2FhNTA4MWFlZjdkMzI1MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rLbp_pNyYzYdtEkKypNecCMCkTz7F-_-M5Nachm7fw8",
+		},
+	};
+
+	axios
+		.get(urlMovie, options)
+		.then(async (res) => {
+			const { title, release_date } = res.data;
+
+			Movie.findOne({ title })
+				.then((movie) => {
+					if (movie.releaseDate) return;
+					const releaseDate = new Date(release_date);
+					movie.releaseDate = releaseDate;
+					console.log("movie updated");
+					return movie.save();
+				})
+				.catch((err) => console.log(err));
+		})
+		.catch((err) => console.log(err));
+}
+
+const listOfMovies = [
+	497, 13, 155, 278, 475557, 603, 157336, 27205, 103663, 121, 423, 120, 807,
+	122, 424, 550, 8681, 9800, 203801, 14,
+];
+
+// listOfMovies.forEach(async (movie) => {
+// 	await pushReleaseDatesToMovie(movie);
+// });
+
+async function pushPhotosAndVideosToMovie(movieId) {
+	const urlMovie = `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`;
+	const urlMovieImages = `https://api.themoviedb.org/3/movie/${movieId}/images`;
+	const urlMovieVideos = `https://api.themoviedb.org/3/movie/${movieId}/videos`;
+
+	const options = {
+		method: "GET",
+		headers: {
+			accept: "application/json",
+			Authorization:
+				"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjOWQ2YmZjMzcyY2ZlZjg0YjgyODgwNzE1M2ZhZDY0YiIsIm5iZiI6MTcyNjI1OTU3Ni45MzE4MTIsInN1YiI6IjYyOWM5NGI5Y2FhNTA4MWFlZjdkMzI1MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rLbp_pNyYzYdtEkKypNecCMCkTz7F-_-M5Nachm7fw8",
+		},
+	};
+
+	let title;
+	await axios
+		.get(urlMovie, options)
+		.then((res) => (title = res.data.title))
+		.catch((err) => console.log(err));
+
+	Movie.findOne({ title })
+		.then((movie) => {
+			console.log("movie found in the db");
+			if (movie.photos.length || movie.videos.length) {
+				console.log("photos or videos found! aborting");
+				return Promise.resolve();
+			}
+			const photos = [];
+			let videos = [];
+
+			axios
+				.get(urlMovieImages, options)
+				.then(async (res) => {
+					const randomImageMaxCount =
+						Math.floor(Math.random() * (13 - 5 + 1)) + 5;
+					const photoPromises = res.data.backdrops
+						.slice(0, randomImageMaxCount)
+						.map(async (photo, i) => {
+							const bannerUrl = `https://image.tmdb.org/t/p/original${photo.file_path}`;
+							console.log("uploading img" + i);
+							const banner = await uploadFileToAWSfromUrl(bannerUrl);
+							setTimeout(() => {}, 700);
+							photos.push(banner); // Store the uploaded image URL
+						});
+
+					await Promise.all(photoPromises);
+
+					const videoRes = await axios.get(urlMovieVideos, options);
+					const randomVideoMaxCount =
+						Math.floor(Math.random() * (6 - 3 + 1)) + 3;
+					console.log("getting videos");
+
+					videos = videoRes.data.results
+						.filter((video) => video.type == "Trailer")
+						.slice(0, randomVideoMaxCount)
+						.map((trailer) => `https://youtube.com/watch?v=${trailer.key}`);
+					console.log("got videos");
+				})
+				.then(() => {
+					console.log("saving movie " + title);
+					movie.photos = photos;
+					movie.videos = videos;
+					return movie.save();
+				})
+				.catch((err) => console.log(err));
+			console.log("movie updated");
+		})
+		.catch((err) => console.log(err));
+}
+
+const listOfMovies2 = [
+	497, 155, 13, 278, 475557, 603, 157336, 27205, 103663, 121, 423, 120, 807, 122,
+	424, 550, 8681, 9800, 203801, 14, 347123
+];
+
+// listOfMovies2.forEach(async (movie) => {
+// 	await pushPhotosAndVideosToMovie(movie);
+// 	setTimeout(() => {}, 3500);
+// });
 
 const uploadFileToAWSfromUrl = async (fileUrl) => {
 	try {
@@ -810,8 +931,25 @@ app.get("/get-upload-url", (req, res) => {
 		});
 });
 
-app.get("/get-movies", (req, res) => {
+app.post("/get-movies", (req, res) => {
+	const { mostAnticiapted } = req.body;
+
 	Movie.find()
+		.then((movies) => {
+			return res.status(200).json({ movies });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-anticipated-movies", (req, res) => {
+	const { mostAnticipated } = req.body;
+
+	const query = {};
+	if (mostAnticipated) query["activity.peopleAwaiting"] = { $exists: true };
+
+	Movie.find(query)
 		.then((movies) => {
 			return res.status(200).json({ movies });
 		})
