@@ -2,6 +2,7 @@ import { Link, NavLink } from "react-router-dom";
 import SingleNews from "../common/SingleNews";
 import { useState, useEffect, useContext } from "react";
 import { DataContext } from "../App";
+import axios from "axios";
 
 const categories = [
 	{ title: "Suggested" },
@@ -16,8 +17,25 @@ const categories = [
 
 const LastestNews = () => {
 	const [currentCategory, setCurrentCategory] = useState("suggested");
+	const [latestNews, setLatestNews] = useState([]);
 
-  const { articles } = useContext(DataContext)
+	const fetchLatestNews = async (category) => {
+		const queryObj = { type: "latest", count: 15 };
+		if (category) queryObj.category = category;
+
+		await axios
+			.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", queryObj)
+			.then(({ data }) => {
+				setLatestNews(data.articles);
+			})
+			.catch((err) => console.error(err));
+	};
+
+	useEffect(() => {
+		fetchLatestNews();
+	}, []);
+
+	const { articles } = useContext(DataContext);
 
 	const handleShowUnderline = (e) => {
 		const category = e.target.innerText.toLowerCase();
@@ -57,7 +75,7 @@ const LastestNews = () => {
 							})}
 						</ul>
 						<div className="grid md:grid-rows-[190px_190px_190px_190px_190px_190px] grid-cols-3 max-md:grid-rows-16rows70px max-md:grid-cols-1 gap-3">
-							{articles.slice(0, 15).map((article, i) => {
+							{latestNews.slice(0, 15).map((article, i) => {
 								let gridarea = {};
 								if (i === 3) {
 									gridarea["row-start"] = "row-start-2";

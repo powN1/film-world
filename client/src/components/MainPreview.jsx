@@ -12,7 +12,7 @@ import Loader from "./Loader";
 const MainPreview = ({ type }) => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
-	const { movies, series } = useContext(DataContext);
+	const { topRatedMovies, series } = useContext(DataContext);
 
 	// Slider states
 	const [oldSlide, setOldSlide] = useState(0);
@@ -44,7 +44,7 @@ const MainPreview = ({ type }) => {
 	}, [activeSlide, films]);
 
 	useEffect(() => {
-		if (type === "movies") setFilms(movies);
+		if (type === "movies") setFilms(topRatedMovies);
 		else if (type === "series") setFilms(series);
 	}, []);
 
@@ -113,7 +113,7 @@ const MainPreview = ({ type }) => {
 							}
 						>
 							<h2 className="text-3xl font-bold uppercase font-sansNarrow">
-								Movies
+                {type === "movies" ? "Movies" : type === "series" ? "Series" : null}
 							</h2>
 							<p className="text-xl">Most popular</p>
 						</div>

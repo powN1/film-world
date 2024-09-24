@@ -9,14 +9,14 @@ import { DataContext } from "../App";
 const WideTrailerSlider = ({ type, showCategories = true }) => {
 	const [currentMovieCategory, setCurrentMovieCategory] = useState("movies");
 
-	const { movies, series } = useContext(DataContext);
+	const { topRatedMovies, series } = useContext(DataContext);
 
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
-	const [films, setFilms] = useState(movies); // Slider settings
+	const [films, setFilms] = useState(topRatedMovies); // Slider settings
 
 	useEffect(() => {
-		if (type === "movies") setFilms(movies);
+		if (type === "movies") setFilms(topRatedMovies);
 		else if (type === "series") setFilms(series);
 	}, []);
 

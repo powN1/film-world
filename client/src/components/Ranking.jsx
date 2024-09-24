@@ -7,13 +7,13 @@ const Ranking = ({ type, showCategories = true, anticipated = false }) => {
 	const [currentMovieCategory, setCurrentMovieCategory] =
 		useState("most anticipated");
 
-	const { movies, series } = useContext(DataContext);
+	const { topRatedMovies, series } = useContext(DataContext);
 	// const mostAnticipatedMovies = movies.sort((movie1, movie2) => movie2.activity.peopleAwaiting - movie1.activity.peopleAwaiting)
 	//
-	const [films, setFilms] = useState(movies); // Slider settings
+	const [films, setFilms] = useState(topRatedMovies); // Slider settings
 
 	useEffect(() => {
-		if (type === "movies") setFilms(movies);
+		if (type === "movies") setFilms(topRatedMovies);
 		else if (type === "series") setFilms(series);
 	}, []);
 	const categories = [

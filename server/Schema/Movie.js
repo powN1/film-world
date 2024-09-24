@@ -47,6 +47,9 @@ const movieSchema = mongoose.Schema({
 		peopleAwaiting: {
 			type: Number,
 		},
+		popularity: {
+			type: Number,
+		},
 	},
 	genre: {
 		type: [String],

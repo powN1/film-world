@@ -8,7 +8,7 @@ import { DataContext } from "../App";
 const WideSlider = () => {
 	const [currentMovieCategory, setCurrentMovieCategory] = useState("movies of the day");
 
-  const { movies } = useContext(DataContext)
+  const { topRatedMovies } = useContext(DataContext)
 
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
@@ -74,7 +74,7 @@ const WideSlider = () => {
 			</ul>
 			<div className="w-[95%] self-center">
 				<Slider {...settings}>
-					{movies.map((movie, i) => {
+					{topRatedMovies.map((movie, i) => {
 						return (
 							<MovieSlide
 								key={i}

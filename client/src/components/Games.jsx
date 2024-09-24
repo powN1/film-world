@@ -9,7 +9,7 @@ import { DataContext } from "../App";
 const Games = () => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
-	const { articles } = useContext(DataContext);
+	const { latestGamesArticles: articles} = useContext(DataContext);
 	// Slider settings
 	const settings = {
 		dots: true,

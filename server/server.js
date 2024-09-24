@@ -290,6 +290,42 @@ async function getMovieFromTheMovieDBById(movieId) {
 			const cover = await uploadFileToAWSfromUrl(coverUrl);
 			const banner = await uploadFileToAWSfromUrl(bannerUrl);
 
+			const photos = [];
+			let videos = [];
+
+			const urlMovieImages = `https://api.themoviedb.org/3/movie/${movieId}/images`;
+			const urlMovieVideos = `https://api.themoviedb.org/3/movie/${movieId}/videos`;
+
+			await axios
+				.get(urlMovieImages, options)
+				.then(async (res) => {
+					const randomImageMaxCount =
+						Math.floor(Math.random() * (13 - 5 + 1)) + 5;
+					const photoPromises = res.data.backdrops
+						.slice(0, randomImageMaxCount)
+						.map(async (photo, i) => {
+							const bannerUrl = `https://image.tmdb.org/t/p/original${photo.file_path}`;
+							console.log("uploading img" + i);
+							const banner = await uploadFileToAWSfromUrl(bannerUrl);
+							setTimeout(() => {}, 700);
+							photos.push(banner); // Store the uploaded image URL
+						});
+
+					await Promise.all(photoPromises);
+
+					const videoRes = await axios.get(urlMovieVideos, options);
+					const randomVideoMaxCount =
+						Math.floor(Math.random() * (6 - 3 + 1)) + 3;
+					console.log("getting videos");
+
+					videos = videoRes.data.results
+						.filter((video) => video.type == "Trailer")
+						.slice(0, randomVideoMaxCount)
+						.map((trailer) => `https://youtube.com/watch?v=${trailer.key}`);
+					console.log("got videos");
+				})
+				.catch((err) => console.log(err));
+
 			const movie = new Movie({
 				title,
 				cover,
@@ -310,6 +346,8 @@ async function getMovieFromTheMovieDBById(movieId) {
 					rating,
 					ratedByCount,
 				},
+				photos,
+				videos,
 			});
 
 			movie
@@ -320,7 +358,7 @@ async function getMovieFromTheMovieDBById(movieId) {
 		.catch((err) => console.log(err));
 }
 
-const listOfMoviesByIdToFetch = [8681, 152532, 9800, 14, 347123, 203801];
+const listOfMoviesByIdToFetch = [1081012, 1252182, 1137207, 835113];
 
 // listOfMoviesByIdToFetch.forEach(async (movie) => {
 // 	await getMovieFromTheMovieDBById(movie);
@@ -763,8 +801,8 @@ async function pushPhotosAndVideosToMovie(movieId) {
 }
 
 const listOfMovies2 = [
-	497, 155, 13, 278, 475557, 603, 157336, 27205, 103663, 121, 423, 120, 807, 122,
-	424, 550, 8681, 9800, 203801, 14, 347123
+	497, 155, 13, 278, 475557, 603, 157336, 27205, 103663, 121, 423, 120, 807,
+	122, 424, 550, 8681, 9800, 203801, 14, 347123,
 ];
 
 // listOfMovies2.forEach(async (movie) => {
@@ -806,9 +844,9 @@ const imagesUrl = [
 	"https://i.imgur.com/P2RobyE.jpeg",
 	"https://i.imgur.com/Y3e17oI.jpeg",
 ];
-imagesUrl.forEach(async (image) => {
-	await uploadFileToAWSfromUrl(image);
-});
+// imagesUrl.forEach(async (image) => {
+// 	await uploadFileToAWSfromUrl(image);
+// });
 
 const formatDataToSend = (user) => {
 	const access_token = jwt.sign(
@@ -894,15 +932,66 @@ app.post("/get-actors", (req, res) => {
 		});
 });
 
-app.get("/get-articles", (req, res) => {
-	const { type } = req.body;
-	Article.find()
-		.then((articles) => {
-			return res.status(200).json({ articles });
-		})
-		.catch((err) => {
-			return res.status(500).json({ error: err.message });
-		});
+app.post("/get-articles", (req, res) => {
+	const { type, count, category, random } = req.body;
+	console.log(type, count, category, random);
+
+	const findQuery = {};
+	const sortQuery = {};
+	const randomQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (category) {
+		if ( category !== "movies" && category !== "series" && category !== "games") {
+			return res.status(400).json({ error: "Wrong article category. Please choose movies, series or games", });
+		}
+		findQuery.tags = category;
+	}
+
+	if (type) {
+		if (type !== "latest" && category !== "popular") {
+			return res .status(400) .json({ error: "Wrong article type. Please choose latest or popular" });
+		}
+		if (type === "latest") sortQuery.publishedAt = -1;
+	}
+	if (count) {
+		if (typeof count !== "number")
+			return res .status(400) .json({ error: "Wrong article count. Please type a number" });
+		countQuery = count;
+	}
+
+	if (random) {
+		if (random !== true && random !== false) {
+			return res.status(400).json({
+				error: "Wrong article random value. Please choose true of false",
+			});
+		}
+		randomQuery.size = countQuery;
+
+		Article.aggregate([
+			{ $match: findQuery }, // Apply filter
+			{ $sample: { size: randomQuery.size } }, // Random sampling with limit
+		])
+			.then((articles) => {
+				console.log("random query size", randomQuery.size);
+        
+				return res.status(200).json({ articles });
+			})
+			.catch((err) => {
+				return res.status(500).json({ error: err.message });
+			});
+	} else {
+		Article.find(findQuery)
+			.sort(sortQuery)
+			.limit(countQuery)
+			.then((articles) => {
+				return res.status(200).json({ articles });
+			})
+			.catch((err) => {
+				return res.status(500).json({ error: err.message });
+			});
+	}
 });
 
 app.get("/get-animes", (req, res) => {
@@ -932,9 +1021,52 @@ app.get("/get-upload-url", (req, res) => {
 });
 
 app.post("/get-movies", (req, res) => {
-	const { mostAnticiapted } = req.body;
+	const { type, count } = req.body;
+	console.log(type, count);
 
-	Movie.find()
+	const findQuery = {};
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (type) {
+		if (
+			type !== "popular" &&
+			type !== "topRated" &&
+			type !== "upcoming" &&
+			type !== "mostAnticipated"
+		) {
+			return res.status(400).json({
+				error:
+					"Wrong movie type. Please choose popular, top rated, upcoming or most anticipated",
+			});
+		}
+
+		if (type === "popular") sortQuery["activity.popularity"] = -1;
+		if (type === "topRated") sortQuery["activity.rating"] = -1;
+		if (type === "mostAnticipated") {
+			const today = new Date();
+			findQuery.releaseDate = { $gt: today };
+			sortQuery["activity.peopleAwaiting"] = -1;
+		}
+		if (type === "upcoming") {
+			const today = new Date();
+			findQuery.releaseDate = { $gt: today };
+			sortQuery["releaseDate"] = 1;
+		}
+	}
+
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong movie count. Please type a number" });
+		countQuery = count;
+	}
+
+	Movie.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
 		.then((movies) => {
 			return res.status(200).json({ movies });
 		})
@@ -980,8 +1112,52 @@ app.post("/get-roles", (req, res) => {
 		.catch((err) => res.status(500).json({ error: err.message }));
 });
 
-app.get("/get-series", (req, res) => {
-	Serie.find()
+app.post("/get-series", (req, res) => {
+	const { type, count } = req.body;
+	console.log(type, count);
+
+	const findQuery = {};
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (type) {
+		if (
+			type !== "popular" &&
+			type !== "topRated" &&
+			type !== "upcoming" &&
+			type !== "mostAnticipated"
+		) {
+			return res.status(400).json({
+				error:
+					"Wrong serie type. Please choose popular, top rated, upcoming or most anticipated",
+			});
+		}
+
+		if (type === "popular") sortQuery["activity.popularity"] = -1;
+		if (type === "topRated") sortQuery["activity.rating"] = -1;
+		if (type === "mostAnticipated") {
+			const today = new Date();
+			findQuery.releaseDate = { $gt: today };
+			sortQuery["activity.peopleAwaiting"] = -1;
+		}
+		if (type === "upcoming") {
+			const today = new Date();
+			findQuery.releaseDate = { $gt: today };
+			sortQuery["releaseDate"] = 1;
+		}
+	}
+
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong serie count. Please type a number" });
+		countQuery = count;
+	}
+	Serie.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
 		.then((series) => {
 			return res.status(200).json({ series });
 		})
