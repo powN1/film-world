@@ -1,15 +1,10 @@
 import { Link } from "react-router-dom";
 import { FaRegCirclePlay } from "react-icons/fa6";
 
-const MovieSlide = ({
-	title,
-	img,
-	ranking = null,
-	description = null,
-	type,
-	pegi = null,
-  scrollable = false,
-}) => {
+const MovieSlide = ({ title, img, link = null, ranking = null, description = null, type, pegi = null, scrollable = false, year }) => {
+
+  const releaseYear = new Date(year).getFullYear();
+
 	const renderMovieSlide = () => {
 		switch (type) {
 			case "movie":
@@ -32,8 +27,21 @@ const MovieSlide = ({
 				);
 			case "trailer":
 				return (
-					<Link to="/" className={ "flex flex-col mx-2 gap-y-2 relative group " + (scrollable ? "min-w-[170px] md:min-w-[240px]" : "")}>
-						<div className={ "border border-gray-300 overflow-hidden after:content-[''] after:absolute after:left-0 after:top-0 after:w-full after:h-full after:bg-black after:opacity-25 " + (scrollable ? "h-[330px] md:h-[450px]" : "h-[400px]")} >
+					<Link
+						to={link}
+						target={link ? "_blank" : null}
+						rel="noopener noreferrer"
+						className={
+							"flex flex-col mx-2 gap-y-2 relative group " +
+							(scrollable ? "min-w-[170px] md:min-w-[240px]" : "")
+						}
+					>
+						<div
+							className={
+								"border border-gray-300 overflow-hidden after:content-[''] after:absolute after:left-0 after:top-0 after:w-full after:h-full after:bg-black after:opacity-25 " +
+								(scrollable ? "h-[330px] md:h-[450px]" : "h-[400px]")
+							}
+						>
 							<img
 								src={img}
 								alt={title}
@@ -43,8 +51,15 @@ const MovieSlide = ({
 						<FaRegCirclePlay className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-5xl text-white group-hover:text-yellow-400 duration-100" />
 						<div className="absolute bottom-0 left-0 p-3 text-white">
 							<p className="line-clamp-1">{title}</p>
-							<p className="text-sm">2024</p>
-							<div className={ "text-sm w-[85%] max-lg:hidden line-clamp-3 " + (scrollable ? "hidden" : "") }>{description}</div>
+							<p className="text-sm">{releaseYear}</p>
+							<div
+								className={
+									"text-sm w-[85%] max-lg:hidden line-clamp-3 " +
+									(scrollable ? "hidden" : "")
+								}
+							>
+								{description}
+							</div>
 						</div>
 						<div
 							className={

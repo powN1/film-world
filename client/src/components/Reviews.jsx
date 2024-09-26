@@ -2,7 +2,6 @@ import Slider from "react-slick";
 import ReviewSlide from "../common/ReviewSlide";
 import { useContext } from "react";
 import { MediaQueriesContext } from "../App";
-import { dummyDataMovies } from "../common/dummyDataMovies";
 import { DataContext } from "../App";
 
 const Reviews = () => {

@@ -5,20 +5,19 @@ import Slider from "react-slick";
 import { useContext, useEffect, useRef, useState } from "react";
 import { MediaQueriesContext } from "../App";
 import PreviewSlide from "../common/PreviewSlide";
-import { dummyDataMovies } from "../common/dummyDataMovies";
 import { DataContext } from "../App";
 import Loader from "./Loader";
 
 const MainPreview = ({ type }) => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
-
-	const { topRatedMovies, series } = useContext(DataContext);
+	const { topRatedMovies, topRatedSeries } = useContext(DataContext);
 
 	// Slider states
 	const [oldSlide, setOldSlide] = useState(0);
 	const [activeSlide, setActiveSlide] = useState(0);
 	const [activeSlide2, setActiveSlide2] = useState(0);
-	const [films, setFilms] = useState([]);
+
+	const [films, setFilms] = useState(topRatedMovies);
 
 	const [currentSrc, setCurrentSrc] = useState(null);
 
@@ -43,10 +42,10 @@ const MainPreview = ({ type }) => {
 		if (films.length > 0) changeSlideAnimation();
 	}, [activeSlide, films]);
 
-	useEffect(() => {
-		if (type === "movies") setFilms(topRatedMovies);
-		else if (type === "series") setFilms(series);
-	}, []);
+  useEffect(() => {
+    if(type === "movies") setFilms(topRatedMovies);
+    if(type === "series") setFilms(topRatedSeries);
+  }, [])
 
 	const beforeChange = (prev, next) => {
 		setOldSlide(prev);

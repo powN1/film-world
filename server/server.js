@@ -934,7 +934,6 @@ app.post("/get-actors", (req, res) => {
 
 app.post("/get-articles", (req, res) => {
 	const { type, count, category, random } = req.body;
-	console.log(type, count, category, random);
 
 	const findQuery = {};
 	const sortQuery = {};
@@ -943,29 +942,44 @@ app.post("/get-articles", (req, res) => {
 
 	// Error checking
 	if (category) {
-		if ( category !== "movies" && category !== "series" && category !== "games") {
-			return res.status(400).json({ error: "Wrong article category. Please choose movies, series or games", });
+		if (
+			category !== "movies" &&
+			category !== "series" &&
+			category !== "games"
+		) {
+			return res
+				.status(400)
+				.json({
+					error:
+						"Wrong article category. Please choose movies, series or games",
+				});
 		}
 		findQuery.tags = category;
 	}
 
 	if (type) {
 		if (type !== "latest" && category !== "popular") {
-			return res .status(400) .json({ error: "Wrong article type. Please choose latest or popular" });
+			return res
+				.status(400)
+				.json({ error: "Wrong article type. Please choose latest or popular" });
 		}
 		if (type === "latest") sortQuery.publishedAt = -1;
 	}
 	if (count) {
 		if (typeof count !== "number")
-			return res .status(400) .json({ error: "Wrong article count. Please type a number" });
+			return res
+				.status(400)
+				.json({ error: "Wrong article count. Please type a number" });
 		countQuery = count;
 	}
 
 	if (random) {
 		if (random !== true && random !== false) {
-			return res.status(400).json({
-				error: "Wrong article random value. Please choose true of false",
-			});
+			return res
+				.status(400)
+				.json({
+					error: "Wrong article random value. Please choose true of false",
+				});
 		}
 		randomQuery.size = countQuery;
 
@@ -974,8 +988,6 @@ app.post("/get-articles", (req, res) => {
 			{ $sample: { size: randomQuery.size } }, // Random sampling with limit
 		])
 			.then((articles) => {
-				console.log("random query size", randomQuery.size);
-        
 				return res.status(200).json({ articles });
 			})
 			.catch((err) => {
@@ -1022,7 +1034,6 @@ app.get("/get-upload-url", (req, res) => {
 
 app.post("/get-movies", (req, res) => {
 	const { type, count } = req.body;
-	console.log(type, count);
 
 	const findQuery = {};
 	const sortQuery = {};
@@ -1092,6 +1103,7 @@ app.post("/get-anticipated-movies", (req, res) => {
 
 app.post("/get-roles", (req, res) => {
 	const { sortByRating, type } = req.body;
+	console.log("roles received");
 
 	let fieldName;
 	if (type === "movies") fieldName = "movie";
@@ -1113,25 +1125,19 @@ app.post("/get-roles", (req, res) => {
 });
 
 app.post("/get-series", (req, res) => {
-	const { type, count } = req.body;
-	console.log(type, count);
+	const { count } = req.body;
 
-	const findQuery = {};
-	const sortQuery = {};
 	let countQuery = 0;
 
 	// Error checking
 	if (type) {
-		if (
-			type !== "popular" &&
-			type !== "topRated" &&
-			type !== "upcoming" &&
-			type !== "mostAnticipated"
-		) {
-			return res.status(400).json({
-				error:
-					"Wrong serie type. Please choose popular, top rated, upcoming or most anticipated",
-			});
+		if ( type !== "popular" && type !== "topRated" && type !== "upcoming" && type !== "mostAnticipated" && type !== "latest") {
+			return res
+				.status(400)
+				.json({
+					error:
+						"Wrong serie type. Please choose popular, top rated, upcoming or most anticipated",
+				});
 		}
 
 		if (type === "popular") sortQuery["activity.popularity"] = -1;
@@ -1142,10 +1148,29 @@ app.post("/get-series", (req, res) => {
 			sortQuery["activity.peopleAwaiting"] = -1;
 		}
 		if (type === "upcoming") {
+			// NOTE: THIS IS COPIED FROM THE MOVIES ROUTE AND NEEDS TO BE ADJUSTED CUZ THERE IS NO RELEASEDATE FIELD FOR SERIES DOCUMENTS
 			const today = new Date();
 			findQuery.releaseDate = { $gt: today };
 			sortQuery["releaseDate"] = 1;
 		}
+		if (type === "latest") {
+			const today = new Date();
+			findQuery.status = { $ne: "Ended" };
+			findQuery.firstAirDate = { $lt: today };
+			sortQuery["firstAirDate"] = -1;
+		}
+	}
+
+	if (sortByRating) {
+		if (typeof sortByRating !== "boolean") {
+			return res
+				.status(400)
+				.json({
+					error:
+						"Wrong serie sorting value. Please type a boolean (true or false)",
+				});
+		}
+		sortQuery["activity.rating"] = -1;
 	}
 
 	if (count) {
@@ -1155,6 +1180,175 @@ app.post("/get-series", (req, res) => {
 				.json({ error: "Wrong serie count. Please type a number" });
 		countQuery = count;
 	}
+	console.log("this is sortQuery", sortQuery);
+	Serie.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
+		.then((series) => {
+			return res.status(200).json({ series });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-series-popular", (req, res) => {
+	// NOTE: Work on this route when popular field is introduced to mongo documents
+	const { sortByRating, count } = req.body;
+
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (sortByRating) {
+		if (typeof sortByRating !== "boolean") {
+			return res
+				.status(400)
+				.json({
+					error:
+						"Wrong serie sorting value. Please type a boolean (true or false)",
+				});
+		}
+		sortQuery["activity.rating"] = -1;
+	}
+
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong serie count. Please type a number" });
+		countQuery = count;
+	}
+	console.log("this is sortQuery", sortQuery);
+	Serie.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
+		.then((series) => {
+			return res.status(200).json({ series });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-series-top-rated", (req, res) => {
+	const { count } = req.body;
+
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+
+	if (count) {
+		if (typeof count !== "number") return res.status(400).json({ error: "Wrong serie count. Please type a number" });
+		countQuery = count;
+	}
+
+	sortQuery["activity.rating"] = -1;
+
+	Serie.find()
+		.sort(sortQuery)
+		.limit(countQuery)
+		.then((series) => {
+			return res.status(200).json({ series });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+// NOTE: THIS IS COPIED FROM THE MOVIES ROUTE AND NEEDS TO BE ADJUSTED CUZ THERE IS NO RELEASEDATE FIELD FOR SERIES DOCUMENTS
+app.post("/get-series-most-anticipated", (req, res) => {
+	const { count } = req.body;
+
+	const findQuery = {};
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+
+	if (count) {
+		if (typeof count !== "number")
+			return res .status(400) .json({ error: "Wrong serie count. Please type a number" });
+		countQuery = count;
+	}
+
+  const today = new Date();
+  findQuery.releaseDate = { $gt: today };
+  sortQuery["activity.peopleAwaiting"] = -1;
+
+	Serie.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
+		.then((series) => {
+			return res.status(200).json({ series });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+// NOTE: THIS IS COPIED FROM THE MOVIES ROUTE AND NEEDS TO BE ADJUSTED CUZ THERE IS NO RELEASEDATE FIELD FOR SERIES DOCUMENTS
+app.post("/get-series-upcoming", (req, res) => {
+	const { count } = req.body;
+
+	const findQuery = {};
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong serie count. Please type a number" });
+		countQuery = count;
+	}
+
+  // NOTE: THIS IS COPIED FROM THE MOVIES ROUTE AND NEEDS TO BE ADJUSTED CUZ THERE IS NO RELEASEDATE FIELD FOR SERIES DOCUMENTS
+  const today = new Date();
+  findQuery.releaseDate = { $gt: today };
+  sortQuery["releaseDate"] = 1;
+
+	Serie.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
+		.then((series) => {
+			return res.status(200).json({ series });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-series-latest", (req, res) => {
+	const { sortByRating, count } = req.body;
+
+	const findQuery = {};
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (sortByRating) {
+		if (typeof sortByRating !== "boolean") { return res .status(400) .json({ error: "Wrong serie sorting value. Please type a boolean (true or false)", })}
+		sortQuery["activity.rating"] = -1;
+	}
+
+	if (count) {
+		if (typeof count !== "number")
+			return res .status(400) .json({ error: "Wrong serie count. Please type a number" });
+		countQuery = count;
+	}
+
+  const today = new Date();
+  const yearAgo = new Date();
+  // This is set to 2 years ago from today so it finds series that are released between 2 years ago and today
+  yearAgo.setFullYear(today.getFullYear() - 2);
+  findQuery.status = { $ne: "Ended" };
+  findQuery.lastAirDate = { $lt: today, $gt: yearAgo };
+  sortQuery["lastAirDate"] = -1;
+
 	Serie.find(findQuery)
 		.sort(sortQuery)
 		.limit(countQuery)

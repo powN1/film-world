@@ -25,7 +25,7 @@ const HomePage = () => {
 					<WideMovieSlider />
 					<Reviews />
 					<WideTrailerSlider />
-					<Ranking />
+					<Ranking showCategories={true}/>
 					<Games />
 					<Download />
 					<Footer />

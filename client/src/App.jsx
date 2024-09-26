@@ -22,31 +22,34 @@ function App() {
 	const [tabletView, setTabletView] = useState(false);
 	const [userAuth, setUserAuth] = useState({});
 
-	const [movies, setMovies] = useState([]);
 	const [popularMovies, setPopularMovies] = useState([]);
 	const [topRatedMovies, setTopRatedMovies] = useState([]);
 	const [upcomingMovies, setUpcomingMovies] = useState([]);
 
-	const [series, setSeries] = useState([]);
 	const [popularSeries, setPopularSeries] = useState([]);
 	const [topRatedSeries, setTopRatedSeries] = useState([]);
 	const [upcomingSeries, setUpcomingSeries] = useState([]);
+	const [latestSeries, setLatestSeries] = useState([]);
 
 	const [animes, setAnimes] = useState([]);
 	const [popularAnimes, setPopularAnimes] = useState([]);
 	const [topRatedAnimes, setTopRatedAnimes] = useState([]);
 	const [upcomingAnimes, setUpcomingAnimes] = useState([]);
 
-	const [articles, setArticles] = useState([]);
+	const [moviesRoles, setMoviesRoles] = useState([]);
+	const [seriesRoles, setSeriesRoles] = useState([]);
+
 	const [randomArticles, setRandomArticles] = useState([]);
 	const [latestArticles, setLatestArticles] = useState([]);
 	const [latestMovieArticles, setLatestMovieArticles] = useState([]);
 	const [latestSeriesArticles, setLatestSeriesArticles] = useState([]);
 	const [latestGamesArticles, setLatestGamesArticles] = useState([]);
 
-	const [actors, setActors] = useState([]);
 	const [reviews, setReviews] = useState([]);
 	const [latestReviews, setLatestReviews] = useState([]);
+
+	const [actors, setActors] = useState([]);
+	const [characters, setCharacters] = useState([]);
 
 	const [loading, setLoading] = useState(true);
 
@@ -89,23 +92,30 @@ function App() {
 	const fetchTopRatedMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies", { type: "topRated", count: 10 });
 	const fetchUpcomingMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies", { type: "upcoming", count: 10 });
 
-	const fetchPopularSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series", { type: "popular", count: 20 });
-	const fetchTopRatedSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series", { type: "topRated", count: 10 });
-	const fetchUpcomingSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series", { type: "upcoming", count: 10 });
+	// const fetchPopularSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-popular", { count: 20 });
+	const fetchTopRatedSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-top-rated", { count: 10 });
+	// const fetchUpcomingSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-upcoming", { count: 10 });
+	const fetchLatestSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-latest", { sortByRating: true, count: 10 });
 
 	const fetchAnimes = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-animes");
 	const fetchPopularAnimes = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
 	const fetchTopRatedAnimes = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
 	const fetchUpcomingAnimes = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
 
-	const fetchRandomArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { random: true, count: 10 });
+	const fetchMoviesRoles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles", { sortByRating: true, type: "movies" });
+	const fetchSeriesRoles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles", { sortByRating: true, type: "series" });
+
+
+	const fetchRandomArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { random: true, count: 20 });
 	const fetchLatestArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { type: "latest", count: 20 });
-	const fetchLatestMoviesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { type: "latest", category: "movies", count: 10 });
+	const fetchLatestMoviesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { type: "latest", category: "movies", count: 20 });
 	const fetchLatestSeriesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { type: "latest", category: "series", count: 10 });
 	const fetchLatestGamesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { type: "latest", category: "games", count: 10 });
 
 	const fetchReviews = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+
 	const fetchActors = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
+	const fetchCharacters = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-characters");
 
 	useEffect(() => {
 		checkDevice();
@@ -127,16 +137,25 @@ function App() {
       fetchPopularMovies(),
 			fetchTopRatedMovies(),
 			fetchUpcomingMovies(),
-      fetchPopularSeries(),
+
+      // fetchPopularSeries(),
 			fetchTopRatedSeries(),
-			fetchUpcomingSeries(),
+			// fetchUpcomingSeries(),
+			fetchLatestSeries(),
+
+      fetchMoviesRoles(),
+      fetchSeriesRoles(),
+
       fetchRandomArticles(),
       fetchLatestArticles(),
       fetchLatestMoviesArticles(),
       fetchLatestSeriesArticles(),
       fetchLatestGamesArticles(),
+
 			fetchReviews(),
+
 			fetchActors(),
+      fetchCharacters(),
 		])
 			.then(
 				([
@@ -144,9 +163,13 @@ function App() {
           topRatedMoviesResponse,
           upcomingMoviesResponse,
           
-          popularSeriesResponse,
+          // popularSeriesResponse,
           topRatedSeriesResponse,
-          upcomingSeriesResponse,
+          // upcomingSeriesResponse,
+          latestSeriesResponse,
+
+          moviesRolesResponse,
+          seriesRolesResponse,
 
           randomArticlesResponse,
           latestArticlesResponse,
@@ -155,16 +178,22 @@ function App() {
           latestGamesArticlesResponse,
 
           reviewsResponse,
+
           actorsResponse,
+          charactersResponse,
 				]) => {
 					setPopularMovies(popularMoviesResponse.data.movies);
 					setTopRatedMovies(topRatedMoviesResponse.data.movies);
 					setUpcomingMovies(upcomingMoviesResponse.data.movies);
 
-					setPopularSeries(popularSeriesResponse.data.series);
+					// setPopularSeries(popularSeriesResponse.data.series);
 					setTopRatedSeries(topRatedSeriesResponse.data.series);
-					setUpcomingSeries(upcomingSeriesResponse.data.series);
+					// setUpcomingSeries(upcomingSeriesResponse.data.series);
+					setLatestSeries(latestSeriesResponse.data.series);
     
+					setMoviesRoles(moviesRolesResponse.data.roles);
+					setSeriesRoles(seriesRolesResponse.data.roles);
+
 					setRandomArticles(randomArticlesResponse.data.articles);
           setLatestArticles(latestArticlesResponse.data.articles)
           setLatestMovieArticles(latestMoviesArticlesResponse.data.articles)
@@ -172,7 +201,9 @@ function App() {
           setLatestGamesArticles(latestGamesArticlesResponse.data.articles)
 
 					setReviews(reviewsResponse.data.movies);
+
 					setActors(actorsResponse.data.actors);
+					setCharacters(charactersResponse.data.characters);
 					setLoading(false);
 				},
 			)
@@ -186,22 +217,30 @@ function App() {
     popularMovies, setPopularMovies,
     topRatedMovies, setTopRatedMovies,
     upcomingMovies, setUpcomingMovies,
-    series, setSeries,
-    popularSeries, setPopularSeries,
+
+    // popularSeries, setPopularSeries,
     topRatedSeries, setTopRatedSeries,
-    upcomingSeries, setUpcomingSeries,
+    // upcomingSeries, setUpcomingSeries,
+    latestSeries, setLatestSeries,
+
     animes, setAnimes,
     popularAnimes, setPopularAnimes,
     topRatedAnimes, setTopRatedAnimes,
     upcomingAnimes, setUpcomingAnimes,
-    articles, setArticles,
+
+    moviesRoles, setMoviesRoles,
+    seriesRoles, setSeriesRoles,
+
     randomArticles, setRandomArticles,
     latestArticles, setLatestArticles,
     latestMovieArticles, setLatestMovieArticles,
     latestSeriesArticles, setLatestSeriesArticles,
     latestGamesArticles, setLatestGamesArticles,
-    actors, setActors,
+
     reviews, setReviews,
+
+    actors, setActors,
+    characters, setCharacters,
   }
 
 	return loading ? (

@@ -1,14 +1,13 @@
 import { Link } from "react-router-dom";
 import SingleNews from "../common/SingleNews";
-import { dummyDataArticles } from "../common/dummyDataArticles";
 import { useContext } from "react";
 import { DataContext } from "../App";
 
 const News = () => {
-	const { articles } = useContext(DataContext);
+	const { latestArticles } = useContext(DataContext);
   // Get articles that have tag "movies" in the and then move that tag to the very beggining.
   // If there's more tags than 1, nicely format it
-	const movieArticles = articles
+	const movieArticles = latestArticles
 		.filter((article) => article.tags.includes("movies"))
 		.map((article) => ({
 			...article,

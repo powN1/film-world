@@ -6,11 +6,11 @@ import { MediaQueriesContext } from "../App";
 import { DataContext } from "../App";
 
 const WideSlider = () => {
-	const [currentMovieCategory, setCurrentMovieCategory] = useState("movies of the day");
-
-  const { topRatedMovies } = useContext(DataContext)
-
+  const { topRatedMovies, topRatedSeries } = useContext(DataContext)
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
+
+	const [currentCategory, setCurrentCategory] = useState("movies of the day");
+  const [currentSlidesArray, setCurrentSlidesArray] = useState(topRatedMovies)
 
 	// Slider settings
 	const settings = {
@@ -24,20 +24,23 @@ const WideSlider = () => {
 	const categories = [
 		{ title: "Movies of the day" },
 		{ title: "Series of the day" },
-		{ title: "VOD" },
 		{ title: "Games of the day" },
-		{ title: "Cinema" },
 	];
 
 
 	const handleShowUnderline = (e) => {
 		const category = e.target.innerText.toLowerCase();
-		console.log(e.target, category);
 
-		if (category !== currentMovieCategory) {
-			setCurrentMovieCategory(category);
+		if (category !== currentCategory) {
+			setCurrentCategory(category);
 		}
 	};
+
+  useEffect(() => {
+    if(currentCategory.toLowerCase() === categories[0].title.toLowerCase()) setCurrentSlidesArray(topRatedMovies);
+    if(currentCategory.toLowerCase() === categories[1].title.toLowerCase()) setCurrentSlidesArray(topRatedSeries);
+    if(currentCategory.toLowerCase() === categories[2].title.toLowerCase()) setCurrentSlidesArray([]);
+  }, [currentCategory])
 
 	return (
 		<div className={"flex flex-col py-10 gap-y-5 bg-black text-white"}>
@@ -60,7 +63,7 @@ const WideSlider = () => {
 								path="/"
 								className={
 									"block px-5 py-2 relative duration-300 after:content-[''] after:z-10 after:absolute after:bottom-0 after:h-[3px] after:bg-yellow-400 after:duration-300 after:transition-[width_left] " +
-									(currentMovieCategory === category.title.toLowerCase()
+									(currentCategory === category.title.toLowerCase()
 										? "after:w-[100%] after:left-0 "
 										: "after:w-[0%] after:left-[50%] text-gray-400 hover:text-white")
 								}
@@ -74,7 +77,7 @@ const WideSlider = () => {
 			</ul>
 			<div className="w-[95%] self-center">
 				<Slider {...settings}>
-					{topRatedMovies.map((movie, i) => {
+					{currentSlidesArray.map((movie, i) => {
 						return (
 							<MovieSlide
 								key={i}

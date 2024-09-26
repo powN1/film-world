@@ -1,16 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import Slider from "react-slick";
 import { DataContext, MediaQueriesContext } from "../App";
-import { dummyDataMovies } from "../common/dummyDataMovies";
 import MostPopularSlide from "../common/MostPopularSlide";
-import axios from "axios";
-import Loader from "./Loader";
 
 const MostPopular = ({ type, category }) => {
+	const { moviesRoles, seriesRoles, characters } = useContext(DataContext);
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
 	const [roles, setRoles] = useState([]);
-	const [characters, setCharacters] = useState([]);
+	const [currentCharacters, setCurrentCharacters] = useState([]);
 	const [games, setGames] = useState([]);
 	const [loading, setLoading] = useState(true);
 
@@ -28,35 +26,12 @@ const MostPopular = ({ type, category }) => {
 		slidesToScroll: slidesToShow,
 	};
 
-	const getRoles = async (type) => {
-		await axios
-			.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles", {
-				sortByRating: true,
-				type,
-			})
-			.then(({ data }) => {
-				console.log("roles:", data.roles.length);
-				setRoles(data.roles.slice(0, 15));
-			})
-			.catch((err) => console.log(err));
-	};
-
-	const getCharacters = async () => {
-		await axios
-			.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-characters")
-			.then(({ data }) => {
-				setCharacters(data.characters);
-			})
-			.catch((err) => console.log(err));
-	};
-
 	useEffect(() => {
 		if (type === "roles") {
-			if (category === "movies") getRoles("movies");
-			else if (category === "series") getRoles("series");
+			if (category === "movies") setRoles(moviesRoles);
+			else if (category === "series") setRoles(seriesRoles);
 		}
-		if (type === "characters") getCharacters();
-		setLoading(false);
+		if (type === "characters") setCurrentCharacters(characters);
 	}, []);
 
 	return (
@@ -72,7 +47,11 @@ const MostPopular = ({ type, category }) => {
 					(type !== "games" ? "text-gray-100" : "text-black")
 				}
 			>
-				{type === "roles" ? `Most popular ${category} roles` : type === "characters" ? "Most popular characters" : "Most popular"}
+				{type === "roles"
+					? `Most popular ${category} roles`
+					: type === "characters"
+						? "Most popular characters"
+						: "Most popular"}
 			</h2>
 			<div
 				className={
@@ -80,7 +59,7 @@ const MostPopular = ({ type, category }) => {
 					(type !== "games" ? "" : "text-black")
 				}
 			>
-				{loading ? ( <Loader />) : (
+				{
 					<Slider {...settings}>
 						{type === "roles"
 							? roles.map((role, i) => {
@@ -96,7 +75,7 @@ const MostPopular = ({ type, category }) => {
 									);
 								})
 							: type === "characters"
-								? characters.map((character, i) => {
+								? currentCharacters.map((character, i) => {
 										return (
 											<MostPopularSlide
 												key={i}
@@ -107,7 +86,7 @@ const MostPopular = ({ type, category }) => {
 									})
 								: null}
 					</Slider>
-				)}
+				}
 			</div>
 		</div>
 	);

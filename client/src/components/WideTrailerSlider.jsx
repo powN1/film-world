@@ -3,22 +3,21 @@ import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import MovieSlide from "../common/MovieSlide";
 import { MediaQueriesContext } from "../App";
-import { dummyDataMovies } from "../common/dummyDataMovies";
 import { DataContext } from "../App";
 
 const WideTrailerSlider = ({ type, showCategories = true }) => {
-	const [currentMovieCategory, setCurrentMovieCategory] = useState("movies");
-
-	const { topRatedMovies, series } = useContext(DataContext);
-
+	const { upcomingMovies, upcomingSeries, topRatedSeries } = useContext(DataContext);
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
-	const [films, setFilms] = useState(topRatedMovies); // Slider settings
+	const [currentCategory, setCurrentCategory] = useState("movies");
 
-	useEffect(() => {
-		if (type === "movies") setFilms(topRatedMovies);
-		else if (type === "series") setFilms(series);
-	}, []);
+  const [currentSlidesArray, setCurrentSlidesArray] = useState(upcomingMovies)
+  
+  useEffect(() => {
+    if(currentCategory.toLowerCase() === categories[0].title.toLowerCase()) setCurrentSlidesArray(upcomingMovies);
+    if(currentCategory.toLowerCase() === categories[1].title.toLowerCase()) setCurrentSlidesArray(topRatedSeries);
+    if(currentCategory.toLowerCase() === categories[2].title.toLowerCase()) setCurrentSlidesArray([]);
+  }, [currentCategory])
 
 	// Slider settings
 	const settings = {
@@ -41,10 +40,14 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
 		const category = e.target.innerText.toLowerCase();
 		console.log(e.target, category);
 
-		if (category !== currentMovieCategory) {
-			setCurrentMovieCategory(category);
+		if (category !== currentCategory) {
+			setCurrentCategory(category);
 		}
 	};
+
+  useEffect(() => {
+    if(type === "series") setCurrentSlidesArray(topRatedSeries)
+  }, [])
 
 	return (
 		<div className="flex flex-col py-10 gap-y-5 bg-transparent text-black bg-white">
@@ -64,7 +67,7 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
 									path="/"
 									className={
 										"block px-5 py-2 relative duration-300 after:content-[''] after:z-10 after:absolute after:bottom-0 after:h-[3px] after:bg-yellow-400 after:duration-300 after:transition-[width_left] " +
-										(currentMovieCategory === category.title.toLowerCase()
+										(currentCategory === category.title.toLowerCase()
 											? "after:w-[100%] after:left-0 "
 											: "after:w-[0%] after:left-[50%] text-gray-400 hover:text-black")
 									}
@@ -79,16 +82,19 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
 			) : null}
 			<div className="w-[95%] self-center">
 				<Slider {...settings}>
-					{films.map((movie, i) => {
+					{currentSlidesArray.map((movie, i) => {
+            // console.log(movie)
 						return (
 							<MovieSlide
 								key={i}
 								title={movie.title}
 								img={movie.banner}
-								ranking={movie.ranking ? movie.ranking : null}
+                link={movie.videos.length > 0 ? movie.videos[0] : null}
+								ranking={movie.activity.ranking ? movie.activity.ranking : null}
 								description={movie.description}
 								type="trailer"
 								pegi={movie.pegi}
+                year={movie.firstAirDate || movie.releaseDate}
 							/>
 						);
 					})}

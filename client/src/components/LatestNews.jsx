@@ -5,18 +5,13 @@ import { DataContext } from "../App";
 import axios from "axios";
 
 const categories = [
-	{ title: "Suggested" },
 	{ title: "Movies" },
 	{ title: "Series" },
 	{ title: "Games" },
-	{ title: "Box office" },
-	{ title: "Rankings" },
-	{ title: "Podcasts" },
-	{ title: "Videos" },
 ];
 
 const LastestNews = () => {
-	const [currentCategory, setCurrentCategory] = useState("suggested");
+	const [currentCategory, setCurrentCategory] = useState("movies");
 	const [latestNews, setLatestNews] = useState([]);
 
 	const fetchLatestNews = async (category) => {
@@ -35,8 +30,7 @@ const LastestNews = () => {
 		fetchLatestNews();
 	}, []);
 
-	const { articles } = useContext(DataContext);
-
+	const { latestArticles, latestMovieArticles, latestSeriesArticles, latestGamesArticles, randomArticles } = useContext(DataContext);
 	const handleShowUnderline = (e) => {
 		const category = e.target.innerText.toLowerCase();
 		console.log(e.target, category);
@@ -75,7 +69,7 @@ const LastestNews = () => {
 							})}
 						</ul>
 						<div className="grid md:grid-rows-[190px_190px_190px_190px_190px_190px] grid-cols-3 max-md:grid-rows-16rows70px max-md:grid-cols-1 gap-3">
-							{latestNews.slice(0, 15).map((article, i) => {
+							{latestMovieArticles.slice(0, 15).map((article, i) => {
 								let gridarea = {};
 								if (i === 3) {
 									gridarea["row-start"] = "row-start-2";
@@ -87,7 +81,7 @@ const LastestNews = () => {
 									<SingleNews
 										key={i}
 										description={article.description}
-										comments={article.comments}
+										comments={article.activity.total_comments}
 										img={article.banner}
 										type={i === 3 ? "large" : "medium"}
 										gridarea={i === 3 ? gridarea : null}
@@ -106,13 +100,13 @@ const LastestNews = () => {
 						<h3 className="w-full font-bold uppercase tracking-wider">
 							Most popular
 						</h3>
-						{articles.map((article, i) => {
+						{randomArticles.slice(0,16).map((article, i) => {
 							return (
 								<SingleNews
 									key={i}
 									description={article.description}
 									comments={article.comments}
-									img={article.img}
+									img={article.banner}
 									type="tiny"
 								/>
 							);

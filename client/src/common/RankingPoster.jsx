@@ -13,11 +13,7 @@ const RankingPoster = ({ title, img, rating, peopleAwaiting }) => {
 					/>
 				</div>
 				<div className="flex justify-center items-center gap-x-1 bg-black py-7 max-lg:py-4 duration-300 group-hover:bg-white">
-					{rating ? (
-						<FaStar className="text-yellow-400 text-xl" />
-					) : (
-						<FaRegEye className="text-green-400 text-xl" />
-					)}
+					{rating ? ( <FaStar className="text-yellow-400 text-xl" />) : ( <FaRegEye className="text-green-400 text-xl" />)}
 
 					<p className="text-white font-bold duration-300 group-hover:text-black">
 						{rating ? rating : peopleAwaiting}

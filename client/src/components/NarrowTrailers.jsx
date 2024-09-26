@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import MovieSlide from "../common/MovieSlide";
-import { dummyDataGames } from "../common/dummyDataGames";
 
 const NarrowTrailers = () => {
+	const { popularMovies } = useContext(DataContext);
 
 	return (
 		<div className="w-full bg-white">
@@ -11,7 +11,7 @@ const NarrowTrailers = () => {
 					Trailers
 				</h2>
 				<div className="w-full self-center flex md:gap-x-3 overflow-x-scroll">
-					{dummyDataGames.map((movie, i) => {
+					{popularMovies.map((movie, i) => {
 						return (
 							<MovieSlide
 								key={i}

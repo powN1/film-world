@@ -3,7 +3,6 @@ import GameSlide from "../common/GameSlide";
 import Slider from "react-slick";
 import { useContext } from "react";
 import { MediaQueriesContext } from "../App";
-import { dummyDataMovies } from "../common/dummyDataMovies";
 import { DataContext } from "../App";
 
 const Games = () => {
@@ -32,8 +31,8 @@ const Games = () => {
 						alt=""
 						className="h-full w-full object-cover group-hover:scale-110 duration-700"
 					/>
-					<h2 className="absolute left-0 bottom-[12%] text-white text-5xl max-lg:text-3xl font-extrabold uppercase w-full text-center group-hover:text-yellow-400 duration-700 tracking-wide">
-						MCU adaptation in the world of games!
+					<h2 className="absolute left-0 bottom-[12%] text-white text-5xl max-lg:text-3xl font-extrabold uppercase w-full text-center px-6 group-hover:text-yellow-400 duration-700 tracking-wide">
+            {articles[0].title}
 					</h2>
 				</Link>
 				<div className="w-[95%] self-center mt-[-13%] md:mt-[-6%] lg:mt-[-5%]">
@@ -44,7 +43,7 @@ const Games = () => {
 									key={i + 1}
 									title={movie.title}
 									img={movie.banner}
-									comments={movie.comments}
+									comments={movie.activity.total_comments}
 								/>
 							);
 						})}

@@ -10,7 +10,7 @@ const SeriesPage = () => {
 	return (
 		<>
 			<MainPreview type="series"/>
-			<Ranking type="series" anticipated={true} showCategories={false} />
+			<Ranking type="series" showCategories={false} />
 			<WideTrailerSlider type="series" showCategories={false} />
 			<MostPopular type="roles" category="series" />
       <News />

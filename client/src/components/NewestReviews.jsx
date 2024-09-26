@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import Review from "../common/Review";
-import { dummyDataGames } from "../common/dummyDataGames";
+import { useContext } from "react";
+import { DataContext } from "../App";
 
 const NewestReviews = () => {
+	const { latestArticles } = useContext(DataContext);
 	return (
 		<div className="bg-white">
 			<div className="md:w-[90%] lg:w-[55%] mx-auto flex flex-col py-10 gap-y-5">
@@ -10,7 +12,7 @@ const NewestReviews = () => {
           Newest reviews
 				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 mb-8">
-					{dummyDataGames.slice(0,2).map((review, i) => {
+					{latestArticles.slice(0,2).map((review, i) => {
 						let {
 							author: { personal_info },
 						} = review;
@@ -31,7 +33,7 @@ const NewestReviews = () => {
 					})}
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10">
-					{dummyDataGames.slice(2,5).map((review, i) => {
+					{latestArticles.slice(2,5).map((review, i) => {
 						let {
 							author: { personal_info },
 						} = review;
