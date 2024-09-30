@@ -1,24 +1,40 @@
 import { Link } from "react-router-dom";
 import SingleNews from "../common/SingleNews";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DataContext } from "../App";
 
-const News = () => {
-	const { latestArticles } = useContext(DataContext);
-  // Get articles that have tag "movies" in the and then move that tag to the very beggining.
-  // If there's more tags than 1, nicely format it
-	const movieArticles = latestArticles
-		.filter((article) => article.tags.includes("movies"))
+const News = ({ type }) => {
+	const { randomArticles, latestArticles, latestMovieArticles, latestSeriesArticles, latestGamesArticles, } = useContext(DataContext);
+
+	const [currentNews, setCurrentNews] = useState([]);
+
+	// Get articles that have tag "movies" in the and then move that tag to the very beggining.
+	// If there's more tags than 1, nicely format it
+  const sortTags = () => {
+	const sortedTagsNews = latestGamesArticles
 		.map((article) => ({
 			...article,
 			tags: article.tags.sort((a, b) =>
-				a === "movies" ? -1 : b === "movies" ? 1 : 0,
+				a === type ? -1 : b === type ? 1 : 0,
 			),
 		}))
 		.map((article) => ({
 			...article,
 			tags: article.tags.length > 1 ? article.tags.join(", ") : article.tags,
 		}));
+    setCurrentNews(sortedTagsNews)
+  }
+
+	useEffect(() => {
+		if (type === "movies") setCurrentNews(latestMovieArticles);
+		else if (type === "series") setCurrentNews(latestSeriesArticles);
+		else if (type === "games") setCurrentNews(latestGamesArticles);
+		else setCurrentNews(randomArticles);
+	}, []);
+
+  useEffect(() => {
+    sortTags();
+  }, [currentNews])
 
 	return (
 		<div className="bg-white">
@@ -27,7 +43,7 @@ const News = () => {
 					News
 				</h2>
 				<div className="w-full self-center grid grid-cols-1 md:grid-cols-2 md:w-[90%] lg:grid-cols-3 gap-y-5 md:gap-y-10 md:gap-x-8">
-					{movieArticles.slice(0, 6).map((article, i) => (
+					{currentNews.slice(0, 6).map((article, i) => (
 						<SingleNews
 							key={i}
 							type="categorized"

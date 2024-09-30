@@ -3,8 +3,6 @@ import { FaRegCirclePlay } from "react-icons/fa6";
 
 const MovieSlide = ({ title, img, link = null, ranking = null, description = null, type, pegi = null, scrollable = false, year }) => {
 
-  const releaseYear = new Date(year).getFullYear();
-
 	const renderMovieSlide = () => {
 		switch (type) {
 			case "movie":
@@ -51,7 +49,7 @@ const MovieSlide = ({ title, img, link = null, ranking = null, description = nul
 						<FaRegCirclePlay className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-5xl text-white group-hover:text-yellow-400 duration-100" />
 						<div className="absolute bottom-0 left-0 p-3 text-white">
 							<p className="line-clamp-1">{title}</p>
-							<p className="text-sm">{releaseYear}</p>
+							<p className="text-sm">{year}</p>
 							<div
 								className={
 									"text-sm w-[85%] max-lg:hidden line-clamp-3 " +

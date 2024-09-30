@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { CiHeart } from "react-icons/ci";
 
-const MostPopularSlide = ({ title, img, actor, role, ranking, character, gameName, }) => {
+const MostPopularSlide = ({ title, img, actor, role, ranking, character, gameName }) => {
 	return (
 		<Link
 			to=""

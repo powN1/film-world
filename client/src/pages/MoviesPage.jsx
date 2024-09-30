@@ -16,7 +16,7 @@ const MoviesPage = () => {
 			<MostPopular type="roles" category="movies" />
 			<Birthday />
 			<MostPopular type="characters" />
-      <News />
+      <News type="movies" />
 			<Download />
 			<Footer />
 		</>

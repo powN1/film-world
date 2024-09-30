@@ -13,7 +13,7 @@ const SeriesPage = () => {
 			<Ranking type="series" showCategories={false} />
 			<WideTrailerSlider type="series" showCategories={false} />
 			<MostPopular type="roles" category="series" />
-      <News />
+      <News type="series" />
 			<Download />
 			<Footer />
 		</>

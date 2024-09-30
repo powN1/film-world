@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import MovieSlide from "../common/MovieSlide";
+import { useContext } from "react";
+import { DataContext } from "../App";
 
 const NarrowTrailers = () => {
 	const { popularMovies } = useContext(DataContext);
@@ -15,13 +17,14 @@ const NarrowTrailers = () => {
 						return (
 							<MovieSlide
 								key={i}
-								title={movie.name}
-								img={movie.img}
-								ranking={movie.ranking ? movie.ranking : null}
+								title={movie.title}
+								img={movie.banner}
+								ranking={movie.activity.rating ? movie.activity.rating : null}
 								description={movie.description}
 								type="trailer"
 								scrollable={true}
 								pegi={movie.pegi}
+                year={movie.year}
 							/>
 						);
 					})}

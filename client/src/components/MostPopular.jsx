@@ -4,13 +4,12 @@ import { DataContext, MediaQueriesContext } from "../App";
 import MostPopularSlide from "../common/MostPopularSlide";
 
 const MostPopular = ({ type, category }) => {
-	const { moviesRoles, seriesRoles, characters } = useContext(DataContext);
+	const { moviesRoles, seriesRoles, characters, topRatedGames } = useContext(DataContext);
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
 	const [roles, setRoles] = useState([]);
 	const [currentCharacters, setCurrentCharacters] = useState([]);
 	const [games, setGames] = useState([]);
-	const [loading, setLoading] = useState(true);
 
 	// Slider settings
 	// NOTE: Slides for roles: Small screens 2 slides, medium 5, large 5
@@ -32,6 +31,8 @@ const MostPopular = ({ type, category }) => {
 			else if (category === "series") setRoles(seriesRoles);
 		}
 		if (type === "characters") setCurrentCharacters(characters);
+		if (type === "games") setGames(topRatedGames);
+  
 	}, []);
 
 	return (
@@ -84,7 +85,17 @@ const MostPopular = ({ type, category }) => {
 											/>
 										);
 									})
-								: null}
+								: type === "games" ? 
+                  games.map((game, i) => {
+                    return (
+										<MostPopularSlide
+											key={i}
+                      gameName={game.title}
+											img={game.cover}
+										/>
+                    )
+                  })
+                  : null}
 					</Slider>
 				}
 			</div>

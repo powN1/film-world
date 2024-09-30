@@ -682,9 +682,8 @@ async function getGameFromTheIGDBById(gameId) {
 		.catch((err) => console.log(err));
 }
 const listOfGamesToFetch = [
-	136879, 19560, 112875, 26472, 7194, 1009, 25076, 479, 7334, 72, 74, 7331,
-	76882, 11208, 116, 732, 1020, 2207, 434, 19686, 472, 733, 19565, 239, 2155,
-	39,
+	51523, 298526, 300976, 135994, 92550, 37136, 51523, 298526, 302704, 228530,
+	152244, 76883, 279661, 250634,
 ];
 // listOfGamesToFetch.forEach(async (game) => {
 // 	await getGameFromTheIGDBById(game);
@@ -932,6 +931,16 @@ app.post("/get-actors", (req, res) => {
 		});
 });
 
+app.get("/get-animes", (req, res) => {
+	Anime.find()
+		.then((animes) => {
+			return res.status(200).json({ animes });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
 app.post("/get-articles", (req, res) => {
 	const { type, count, category, random } = req.body;
 
@@ -947,12 +956,9 @@ app.post("/get-articles", (req, res) => {
 			category !== "series" &&
 			category !== "games"
 		) {
-			return res
-				.status(400)
-				.json({
-					error:
-						"Wrong article category. Please choose movies, series or games",
-				});
+			return res.status(400).json({
+				error: "Wrong article category. Please choose movies, series or games",
+			});
 		}
 		findQuery.tags = category;
 	}
@@ -975,11 +981,9 @@ app.post("/get-articles", (req, res) => {
 
 	if (random) {
 		if (random !== true && random !== false) {
-			return res
-				.status(400)
-				.json({
-					error: "Wrong article random value. Please choose true of false",
-				});
+			return res.status(400).json({
+				error: "Wrong article random value. Please choose true of false",
+			});
 		}
 		randomQuery.size = countQuery;
 
@@ -1006,10 +1010,120 @@ app.post("/get-articles", (req, res) => {
 	}
 });
 
-app.get("/get-animes", (req, res) => {
-	Anime.find()
-		.then((animes) => {
-			return res.status(200).json({ animes });
+app.post("/get-articles-latest", (req, res) => {
+	const { count } = req.body;
+
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong article count. Please type a number" });
+		countQuery = count;
+	}
+
+	sortQuery["publishedAt"] = -1;
+
+	Article.find()
+		.sort(sortQuery)
+		.limit(countQuery)
+		.populate("author", "personal_info.fullname, personal_info.profile_img")
+		.then((articles) => {
+			return res.status(200).json({ articles });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-articles-latest-movies", (req, res) => {
+	const { count } = req.body;
+
+	const findQuery = {};
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong article count. Please type a number" });
+		countQuery = count;
+	}
+
+	sortQuery["publishedAt"] = -1;
+	findQuery.tags = { $in: ["movies"] };
+
+	Article.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
+		.populate("author", "personal_info.fullname, personal_info.profile_img")
+		.then((articles) => {
+			return res.status(200).json({ articles });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-articles-latest-series", (req, res) => {
+	const { count } = req.body;
+
+	const findQuery = {};
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong article count. Please type a number" });
+		countQuery = count;
+	}
+
+	sortQuery["publishedAt"] = -1;
+	findQuery.tags = { $in: ["series"] };
+
+	Article.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
+		.then((articles) => {
+			return res.status(200).json({ articles });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-articles-latest-games", (req, res) => {
+	const { count } = req.body;
+
+	const findQuery = {};
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong article count. Please type a number" });
+		countQuery = count;
+	}
+
+	sortQuery["publishedAt"] = -1;
+	findQuery.tags = { $in: ["games"] };
+
+	Article.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
+		.then((articles) => {
+			return res.status(200).json({ articles });
 		})
 		.catch((err) => {
 			return res.status(500).json({ error: err.message });
@@ -1023,6 +1137,123 @@ app.post("/get-characters", (req, res) => {
 		})
 		.catch((err) => res.status(500).json({ error: err.message }));
 });
+
+app.post("/get-games-random", (req, res) => {
+	const { count } = req.body;
+
+	let countQuery = 0;
+	let randomQuery = {};
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong game count. Please type a number" });
+		countQuery = count;
+		randomQuery.size = countQuery;
+	}
+
+	Game.aggregate([
+		{ $sample: { size: randomQuery.size } }, // Random sampling with limit
+	])
+		.limit(countQuery)
+		.then((games) => {
+			return res.status(200).json({ games });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-games-latest", (req, res) => {
+	const { count } = req.body;
+
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong game count. Please type a number" });
+		countQuery = count;
+	}
+
+	sortQuery["releaseDate"] = -1;
+
+	Game.find()
+		.sort(sortQuery)
+		.limit(countQuery)
+		.then((games) => {
+			return res.status(200).json({ games });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-games-top-rated", (req, res) => {
+	const { count } = req.body;
+
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong game count. Please type a number" });
+		countQuery = count;
+	}
+
+	sortQuery["activity.rating"] = -1;
+
+	Game.find()
+		.sort(sortQuery)
+		.limit(countQuery)
+		.then((games) => {
+			return res.status(200).json({ games });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-games-anticipated", (req, res) => {
+	const { sortByRating, count } = req.body;
+
+	let countQuery = 0;
+	if (count) {
+		if (typeof count !== "number")
+			return res .status(400) .json({ error: "Wrong game count. Please type a number" });
+		countQuery = count;
+	}
+
+	let sortQuery = {};
+	if (sortByRating) {
+		if (typeof(sortByRating) !== "boolean") {
+			return res .status(400) .json({ error: "Wrong sort value. Please choose a true or false" });
+		}
+		sortQuery = { "activity.peopleAwaiting": -1 };
+	}
+
+	const findQuery = {};
+	findQuery["activity.peopleAwaiting"] = { $exists: true };
+
+	Game.find(findQuery)
+    .sort(sortQuery)
+    .limit(countQuery)
+		.then((games) => {
+			return res.status(200).json({ games });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
 // upload img url route
 app.get("/get-upload-url", (req, res) => {
 	generateUploadUrl()
@@ -1131,13 +1362,17 @@ app.post("/get-series", (req, res) => {
 
 	// Error checking
 	if (type) {
-		if ( type !== "popular" && type !== "topRated" && type !== "upcoming" && type !== "mostAnticipated" && type !== "latest") {
-			return res
-				.status(400)
-				.json({
-					error:
-						"Wrong serie type. Please choose popular, top rated, upcoming or most anticipated",
-				});
+		if (
+			type !== "popular" &&
+			type !== "topRated" &&
+			type !== "upcoming" &&
+			type !== "mostAnticipated" &&
+			type !== "latest"
+		) {
+			return res.status(400).json({
+				error:
+					"Wrong serie type. Please choose popular, top rated, upcoming or most anticipated",
+			});
 		}
 
 		if (type === "popular") sortQuery["activity.popularity"] = -1;
@@ -1163,12 +1398,10 @@ app.post("/get-series", (req, res) => {
 
 	if (sortByRating) {
 		if (typeof sortByRating !== "boolean") {
-			return res
-				.status(400)
-				.json({
-					error:
-						"Wrong serie sorting value. Please type a boolean (true or false)",
-				});
+			return res.status(400).json({
+				error:
+					"Wrong serie sorting value. Please type a boolean (true or false)",
+			});
 		}
 		sortQuery["activity.rating"] = -1;
 	}
@@ -1202,12 +1435,10 @@ app.post("/get-series-popular", (req, res) => {
 	// Error checking
 	if (sortByRating) {
 		if (typeof sortByRating !== "boolean") {
-			return res
-				.status(400)
-				.json({
-					error:
-						"Wrong serie sorting value. Please type a boolean (true or false)",
-				});
+			return res.status(400).json({
+				error:
+					"Wrong serie sorting value. Please type a boolean (true or false)",
+			});
 		}
 		sortQuery["activity.rating"] = -1;
 	}
@@ -1240,7 +1471,10 @@ app.post("/get-series-top-rated", (req, res) => {
 	// Error checking
 
 	if (count) {
-		if (typeof count !== "number") return res.status(400).json({ error: "Wrong serie count. Please type a number" });
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong serie count. Please type a number" });
 		countQuery = count;
 	}
 
@@ -1269,13 +1503,15 @@ app.post("/get-series-most-anticipated", (req, res) => {
 
 	if (count) {
 		if (typeof count !== "number")
-			return res .status(400) .json({ error: "Wrong serie count. Please type a number" });
+			return res
+				.status(400)
+				.json({ error: "Wrong serie count. Please type a number" });
 		countQuery = count;
 	}
 
-  const today = new Date();
-  findQuery.releaseDate = { $gt: today };
-  sortQuery["activity.peopleAwaiting"] = -1;
+	const today = new Date();
+	findQuery.releaseDate = { $gt: today };
+	sortQuery["activity.peopleAwaiting"] = -1;
 
 	Serie.find(findQuery)
 		.sort(sortQuery)
@@ -1306,10 +1542,10 @@ app.post("/get-series-upcoming", (req, res) => {
 		countQuery = count;
 	}
 
-  // NOTE: THIS IS COPIED FROM THE MOVIES ROUTE AND NEEDS TO BE ADJUSTED CUZ THERE IS NO RELEASEDATE FIELD FOR SERIES DOCUMENTS
-  const today = new Date();
-  findQuery.releaseDate = { $gt: today };
-  sortQuery["releaseDate"] = 1;
+	// NOTE: THIS IS COPIED FROM THE MOVIES ROUTE AND NEEDS TO BE ADJUSTED CUZ THERE IS NO RELEASEDATE FIELD FOR SERIES DOCUMENTS
+	const today = new Date();
+	findQuery.releaseDate = { $gt: today };
+	sortQuery["releaseDate"] = 1;
 
 	Serie.find(findQuery)
 		.sort(sortQuery)
@@ -1331,23 +1567,30 @@ app.post("/get-series-latest", (req, res) => {
 
 	// Error checking
 	if (sortByRating) {
-		if (typeof sortByRating !== "boolean") { return res .status(400) .json({ error: "Wrong serie sorting value. Please type a boolean (true or false)", })}
+		if (typeof sortByRating !== "boolean") {
+			return res.status(400).json({
+				error:
+					"Wrong serie sorting value. Please type a boolean (true or false)",
+			});
+		}
 		sortQuery["activity.rating"] = -1;
 	}
 
 	if (count) {
 		if (typeof count !== "number")
-			return res .status(400) .json({ error: "Wrong serie count. Please type a number" });
+			return res
+				.status(400)
+				.json({ error: "Wrong serie count. Please type a number" });
 		countQuery = count;
 	}
 
-  const today = new Date();
-  const yearAgo = new Date();
-  // This is set to 2 years ago from today so it finds series that are released between 2 years ago and today
-  yearAgo.setFullYear(today.getFullYear() - 2);
-  findQuery.status = { $ne: "Ended" };
-  findQuery.lastAirDate = { $lt: today, $gt: yearAgo };
-  sortQuery["lastAirDate"] = -1;
+	const today = new Date();
+	const yearAgo = new Date();
+	// This is set to 2 years ago from today so it finds series that are released between 2 years ago and today
+	yearAgo.setFullYear(today.getFullYear() - 2);
+	findQuery.status = { $ne: "Ended" };
+	findQuery.lastAirDate = { $lt: today, $gt: yearAgo };
+	sortQuery["lastAirDate"] = -1;
 
 	Serie.find(findQuery)
 		.sort(sortQuery)

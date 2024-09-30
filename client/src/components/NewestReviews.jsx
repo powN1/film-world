@@ -5,6 +5,7 @@ import { DataContext } from "../App";
 
 const NewestReviews = () => {
 	const { latestArticles } = useContext(DataContext);
+
 	return (
 		<div className="bg-white">
 			<div className="md:w-[90%] lg:w-[55%] mx-auto flex flex-col py-10 gap-y-5">

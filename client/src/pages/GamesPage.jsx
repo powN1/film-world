@@ -13,10 +13,10 @@ const GamesPage = () => {
 			<Games />
 			<NarrowTrailers />
 			<MostPopular type="games" />
-			<Ranking anticipated={true} showCategories={false} />
+			<Ranking type="games" anticipated={true} showCategories={false} />
 			<NewestReviews />
-			<Ranking showCategories={false} />
-			<News />
+			<Ranking type="games" showCategories={false} />
+			<News type="games" />
 			<Download />
 			<Footer />
 		</>

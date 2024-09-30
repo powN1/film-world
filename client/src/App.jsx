@@ -36,6 +36,11 @@ function App() {
 	const [topRatedAnimes, setTopRatedAnimes] = useState([]);
 	const [upcomingAnimes, setUpcomingAnimes] = useState([]);
 
+	const [randomGames, setRandomGames] = useState([]);
+	const [latestGames, setLatestGames] = useState([]);
+	const [topRatedGames, setTopRatedGames] = useState([]);
+	const [anticipatedGames, setAnticipatedGames] = useState([]);
+
 	const [moviesRoles, setMoviesRoles] = useState([]);
 	const [seriesRoles, setSeriesRoles] = useState([]);
 
@@ -102,15 +107,20 @@ function App() {
 	const fetchTopRatedAnimes = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
 	const fetchUpcomingAnimes = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
 
+	const fetchRandomGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-random", { count: 20 });
+	const fetchLatestGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-latest", { count: 20 });
+	const fetchTopRatedGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-top-rated", { count: 20 });
+	const fetchAnticipatedGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-anticipated", { sortByRating: true, count: 20 });
+
 	const fetchMoviesRoles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles", { sortByRating: true, type: "movies" });
 	const fetchSeriesRoles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles", { sortByRating: true, type: "series" });
 
 
 	const fetchRandomArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { random: true, count: 20 });
-	const fetchLatestArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { type: "latest", count: 20 });
-	const fetchLatestMoviesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { type: "latest", category: "movies", count: 20 });
-	const fetchLatestSeriesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { type: "latest", category: "series", count: 10 });
-	const fetchLatestGamesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { type: "latest", category: "games", count: 10 });
+	const fetchLatestArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest", { count: 20 });
+	const fetchLatestMoviesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-movies", { count: 20 });
+	const fetchLatestSeriesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-series", { count: 20 });
+	const fetchLatestGamesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-games", { count: 20 });
 
 	const fetchReviews = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
 
@@ -143,6 +153,11 @@ function App() {
 			// fetchUpcomingSeries(),
 			fetchLatestSeries(),
 
+      fetchRandomGames(), 
+      fetchLatestGames(), 
+      fetchTopRatedGames(),
+      fetchAnticipatedGames(),
+
       fetchMoviesRoles(),
       fetchSeriesRoles(),
 
@@ -168,6 +183,11 @@ function App() {
           // upcomingSeriesResponse,
           latestSeriesResponse,
 
+          randomGamesResponse,
+          latestGamesResponse,
+          topRatedGamesResponse,
+          anticipatedGamesResponse,
+
           moviesRolesResponse,
           seriesRolesResponse,
 
@@ -190,6 +210,11 @@ function App() {
 					setTopRatedSeries(topRatedSeriesResponse.data.series);
 					// setUpcomingSeries(upcomingSeriesResponse.data.series);
 					setLatestSeries(latestSeriesResponse.data.series);
+
+          setRandomGames(randomGamesResponse.data.games)
+          setLatestGames(latestGamesResponse.data.games)
+          setTopRatedGames(topRatedGamesResponse.data.games)
+          setAnticipatedGames(anticipatedGamesResponse.data.games),
     
 					setMoviesRoles(moviesRolesResponse.data.roles);
 					setSeriesRoles(seriesRolesResponse.data.roles);
@@ -227,6 +252,11 @@ function App() {
     popularAnimes, setPopularAnimes,
     topRatedAnimes, setTopRatedAnimes,
     upcomingAnimes, setUpcomingAnimes,
+
+    randomGames, setRandomGames,
+    latestGames, setLatestGames,
+    topRatedGames, setTopRatedGames,
+    anticipatedGames, setAnticipatedGames,
 
     moviesRoles, setMoviesRoles,
     seriesRoles, setSeriesRoles,
