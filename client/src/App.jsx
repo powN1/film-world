@@ -10,8 +10,10 @@ import RankingPage from "./pages/RankingPage";
 import MyFilmwebPage from "./pages/MyFilmwebPage";
 import { lookInSession } from "./common/session";
 import axios from "axios";
-import CreateArticlePage from "./pages/CreateArticlePage";
+import WriteArticlePage from "./pages/WriteArticlePage";
+import WriteReviewPage from "./pages/WriteReviewPage";
 import Loader from "./components/Loader";
+import WritePage from "./pages/WritePage";
 
 export const UserContext = createContext({});
 export const MediaQueriesContext = createContext({});
@@ -289,7 +291,9 @@ function App() {
 							<Route path="/games" element={<GamesPage />} />
 							<Route path="/ranking" element={<RankingPage />} />
 							<Route path="/my" element={<MyFilmwebPage />} />
-							<Route path="/create-article" element={<CreateArticlePage />} />
+							<Route path="/write" element={<WritePage />} />
+							<Route path="/write-article" element={<WriteArticlePage />} />
+							<Route path="/write-review" element={<WriteReviewPage />} />
 						</Route>
 					</Routes>
 				</DataContext.Provider>

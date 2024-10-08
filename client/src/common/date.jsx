@@ -16,6 +16,10 @@ export const getYear = (timestamp) => {
   return `${date.getYear()}`;
 };
 
+export const getFullYear = (timestamp) => {
+  let date = new Date(timestamp);
+  return `${date.getFullYear()}`;
+};
 export const getMonth = (timestamp) => {
   let date = new Date(timestamp);
   return `${date.getMonth()}`;

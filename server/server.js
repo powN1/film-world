@@ -1138,6 +1138,30 @@ app.post("/get-characters", (req, res) => {
 		.catch((err) => res.status(500).json({ error: err.message }));
 });
 
+app.post("/get-games", (req, res) => {
+	const { count } = req.body;
+
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong game count. Please type a number" });
+		countQuery = count;
+	}
+
+	Game.find()
+		.sort()
+		.limit(countQuery)
+		.then((games) => {
+			return res.status(200).json({ games });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
 app.post("/get-games-random", (req, res) => {
 	const { count } = req.body;
 
@@ -1228,14 +1252,18 @@ app.post("/get-games-anticipated", (req, res) => {
 	let countQuery = 0;
 	if (count) {
 		if (typeof count !== "number")
-			return res .status(400) .json({ error: "Wrong game count. Please type a number" });
+			return res
+				.status(400)
+				.json({ error: "Wrong game count. Please type a number" });
 		countQuery = count;
 	}
 
 	let sortQuery = {};
 	if (sortByRating) {
-		if (typeof(sortByRating) !== "boolean") {
-			return res .status(400) .json({ error: "Wrong sort value. Please choose a true or false" });
+		if (typeof sortByRating !== "boolean") {
+			return res
+				.status(400)
+				.json({ error: "Wrong sort value. Please choose a true or false" });
 		}
 		sortQuery = { "activity.peopleAwaiting": -1 };
 	}
@@ -1244,8 +1272,8 @@ app.post("/get-games-anticipated", (req, res) => {
 	findQuery["activity.peopleAwaiting"] = { $exists: true };
 
 	Game.find(findQuery)
-    .sort(sortQuery)
-    .limit(countQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
 		.then((games) => {
 			return res.status(200).json({ games });
 		})
@@ -1264,40 +1292,12 @@ app.get("/get-upload-url", (req, res) => {
 });
 
 app.post("/get-movies", (req, res) => {
-	const { type, count } = req.body;
+	const { count } = req.body;
 
 	const findQuery = {};
-	const sortQuery = {};
 	let countQuery = 0;
 
 	// Error checking
-	if (type) {
-		if (
-			type !== "popular" &&
-			type !== "topRated" &&
-			type !== "upcoming" &&
-			type !== "mostAnticipated"
-		) {
-			return res.status(400).json({
-				error:
-					"Wrong movie type. Please choose popular, top rated, upcoming or most anticipated",
-			});
-		}
-
-		if (type === "popular") sortQuery["activity.popularity"] = -1;
-		if (type === "topRated") sortQuery["activity.rating"] = -1;
-		if (type === "mostAnticipated") {
-			const today = new Date();
-			findQuery.releaseDate = { $gt: today };
-			sortQuery["activity.peopleAwaiting"] = -1;
-		}
-		if (type === "upcoming") {
-			const today = new Date();
-			findQuery.releaseDate = { $gt: today };
-			sortQuery["releaseDate"] = 1;
-		}
-	}
-
 	if (count) {
 		if (typeof count !== "number")
 			return res
@@ -1307,7 +1307,7 @@ app.post("/get-movies", (req, res) => {
 	}
 
 	Movie.find(findQuery)
-		.sort(sortQuery)
+		.sort()
 		.limit(countQuery)
 		.then((movies) => {
 			return res.status(200).json({ movies });
@@ -1334,7 +1334,6 @@ app.post("/get-anticipated-movies", (req, res) => {
 
 app.post("/get-roles", (req, res) => {
 	const { sortByRating, type } = req.body;
-	console.log("roles received");
 
 	let fieldName;
 	if (type === "movies") fieldName = "movie";
@@ -1361,51 +1360,6 @@ app.post("/get-series", (req, res) => {
 	let countQuery = 0;
 
 	// Error checking
-	if (type) {
-		if (
-			type !== "popular" &&
-			type !== "topRated" &&
-			type !== "upcoming" &&
-			type !== "mostAnticipated" &&
-			type !== "latest"
-		) {
-			return res.status(400).json({
-				error:
-					"Wrong serie type. Please choose popular, top rated, upcoming or most anticipated",
-			});
-		}
-
-		if (type === "popular") sortQuery["activity.popularity"] = -1;
-		if (type === "topRated") sortQuery["activity.rating"] = -1;
-		if (type === "mostAnticipated") {
-			const today = new Date();
-			findQuery.releaseDate = { $gt: today };
-			sortQuery["activity.peopleAwaiting"] = -1;
-		}
-		if (type === "upcoming") {
-			// NOTE: THIS IS COPIED FROM THE MOVIES ROUTE AND NEEDS TO BE ADJUSTED CUZ THERE IS NO RELEASEDATE FIELD FOR SERIES DOCUMENTS
-			const today = new Date();
-			findQuery.releaseDate = { $gt: today };
-			sortQuery["releaseDate"] = 1;
-		}
-		if (type === "latest") {
-			const today = new Date();
-			findQuery.status = { $ne: "Ended" };
-			findQuery.firstAirDate = { $lt: today };
-			sortQuery["firstAirDate"] = -1;
-		}
-	}
-
-	if (sortByRating) {
-		if (typeof sortByRating !== "boolean") {
-			return res.status(400).json({
-				error:
-					"Wrong serie sorting value. Please type a boolean (true or false)",
-			});
-		}
-		sortQuery["activity.rating"] = -1;
-	}
-
 	if (count) {
 		if (typeof count !== "number")
 			return res
@@ -1413,9 +1367,9 @@ app.post("/get-series", (req, res) => {
 				.json({ error: "Wrong serie count. Please type a number" });
 		countQuery = count;
 	}
-	console.log("this is sortQuery", sortQuery);
-	Serie.find(findQuery)
-		.sort(sortQuery)
+
+	Serie.find()
+		.sort()
 		.limit(countQuery)
 		.then((series) => {
 			return res.status(200).json({ series });
@@ -1686,7 +1640,7 @@ app.post("/create-article", verifyJWT, (req, res) => {
 				User.findOneAndUpdate(
 					{ _id: authorId },
 					{
-						$inc: { "account_info.total_posts": incrementVal },
+						$inc: { "account_info.total_articles": incrementVal },
 						$push: { articles: article._id },
 					},
 				)
@@ -1705,6 +1659,150 @@ app.post("/create-article", verifyJWT, (req, res) => {
 	}
 });
 
+async function findDocumentCollectionById(id) {
+	try {
+		const db = mongoose.connection.db;
+
+		// Step 1: Get all collection names
+		const collections = await db.listCollections().toArray();
+
+		for (const collection of collections) {
+			const collectionName = collection.name;
+
+			// Step 2: Dynamically access the collection and search by _id
+			const result = await db
+				.collection(collectionName)
+				.findOne({ _id: new mongoose.Types.ObjectId(id) });
+
+			if (result) {
+				return collectionName; // Found the document
+			}
+		}
+
+		return null; // Document not found in any collection
+	} catch (error) {
+		console.error("Error finding document by id:", error);
+	}
+}
+
+app.post("/create-review", verifyJWT, (req, res) => {
+	const authorId = req.user;
+
+	let { title, description, banner, content, referredMediaID, draft, id } =
+		req.body;
+
+	// validation
+	if (!title.length) {
+		return res.status(403).json({ error: "You must provide a title" });
+	}
+
+	if (!draft) {
+		if (!description.length || description.length > 80) {
+			return res.status(403).json({
+				error: "You must provide review description under 80 characters",
+			});
+		}
+
+		if (!banner.length) {
+			return res.status(403).json({
+				error: "You must provide review banner in order to publish it",
+			});
+		}
+
+		if (!content.blocks.length) {
+			return res
+				.status(403)
+				.json({ error: "There must be some review content to publish it" });
+		}
+	}
+
+	let review_id =
+		id ||
+		title
+			.replace(/[^a-zA-Z0-9]/g, " ")
+			.replace(/\s+/g, "-")
+			.trim() + nanoid();
+
+	if (id) {
+		Review.findOneAndUpdate(
+			{ review_id },
+			{
+				title,
+				description,
+				banner,
+				content,
+				referredMediaID,
+				draft: draft ? draft : false,
+			},
+		)
+			.then(() => {
+				return res.status(200).json({ id: review_id });
+			})
+			.catch((err) => {
+				return res.status(500).json({ error: err.message });
+			});
+	} else {
+		let review = new Review({
+			title,
+			description,
+			banner,
+			content,
+			referredMedia: referredMediaID,
+			author: authorId,
+			review_id,
+			draft: Boolean(draft),
+		});
+
+		review
+			.save()
+			.then(async (review) => {
+				let incrementVal = draft ? 0 : 1;
+
+				User.findOneAndUpdate(
+					{ _id: authorId },
+					{
+						$inc: { "account_info.total_reviews": incrementVal },
+						$push: { reviews: review._id },
+					},
+				)
+					.then(async (_user) => {
+						const collectionName = await findDocumentCollectionById(referredMediaID);
+            console.log(`collection name is: ${collectionName}`)
+
+						if ((collectionName === "movies")) {
+							Movie.findOneAndUpdate(
+								{ _id: referredMediaID },
+								{ $push: { reviews: review._id } },
+							)
+              .then();
+
+						} else if ((collectionName === "series")) {
+							Serie.findOneAndUpdate(
+								{ _id: referredMediaID },
+								{ $push: { reviews: review._id } },
+							)
+              .then();
+
+						} else if ((collectionName === "games")) {
+              console.log("pushing the review into the games's reviews array")
+							Game.findOneAndUpdate(
+								{ _id: referredMediaID },
+								{ $push: { reviews: review._id } },
+							)
+              .then();
+
+						}
+						return res.status(200).json({ id: review.review_id });
+					})
+					.catch((_err) => {
+						return res .status(500) .json({ error: _err });
+					});
+			})
+			.catch((err) => {
+				return res.status(500).json({ error: err.message });
+			});
+	}
+});
 app.post("/add-actor", async (req, res) => {
 	let { personal_info, banner, activity, roles } = req.body;
 

@@ -25,6 +25,10 @@ const reviewSchema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
+  referredMedia: {
+		type: Schema.Types.ObjectId,
+		required: true,
+  }
 });
 
 export default mongoose.model("reviews", reviewSchema);

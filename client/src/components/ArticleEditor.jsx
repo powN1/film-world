@@ -2,7 +2,7 @@ import defaultBanner from "../imgs/defaultBanner.png";
 import uploadImage from "../common/aws";
 import { useContext, useEffect, useRef } from "react";
 import { Toaster, toast } from "react-hot-toast";
-import { EditorContext } from "../pages/CreateArticlePage";
+import { EditorContext } from "../pages/WriteArticlePage";
 import EditorJS from "@editorjs/editorjs";
 import { tools } from "../common/tools";
 

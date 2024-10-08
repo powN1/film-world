@@ -37,20 +37,22 @@ const gameSchema = mongoose.Schema({
 	releaseDate: {
 		type: Date,
 	},
-  dlcs: {
-    type: [{
-      name: String,
-      cover: {
-        url: String
-      }
-    }]
-  },
-  platforms: {
-    type: [String]
-  },
-  similarGames: {
-    type: [String]
-  },
+	dlcs: {
+		type: [
+			{
+				name: String,
+				cover: {
+					url: String,
+				},
+			},
+		],
+	},
+	platforms: {
+		type: [String],
+	},
+	similarGames: {
+		type: [String],
+	},
 	universe: {
 		type: [String],
 	},
@@ -66,12 +68,11 @@ const gameSchema = mongoose.Schema({
 	videos: {
 		type: [String],
 	},
-	reviews: [
-		{
-			type: Schema.Types.ObjectId,
-			ref: "reviews",
-		},
-	],
+	reviews: {
+		type: [Schema.Types.ObjectId],
+		ref: "reviews",
+		default: [],
+	},
 });
 
 export default mongoose.model("games", gameSchema);

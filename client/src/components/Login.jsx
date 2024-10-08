@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { IoMdClose } from "react-icons/io";
 import LoginModal from "../components/LoginModal";
 import { UserContext } from "../App";
 

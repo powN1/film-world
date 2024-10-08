@@ -62,6 +62,20 @@ const userSchema = mongoose.Schema(
 				},
 			},
 		},
+		account_info: {
+			total_articles: {
+				type: Number,
+				default: 0,
+			},
+			total_reviews: {
+				type: Number,
+				default: 0,
+			},
+			total_reads: {
+				type: Number,
+				default: 0,
+			},
+		},
 		admin: {
 			type: Boolean,
 			default: false,
@@ -77,6 +91,11 @@ const userSchema = mongoose.Schema(
 		articles: {
 			type: [Schema.Types.ObjectId],
 			ref: "articles",
+			default: [],
+		},
+		reviews: {
+			type: [Schema.Types.ObjectId],
+			ref: "reviews",
 			default: [],
 		},
 	},

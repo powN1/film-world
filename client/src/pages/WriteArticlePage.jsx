@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 import ArticleEditor from "../components/ArticleEditor";
 import PublishForm from '../components/PublishForm'
 
-const articleStructure = {
+const reviewStructure = {
 	title: "",
 	banner: "",
 	content: [],
@@ -13,14 +13,14 @@ const articleStructure = {
 
 export const EditorContext = createContext({});
 
-export default function CreateArticlePage() {
-	const [article, setArticle] = useState(articleStructure);
+export default function WriteArticlePage() {
+	const [article, setArticle] = useState(reviewStructure);
 	const [editorState, setEditorState] = useState("editor");
 	const [textEditor, setTextEditor] = useState({ isReady: false });
 	const [loading, setLoading] = useState(true);
 
 	return (
-		<EditorContext.Provider value={{ article, setArticle, editorState, setEditorState, textEditor, setTextEditor }} >
+		<EditorContext.Provider value={{ article, setArticle, editorState, setEditorState, textEditor, setTextEditor }}>
 			{editorState === "editor" ? <ArticleEditor /> : <PublishForm />}
 		</EditorContext.Provider>
 	);
