@@ -1,34 +1,61 @@
 import mongoose, { Schema } from "mongoose";
 
-const reviewSchema = mongoose.Schema({
-	activity: {
-		rating: {
-			type: Number,
+const reviewSchema = mongoose.Schema(
+	{
+		review_id: {
+			type: String,
+			required: true,
+			unique: true,
+		},
+		activity: {
+			rating: {
+				type: Number,
+			},
+			total_comments: {
+				type: Number,
+				default: 0,
+			},
+			total_parent_comments: {
+				type: Number,
+				default: 0,
+			},
+		},
+		author: {
+			type: Schema.Types.ObjectId,
+			required: true,
+			ref: "users",
+		},
+		banner: {
+			type: String,
+			required: true,
+		},
+		category: {
+			type: String,
+		},
+		content: {
+			type: [],
+			// required: true
+		},
+		description: {
+			type: String,
+		},
+		draft: {
+			type: Boolean,
+			default: false,
+		},
+		title: {
+			type: String,
+			required: true,
+		},
+		referredMedia: {
+			type: Schema.Types.ObjectId,
+			required: true,
 		},
 	},
-	author: {
-		type: Schema.Types.ObjectId,
-		required: true,
-		ref: "users",
+	{
+		timestamps: {
+			createdAt: "publishedAt",
+		},
 	},
-	banner: {
-		type: String,
-		required: true,
-	},
-	category: {
-		type: String,
-	},
-	description: {
-		type: String,
-	},
-	title: {
-		type: String,
-		required: true,
-	},
-  referredMedia: {
-		type: Schema.Types.ObjectId,
-		required: true,
-  }
-});
-
+);
 export default mongoose.model("reviews", reviewSchema);

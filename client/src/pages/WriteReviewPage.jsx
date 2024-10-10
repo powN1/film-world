@@ -5,11 +5,13 @@ import PublishReviewForm from '../components/PublishReviewForm'
 const reviewStructure = {
 	title: "",
 	banner: "",
+  category: "",
 	content: [],
 	tags: [],
 	description: "",
   referredMediaID: "",
 	author: { personal_info: {} },
+  activity: { rating: 0 },
 };
 
 export const EditorContext = createContext({});

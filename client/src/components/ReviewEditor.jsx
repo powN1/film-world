@@ -3,6 +3,7 @@ import uploadImage from "../common/aws";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { IoMdClose } from "react-icons/io";
+import { FaRegStar, FaStar } from "react-icons/fa";
 import { EditorContext } from "../pages/WriteReviewPage";
 import EditorJS from "@editorjs/editorjs";
 import { tools } from "../common/tools";
@@ -21,10 +22,11 @@ const ReviewEditor = () => {
 	const [searchedCollection, setSearchedCollection] = useState([]);
 
 	const [selectedMedia, setSelectedMedia] = useState(null);
+	const [userRating, setUserRating] = useState(0);
 
 	const {
 		review,
-		review: { title, banner, content, description, referredMediaID },
+		review: { title, banner, category, content, description, referredMediaID, activity },
 		setReview,
 		setEditorState,
 		textEditor,
@@ -72,23 +74,27 @@ const ReviewEditor = () => {
 
 	const handlePublishEvent = () => {
 		if (!banner.length) {
-			return toast.error("Upload a review banner to publish it");
+			return toast.error("Upload a review banner to publish the review");
 		}
 
 		if (!title.length) {
-			return toast.error("Write reivew title to publish it");
+			return toast.error("Write review title to publish the review");
 		}
 
-    if (!referredMediaID) {
+		if (!referredMediaID) {
 			return toast.error("Select a specific title to publish the review");
-    }
+		}
+
+		if (userRating === 0) {
+			return toast.error("Rate a title to publish the review");
+		}
 
 		if (textEditor.isReady) {
 			textEditor
 				.save()
 				.then((data) => {
 					if (data.blocks.length) {
-						setReview({ ...review, content: data });
+						setReview({ ...review, category: selectedCategory, content: data });
 						setEditorState("publish");
 					} else {
 						return toast.error("Write something in your review to publish it");
@@ -107,22 +113,12 @@ const ReviewEditor = () => {
 		let searched = [];
 
 		if (selectedCategory === "movie") {
-			searched = movies
-				.filter((movie) =>
-					movie.title.toLowerCase().includes(inputValue.toLowerCase()),
-				)
-				.sort((a, b) => a.title.localeCompare(b.title));
+			searched = movies .filter((movie) => movie.title.toLowerCase().includes(inputValue.toLowerCase()),) .sort((a, b) => a.title.localeCompare(b.title));
 		} else if (selectedCategory === "serie") {
-			searched = series
-				.filter((serie) =>
-					serie.title.toLowerCase().includes(inputValue.toLowerCase()),
-				)
-				.sort((a, b) => a.title.localeCompare(b.title));
+			searched = series .filter((serie) => serie.title.toLowerCase().includes(inputValue.toLowerCase()),) .sort((a, b) => a.title.localeCompare(b.title));
 		} else if (selectedCategory === "game") {
 			searched = games
-				.filter((game) =>
-					game.title.toLowerCase().includes(inputValue.toLowerCase()),
-				)
+				.filter((game) => game.title.toLowerCase().includes(inputValue.toLowerCase()),)
 				.sort((a, b) => a.title.localeCompare(b.title));
 		}
 
@@ -159,9 +155,15 @@ const ReviewEditor = () => {
 	};
 
 	const fetchData = async () => {
-		const fetchMovies = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movies",);
-		const fetchSeries = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-series",);
-		const fetchGames = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-games",);
+		const fetchMovies = await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-movies",
+		);
+		const fetchSeries = await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-series",
+		);
+		const fetchGames = await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-games",
+		);
 
 		setMovies(fetchMovies.data.movies);
 		setSeries(fetchSeries.data.series);
@@ -169,23 +171,28 @@ const ReviewEditor = () => {
 	};
 
 	const handleMediaSelection = (media) => {
-    console.log(media)
-
 		if (!selectedMedia) {
 			setSelectedMedia(media);
 			setSearchTitleValue("");
-      setSelectedCategory("movie");
 		} else {
 			setSearchTitleValue("");
 			return toast.error("You can only write a review for one at the time");
 		}
 
-    setReview({...review, referredMediaID: media._id})
+		setReview({ ...review, referredMediaID: media._id });
 	};
 
 	const handleMediaRemoval = () => {
-    setSelectedCategory("movie");
+		setSelectedCategory("movie");
 		setSelectedMedia(null);
+		setUserRating(0);
+	};
+
+	const handleRatingChange = (index) => {
+		if (selectedMedia) {
+			setUserRating(index + 1);
+			setReview({ ...review, activity: { ...review.activity, rating: index + 1 } });
+		} else return toast.error("Select a title before rating it");
 	};
 
 	useEffect(() => {
@@ -221,11 +228,13 @@ const ReviewEditor = () => {
 					</div>
 				</div>
 
+        {/* Category selection */}
 				<div className="flex flex-col gap-y-2">
 					<p className="text-gray-500">Review for</p>
 					<select
 						id="category-select"
 						value={selectedCategory}
+            disabled={selectedMedia}
 						className="input-box2 w-1/6 border border-gray-400 rounded-md focus:border-yellow-400 duration-150 focus:[box-shadow:_2px_2px_6px_rgb(250_204_21/_15%)] ml-4"
 						onChange={handleCategoryChange}
 					>
@@ -235,21 +244,31 @@ const ReviewEditor = () => {
 					</select>
 				</div>
 
+        {/* Title search */}
 				<div className="flex flex-col gap-y-2">
 					<p className="text-gray-500">Title</p>
 					<input
 						type="text"
 						placeholder="Search..."
 						value={searchTitleValue}
+            disabled={selectedMedia}
 						className="w-1/2 input-box2 border border-gray-400 rounded-md focus:border-yellow-400 duration-150 focus:[box-shadow:_2px_2px_6px_rgb(250_204_21/_15%)] ml-4"
 						onChange={handleTitleSearch}
 					/>
 					{searchTitleValue.length > 1 && (
 						<ul className="max-h-[400px] overflow-y-scroll">
 							{searchedCollection.map((item, i) => {
-								const year = selectedCategory === "movie" || selectedCategory === "game" ? getFullYear(item.releaseDate) : null;
-								const firstAirYear = selectedCategory === "serie" && getFullYear(item.firstAirDate);
-								const lastAirYear = selectedCategory === "serie" && item.status === "Ended" ? getFullYear(item.lastAirDate) : null;
+								const year =
+									selectedCategory === "movie" || selectedCategory === "game"
+										? getFullYear(item.releaseDate)
+										: null;
+								const firstAirYear =
+									selectedCategory === "serie" &&
+									getFullYear(item.firstAirDate);
+								const lastAirYear =
+									selectedCategory === "serie" && item.status === "Ended"
+										? getFullYear(item.lastAirDate)
+										: null;
 
 								return (
 									<li
@@ -284,15 +303,46 @@ const ReviewEditor = () => {
 						<p>
 							{selectedMedia.title}{" "}
 							<span className="text-gray-400 text-sm">
-								{selectedMedia.releaseDate ? `(${getFullYear(selectedMedia.releaseDate)})`
+								{selectedMedia.releaseDate
+									? `(${getFullYear(selectedMedia.releaseDate)})`
 									: `(${getFullYear(selectedMedia.firstAirDate)}${selectedMedia.lastAirDate ? ` - ${getFullYear(selectedMedia.lastAirDate)}` : " -"})`}
 							</span>
 						</p>
-						<button className="ml-auto mr-3 text-red-600" onClick={handleMediaRemoval}>
+						<button
+							className="ml-auto mr-3 text-red-600"
+							onClick={handleMediaRemoval}
+						>
 							<IoMdClose className="text-3xl" />
 						</button>
 					</div>
 				)}
+
+        {/* Rating */}
+				<div className="flex flex-col gap-y-2 mb-3">
+					<p className="text-gray-500">
+						Rating{" "}
+						<span className="text-sm">
+							{userRating > 0 ? `(${userRating} / 10)` : null}
+						</span>
+					</p>
+					<div className="flex ml-4">
+						{[...Array(10)].map((_, i) =>
+							i < userRating ? (
+								<FaStar
+									key={i}
+									className="text-yellow-400 text-xl cursor-pointer"
+									onClick={() => handleRatingChange(i)}
+								/>
+							) : (
+								<FaRegStar
+									key={i}
+									className="text-yellow-400 text-xl cursor-pointer"
+									onClick={() => handleRatingChange(i)}
+								/>
+							),
+						)}
+					</div>
+				</div>
 
 				<div>
 					<div className="aspect-video bg-white border-4 border-gray-400/30 hover:border-gray-400/60 cursor-pointer">

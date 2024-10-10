@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { IoMdClose } from "react-icons/io";
+import { FaRegStar, FaStar } from "react-icons/fa";
 import { EditorContext } from "../pages/WriteReviewPage";
-import Tag from "./Tags";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../App";
@@ -13,12 +13,12 @@ const PublishReviewForm = () => {
 
 	const {
 		review,
-		review: { banner, title, tags, description, content, referredMediaID },
+		review: { banner, title, category, description, content, referredMediaID, activity },
 		setReview,
 		setEditorState,
 	} = useContext(EditorContext);
 
-  console.log(`referred media: ${referredMediaID}`)
+	console.log(`referred media: ${referredMediaID}`);
 	const {
 		userAuth: { access_token },
 	} = useContext(UserContext);
@@ -54,9 +54,7 @@ const PublishReviewForm = () => {
 			return toast.error("Write review title before publishing");
 		}
 		if (!description.length || description.length > characterLimit) {
-			return toast.error(
-				`Write review description under ${characterLimit} before publishing`,
-			);
+			return toast.error( `Write review description under ${characterLimit} before publishing`,);
 		}
 
 		let loadingToast = toast.loading("Publishing...");
@@ -66,9 +64,11 @@ const PublishReviewForm = () => {
 		let reviewObj = {
 			title,
 			banner,
+      category,
 			description,
 			content,
-      referredMediaID,
+			referredMediaID,
+      activity,
 			draft: false,
 		};
 		axios
@@ -141,6 +141,27 @@ const PublishReviewForm = () => {
 						<p className="text-gray-500 place-self-end text-sm">
 							{descriptionCharLimit - description.length} characters left
 						</p>
+					</div>
+
+					<div className="flex flex-col gap-y-2">
+						<p className="text-gray-500">
+							Rating <span className="text-sm">({activity.rating} / 10)</span>
+						</p>
+						<div className="flex ml-4">
+							{[...Array(10)].map((_, i) =>
+								i < activity.rating ? (
+									<FaStar
+										key={i}
+										className="text-yellow-400 text-xl"
+									/>
+								) : (
+									<FaRegStar
+										key={i}
+										className="text-yellow-400 text-xl"
+									/>
+								),
+							)}
+						</div>
 					</div>
 
 					<button

@@ -124,7 +124,11 @@ function App() {
 	const fetchLatestSeriesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-series", { count: 20 });
 	const fetchLatestGamesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-games", { count: 20 });
 
-	const fetchReviews = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	// const fetchRandomReviews = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-random", { count: 20 });
+	// const fetchLatestReviews = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest", { count: 20 });
+	// const fetchLatestMoviesReviews = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-movies", { count: 20 });
+	// const fetchLatestSeriesReviews = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-series", { count: 20 });
+	// const fetchLatestGamesReviews = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-games", { count: 20 });
 
 	const fetchActors = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
 	const fetchCharacters = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-characters");
@@ -169,7 +173,7 @@ function App() {
       fetchLatestSeriesArticles(),
       fetchLatestGamesArticles(),
 
-			fetchReviews(),
+			// fetchReviews(),
 
 			fetchActors(),
       fetchCharacters(),
@@ -199,7 +203,7 @@ function App() {
           latestSeriesArticlesResponse,
           latestGamesArticlesResponse,
 
-          reviewsResponse,
+          // reviewsResponse,
 
           actorsResponse,
           charactersResponse,
@@ -227,7 +231,7 @@ function App() {
           setLatestSeriesArticles(latestSeriesArticlesResponse.data.articles)
           setLatestGamesArticles(latestGamesArticlesResponse.data.articles)
 
-					setReviews(reviewsResponse.data.movies);
+					// setReviews(reviewsResponse.data.movies);
 
 					setActors(actorsResponse.data.actors);
 					setCharacters(charactersResponse.data.characters);
@@ -269,7 +273,7 @@ function App() {
     latestSeriesArticles, setLatestSeriesArticles,
     latestGamesArticles, setLatestGamesArticles,
 
-    reviews, setReviews,
+    // reviews, setReviews,
 
     actors, setActors,
     characters, setCharacters,

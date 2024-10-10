@@ -1162,6 +1162,7 @@ app.post("/get-games", (req, res) => {
 			return res.status(500).json({ error: err.message });
 		});
 });
+
 app.post("/get-games-random", (req, res) => {
 	const { count } = req.body;
 
@@ -1326,6 +1327,63 @@ app.post("/get-anticipated-movies", (req, res) => {
 	Movie.find(query)
 		.then((movies) => {
 			return res.status(200).json({ movies });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-reviews-random", (req, res) => {
+	const { count } = req.body;
+
+	let countQuery = 0;
+	let randomQuery = {};
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong review count. Please type a number" });
+		countQuery = count;
+		randomQuery.size = countQuery;
+	}
+
+	Review.aggregate([
+		{ $sample: { size: randomQuery.size } }, // Random sampling with limit
+	])
+		.limit(countQuery)
+		.then((games) => {
+			return res.status(200).json({ games });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-reviews-latest", (req, res) => {
+	const { count } = req.body;
+
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong review count. Please type a number" });
+		countQuery = count;
+	}
+
+	sortQuery["publishedAt"] = -1;
+
+	Review.find()
+		.sort(sortQuery)
+		.limit(countQuery)
+		.populate("author", "personal_info.fullname, personal_info.profile_img")
+		.then((reviews) => {
+			return res.status(200).json({ reviews });
 		})
 		.catch((err) => {
 			return res.status(500).json({ error: err.message });
@@ -1685,11 +1743,20 @@ async function findDocumentCollectionById(id) {
 	}
 }
 
-app.post("/create-review", verifyJWT, (req, res) => {
+app.post("/create-review", verifyJWT, async (req, res) => {
 	const authorId = req.user;
 
-	let { title, description, banner, content, referredMediaID, draft, id } =
-		req.body;
+	let {
+		title,
+		category,
+		description,
+		banner,
+		content,
+		referredMediaID,
+		activity,
+		draft,
+		id,
+	} = req.body;
 
 	// validation
 	if (!title.length) {
@@ -1709,29 +1776,59 @@ app.post("/create-review", verifyJWT, (req, res) => {
 			});
 		}
 
+		if (!category.length) {
+			return res.status(403).json({
+				error: "You must provide review category in order to publish it",
+			});
+		}
+
 		if (!content.blocks.length) {
 			return res
 				.status(403)
 				.json({ error: "There must be some review content to publish it" });
 		}
+
+		if (activity.rating === 0) {
+			return res.status(403).json({
+				error: "You must provide review rating in order to publish it",
+			});
+		}
 	}
 
-	let review_id =
-		id ||
-		title
-			.replace(/[^a-zA-Z0-9]/g, " ")
-			.replace(/\s+/g, "-")
-			.trim() + nanoid();
+  // Get movie/serie/game title
+	let mediaTitle;
+
+	try {
+		if (category === "movie") {
+			const media = await Movie.findOne({ _id: new mongoose.Types.ObjectId(referredMediaID), });
+			mediaTitle = media ? media.title : null;
+		} else if (category === "serie") {
+			const media = await Serie.findOne({ _id: new mongoose.Types.ObjectId(referredMediaID), });
+			mediaTitle = media ? media.title : null;
+		} else if (category === "game") {
+			const media = await Game.findOne({ _id: new mongoose.Types.ObjectId(referredMediaID), });
+			mediaTitle = media ? media.title : null;
+		}
+	} catch (err) {
+		return res.status(500).json({ error: err });
+	}
+
+  mediaTitle = mediaTitle.replace(/[^a-zA-Z0-9]/g, " ").replace(/\s+/g, "-").trim()
+  title = title.replace(/[^a-zA-Z0-9]/g, " ").replace(/\s+/g, "-").trim()
+
+	let review_id = id || mediaTitle + "-" + title + nanoid();
 
 	if (id) {
 		Review.findOneAndUpdate(
 			{ review_id },
 			{
 				title,
+				category,
 				description,
 				banner,
 				content,
 				referredMediaID,
+				activity,
 				draft: draft ? draft : false,
 			},
 		)
@@ -1744,10 +1841,12 @@ app.post("/create-review", verifyJWT, (req, res) => {
 	} else {
 		let review = new Review({
 			title,
+			category,
 			description,
 			banner,
 			content,
 			referredMedia: referredMediaID,
+			activity,
 			author: authorId,
 			review_id,
 			draft: Boolean(draft),
@@ -1766,36 +1865,31 @@ app.post("/create-review", verifyJWT, (req, res) => {
 					},
 				)
 					.then(async (_user) => {
-						const collectionName = await findDocumentCollectionById(referredMediaID);
-            console.log(`collection name is: ${collectionName}`)
+						const collectionName =
+							await findDocumentCollectionById(referredMediaID);
+						console.log(`collection name is: ${collectionName}`);
 
-						if ((collectionName === "movies")) {
+						if (collectionName === "movies") {
 							Movie.findOneAndUpdate(
 								{ _id: referredMediaID },
 								{ $push: { reviews: review._id } },
-							)
-              .then();
-
-						} else if ((collectionName === "series")) {
+							).then();
+						} else if (collectionName === "series") {
 							Serie.findOneAndUpdate(
 								{ _id: referredMediaID },
 								{ $push: { reviews: review._id } },
-							)
-              .then();
-
-						} else if ((collectionName === "games")) {
-              console.log("pushing the review into the games's reviews array")
+							).then();
+						} else if (collectionName === "games") {
+							console.log("pushing the review into the games's reviews array");
 							Game.findOneAndUpdate(
 								{ _id: referredMediaID },
 								{ $push: { reviews: review._id } },
-							)
-              .then();
-
+							).then();
 						}
 						return res.status(200).json({ id: review.review_id });
 					})
 					.catch((_err) => {
-						return res .status(500) .json({ error: _err });
+						return res.status(500).json({ error: _err });
 					});
 			})
 			.catch((err) => {
@@ -1803,6 +1897,7 @@ app.post("/create-review", verifyJWT, (req, res) => {
 			});
 	}
 });
+
 app.post("/add-actor", async (req, res) => {
 	let { personal_info, banner, activity, roles } = req.body;
 
