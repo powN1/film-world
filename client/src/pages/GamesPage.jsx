@@ -11,7 +11,7 @@ const GamesPage = () => {
 	return (
 		<>
 			<Games />
-			<NarrowTrailers />
+			<NarrowTrailers type="games"/>
 			<MostPopular type="games" />
 			<Ranking type="games" anticipated={true} showCategories={false} />
 			<NewestReviews />

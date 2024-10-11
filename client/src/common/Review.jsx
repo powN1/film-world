@@ -1,7 +1,7 @@
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const Review = ({img, name, title, year, author, rating, reviewTitle, description, type}) => {
+const Review = ({img, name, title, year, author, rating, description, type}) => {
 	return (
 		<div className="flex flex-col group">
 			{/* Movie img */}
@@ -16,7 +16,7 @@ const Review = ({img, name, title, year, author, rating, reviewTitle, descriptio
 				/>
 			</Link>
 
-			<div className="flex flex-col px-3 md:px-6 pb-6 pt-3 gap-y-2 group-hover:[box-shadow:_0px_0px_6px_rgb(0_0_0_/_25%)] duration-500 ease-in-out">
+			<div className="flex flex-col px-3 md:px-4 pb-6 pt-3 gap-y-2 group-hover:[box-shadow:_0px_0px_6px_rgb(0_0_0_/_25%)] duration-500 ease-in-out">
 				{/* {Game name} */}
 				<p className="uppercase text-sm md:text-xs text-gray-400">
 					<span className="font-black hover:text-gray-300 cursor-pointer duration-300">{name} </span>({year}) review

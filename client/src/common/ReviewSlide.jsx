@@ -2,13 +2,7 @@ import { Link } from "react-router-dom";
 import { FaRegStar } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 
-const ReviewSlide = ({
-	title,
-	img,
-	category,
-	rating,
-	description,
-	// author,
+const ReviewSlide = ({ title, img, category, rating, description, author,
 }) => {
 
 	return (
@@ -31,9 +25,9 @@ const ReviewSlide = ({
 			<div className="flex flex-col px-3 pt-1 gap-y-1">
 				{/* Author info */}
 				<div className="flex gap-x-2">
-					<Link className="relative h-[70px] w-[70px] border-2 border-green-600 rounded-full p-1">
+					<Link className="relative h-[70px] w-[70px] border-2 border-green-600 rounded-full p-[2px]">
 						<img
-							src=""
+							src={author.profile_img}
 							alt="user picutre"
 							className="h-full w-full object-cover rounded-full"
 						/>

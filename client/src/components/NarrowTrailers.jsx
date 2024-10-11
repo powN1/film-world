@@ -1,10 +1,18 @@
 import { Link } from "react-router-dom";
 import MovieSlide from "../common/MovieSlide";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DataContext } from "../App";
 
-const NarrowTrailers = () => {
-	const { popularMovies } = useContext(DataContext);
+const NarrowTrailers = ({ type }) => {
+	const { popularMovies, topRatedSeries, anticipatedGames } = useContext(DataContext);
+
+  const [slidesToShow, setSlidesToShow] = useState([])
+
+  useEffect(() => {
+    if(type === "movies") setSlidesToShow(popularMovies);
+    if(type === "series") setSlidesToShow(topRatedSeries);
+    if(type === "games") setSlidesToShow(anticipatedGames);
+  }, [ ])
 
 	return (
 		<div className="w-full bg-white">
@@ -13,7 +21,7 @@ const NarrowTrailers = () => {
 					Trailers
 				</h2>
 				<div className="w-full self-center flex md:gap-x-3 overflow-x-scroll">
-					{popularMovies.map((movie, i) => {
+					{slidesToShow.map((movie, i) => {
 						return (
 							<MovieSlide
 								key={i}

@@ -94,7 +94,7 @@ const ReviewEditor = () => {
 				.save()
 				.then((data) => {
 					if (data.blocks.length) {
-						setReview({ ...review, category: selectedCategory, content: data });
+						setReview({ ...review, category: selectedCategory + "s", content: data });
 						setEditorState("publish");
 					} else {
 						return toast.error("Write something in your review to publish it");

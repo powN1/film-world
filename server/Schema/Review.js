@@ -31,6 +31,8 @@ const reviewSchema = mongoose.Schema(
 		},
 		category: {
 			type: String,
+      required: true,
+      enum: ["movies", "series", "games"]
 		},
 		content: {
 			type: [],
@@ -50,6 +52,7 @@ const reviewSchema = mongoose.Schema(
 		referredMedia: {
 			type: Schema.Types.ObjectId,
 			required: true,
+      refPath: "category"
 		},
 	},
 	{

@@ -7,7 +7,7 @@ import { DataContext } from "../App";
 const Reviews = () => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
-	const { reviews } = useContext(DataContext);
+	const { latestReviews } = useContext(DataContext);
 
 	const settings = {
 		dots: true,
@@ -26,13 +26,13 @@ const Reviews = () => {
 				</h2>
 				<div className="w-[95%] self-center">
 					<Slider {...settings}>
-						{reviews.map((review, i) => {
-							// let { author: { personal_info }, } = review;
+						{latestReviews.map((review, i) => {
+							let { author: { personal_info }, } = review;
 
 							return (
 								<ReviewSlide
 									key={i}
-									// author={personal_info}
+									author={personal_info}
 									category={review.category}
 									description={review.description}
 									img={review.banner}

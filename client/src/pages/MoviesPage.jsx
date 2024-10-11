@@ -12,7 +12,7 @@ const MoviesPage = () => {
 		<>
 			<MainPreview type="movies"/>
 			<WideTrailerSlider type="movies" showCategories={false} />
-			<Ranking anticipated={true} showCategories={false} />
+			<Ranking type="movies" anticipated={true} showCategories={false} />
 			<MostPopular type="roles" category="movies" />
 			<Birthday />
 			<MostPopular type="characters" />

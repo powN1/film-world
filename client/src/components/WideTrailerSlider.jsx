@@ -4,6 +4,7 @@ import Slider from "react-slick";
 import MovieSlide from "../common/MovieSlide";
 import { MediaQueriesContext } from "../App";
 import { DataContext } from "../App";
+import { getFullYear } from "../common/date";
 
 const WideTrailerSlider = ({ type, showCategories = true }) => {
 	const { upcomingMovies, upcomingSeries, topRatedSeries } = useContext(DataContext);
@@ -83,7 +84,7 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
 			<div className="w-[95%] self-center">
 				<Slider {...settings}>
 					{currentSlidesArray.map((movie, i) => {
-            // console.log(movie)
+            const year = getFullYear(movie.releaseDate) || getFullYear(moviefirstAirDate);
 						return (
 							<MovieSlide
 								key={i}
@@ -94,7 +95,7 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
 								description={movie.description}
 								type="trailer"
 								pegi={movie.pegi}
-                year={movie.firstAirDate || movie.releaseDate}
+                year={year}
 							/>
 						);
 					})}

@@ -4,7 +4,7 @@ import RankingPoster from "../common/RankingPoster";
 import { DataContext } from "../App";
 
 const Ranking = ({ type, showCategories, anticipated = false }) => {
-	const { upcomingMovies, topRatedMovies, latestSeries, anticipatedGames, topRatedGames } = useContext(DataContext);
+	const { anticipatedMovies, topRatedMovies, latestSeries, anticipatedGames, topRatedGames } = useContext(DataContext);
 
 	const [currentCategory, setCurrentCategory] = useState("");
 
@@ -32,7 +32,7 @@ const Ranking = ({ type, showCategories, anticipated = false }) => {
 
 	useEffect(() => {
 		if (type === "movies") {
-			if (anticipated) setCurrentSlidesArray(upcomingMovies);
+			if (anticipated) setCurrentSlidesArray(anticipatedMovies);
 			else setCurrentSlidesArray(topRatedMovies);
 		}
 		if (type === "series") setCurrentSlidesArray(latestSeries);
@@ -85,11 +85,7 @@ const Ranking = ({ type, showCategories, anticipated = false }) => {
 								title={movie.title}
 								img={movie.cover}
 								rating={ currentCategory === "most anticipated" || anticipated ? null : movie.activity.rating ? movie.activity.rating : null }
-								peopleAwaiting={
-									movie.activity.peopleAwaiting
-										? movie.activity.peopleAwaiting
-										: null
-								}
+								peopleAwaiting={ movie.activity.peopleAwaiting ? movie.activity.peopleAwaiting : null }
 							/>
 						);
 					})}

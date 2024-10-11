@@ -358,7 +358,7 @@ async function getMovieFromTheMovieDBById(movieId) {
 		.catch((err) => console.log(err));
 }
 
-const listOfMoviesByIdToFetch = [1081012, 1252182, 1137207, 835113];
+const listOfMoviesByIdToFetch = [986056, 1233413, 1234821, 1084199, 777443, 1100988, 950387, 617126, 822119, 1360520];
 
 // listOfMoviesByIdToFetch.forEach(async (movie) => {
 // 	await getMovieFromTheMovieDBById(movie);
@@ -1318,13 +1318,27 @@ app.post("/get-movies", (req, res) => {
 		});
 });
 
-app.post("/get-anticipated-movies", (req, res) => {
-	const { mostAnticipated } = req.body;
+app.post("/get-movies-top-rated", (req, res) => {
+	const { count } = req.body;
 
-	const query = {};
-	if (mostAnticipated) query["activity.peopleAwaiting"] = { $exists: true };
+	const sortQuery = {};
+	let countQuery = 0;
 
-	Movie.find(query)
+	// Error checking
+
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong movie count. Please type a number" });
+		countQuery = count;
+	}
+
+	sortQuery["activity.rating"] = -1;
+
+	Movie.find()
+		.sort(sortQuery)
+		.limit(countQuery)
 		.then((movies) => {
 			return res.status(200).json({ movies });
 		})
@@ -1333,28 +1347,61 @@ app.post("/get-anticipated-movies", (req, res) => {
 		});
 });
 
-app.post("/get-reviews-random", (req, res) => {
+app.post("/get-movies-most-anticipated", (req, res) => {
 	const { count } = req.body;
 
+	const findQuery = {};
+	const sortQuery = {};
 	let countQuery = 0;
-	let randomQuery = {};
+
+	// Error checking
+
+	if (count) {
+		if (typeof count !== "number")
+			return res .status(400) .json({ error: "Wrong movie count. Please type a number" });
+		countQuery = count;
+	}
+
+	const today = new Date();
+	findQuery.releaseDate = { $gt: today };
+	sortQuery["activity.peopleAwaiting"] = -1;
+
+	Movie.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
+		.then((movies) => {
+			return res.status(200).json({ movies });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-movies-upcoming", (req, res) => {
+	const { count } = req.body;
+
+	const findQuery = {};
+	const sortQuery = {};
+	let countQuery = 0;
 
 	// Error checking
 	if (count) {
 		if (typeof count !== "number")
 			return res
 				.status(400)
-				.json({ error: "Wrong review count. Please type a number" });
+				.json({ error: "Wrong movie count. Please type a number" });
 		countQuery = count;
-		randomQuery.size = countQuery;
 	}
 
-	Review.aggregate([
-		{ $sample: { size: randomQuery.size } }, // Random sampling with limit
-	])
+	const today = new Date();
+	findQuery.releaseDate = { $gt: today };
+	sortQuery["releaseDate"] = 1;
+
+	Movie.find(findQuery)
+		.sort(sortQuery)
 		.limit(countQuery)
-		.then((games) => {
-			return res.status(200).json({ games });
+		.then((movies) => {
+			return res.status(200).json({ movies });
 		})
 		.catch((err) => {
 			return res.status(500).json({ error: err.message });
@@ -1382,6 +1429,123 @@ app.post("/get-reviews-latest", (req, res) => {
 		.sort(sortQuery)
 		.limit(countQuery)
 		.populate("author", "personal_info.fullname, personal_info.profile_img")
+		.populate("referredMedia", "title releaseDate firstAirDate")
+		.then((reviews) => {
+			return res.status(200).json({ reviews });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-reviews-latest-movies", (req, res) => {
+	const { count } = req.body;
+
+	const findQuery = {};
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res .status(400) .json({ error: "Wrong review count. Please type a number" });
+		countQuery = count;
+	}
+
+	sortQuery["publishedAt"] = -1;
+	findQuery.category = "movies";
+
+	Review.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
+		.populate("author", "personal_info.fullname, personal_info.profile_img")
+		.populate("referredMedia", "title releaseDate firstAirDate")
+		.then((reviews) => {
+			return res.status(200).json({ reviews });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-reviews-latest-series", (req, res) => {
+	const { count } = req.body;
+
+	const findQuery = {};
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res .status(400) .json({ error: "Wrong review count. Please type a number" });
+		countQuery = count;
+	}
+
+	sortQuery["publishedAt"] = -1;
+	findQuery.category = "series";
+
+	Review.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
+		.populate("author", "personal_info.fullname, personal_info.profile_img")
+		.populate("referredMedia", "title releaseDate firstAirDate")
+		.then((reviews) => {
+			return res.status(200).json({ reviews });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-reviews-latest-games", (req, res) => {
+	const { count } = req.body;
+
+	const findQuery = {};
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res .status(400) .json({ error: "Wrong review count. Please type a number" });
+		countQuery = count;
+	}
+
+	sortQuery["publishedAt"] = -1;
+	findQuery.category = "games";
+
+	Review.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
+		.populate("author", "personal_info.fullname, personal_info.profile_img")
+		.populate("referredMedia", "title releaseDate firstAirDate")
+		.then((reviews) => {
+			return res.status(200).json({ reviews });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-reviews-random", (req, res) => {
+	const { count } = req.body;
+
+	let countQuery = 0;
+	let randomQuery = {};
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res .status(400) .json({ error: "Wrong review count. Please type a number" });
+		countQuery = count;
+		randomQuery.size = countQuery;
+	}
+
+	Review.aggregate([
+		{ $sample: { size: randomQuery.size } }, // Random sampling with limit
+	])
+		.limit(countQuery)
 		.then((reviews) => {
 			return res.status(200).json({ reviews });
 		})
@@ -1795,26 +1959,33 @@ app.post("/create-review", verifyJWT, async (req, res) => {
 		}
 	}
 
-  // Get movie/serie/game title
+	// Get movie/serie/game title
 	let mediaTitle;
 
 	try {
-		if (category === "movie") {
-			const media = await Movie.findOne({ _id: new mongoose.Types.ObjectId(referredMediaID), });
+		if (category === "movies") {
+			const media = await Movie.findOne({
+				_id: new mongoose.Types.ObjectId(referredMediaID),
+			});
 			mediaTitle = media ? media.title : null;
-		} else if (category === "serie") {
-			const media = await Serie.findOne({ _id: new mongoose.Types.ObjectId(referredMediaID), });
+		} else if (category === "series") {
+			const media = await Serie.findOne({
+				_id: new mongoose.Types.ObjectId(referredMediaID),
+			});
 			mediaTitle = media ? media.title : null;
-		} else if (category === "game") {
-			const media = await Game.findOne({ _id: new mongoose.Types.ObjectId(referredMediaID), });
+		} else if (category === "games") {
+			const media = await Game.findOne({
+				_id: new mongoose.Types.ObjectId(referredMediaID),
+			});
 			mediaTitle = media ? media.title : null;
 		}
 	} catch (err) {
 		return res.status(500).json({ error: err });
 	}
 
-  mediaTitle = mediaTitle.replace(/[^a-zA-Z0-9]/g, " ").replace(/\s+/g, "-").trim()
-  title = title.replace(/[^a-zA-Z0-9]/g, " ").replace(/\s+/g, "-").trim()
+  // Create title for the review (url)
+	mediaTitle = mediaTitle .replace(/[^a-zA-Z0-9]/g, " ") .replace(/\s+/g, "-") .trim();
+	title = title .replace(/[^a-zA-Z0-9]/g, " ") .replace(/\s+/g, "-") .trim();
 
 	let review_id = id || mediaTitle + "-" + title + nanoid();
 
