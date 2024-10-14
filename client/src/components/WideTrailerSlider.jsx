@@ -84,7 +84,7 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
 			<div className="w-[95%] self-center">
 				<Slider {...settings}>
 					{currentSlidesArray.map((movie, i) => {
-            const year = getFullYear(movie.releaseDate) || getFullYear(moviefirstAirDate);
+            const year = getFullYear(movie.releaseDate) || getFullYear(movie.firstAirDate);
 						return (
 							<MovieSlide
 								key={i}

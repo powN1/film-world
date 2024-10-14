@@ -12,7 +12,7 @@ import filmwebLogoSmall from "../imgs/filmweb-logo-small.png";
 import { navbarItems } from "./navbarItems";
 import { useContext, useEffect, useRef, useState } from "react";
 import SearchPoster from "../common/SearchPoster";
-import { MediaQueriesContext, UserContext } from "../App";
+import { DataContext, MediaQueriesContext, UserContext } from "../App";
 import LoginModal from "./LoginModal";
 import { removeFromSession, storeInSession } from "../common/session";
 import { authWithGoogle } from "../common/firebase";
@@ -20,27 +20,14 @@ import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 
 const Navbar = () => {
-	let {
-    userAuth,
-		userAuth: { access_token, admin, profile_img, firstName, surname },
-		setUserAuth,
-	} = useContext(UserContext);
-
-	const fetchMovies = () => {
-		axios
-			.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies")
-			.then((res) => {
-				setMovies(res.data.movies);
-			})
-			.catch((err) => console.error(err));
-	};
+	let { movies } = useContext(DataContext);
+	let { userAuth, userAuth: { access_token, admin, profile_img, firstName, surname }, setUserAuth, } = useContext(UserContext);
 
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
 	const [navbarSize, setNavbarSize] = useState("big");
 	const [searchModalVisible, setSearchModalVisible] = useState(false);
 	const [modalInputValue, setModalInputValue] = useState("");
-	const [movies, setMovies] = useState([]);
 	const [foundMovies, setFoundMovies] = useState([]);
 	const [showMobileMenu, setShowMobileMenu] = useState(false);
 	const [showMobileNavbar, setShowMobileNavbar] = useState(true);

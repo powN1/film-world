@@ -24,11 +24,15 @@ function App() {
 	const [tabletView, setTabletView] = useState(false);
 	const [userAuth, setUserAuth] = useState({});
 
+	const [movies, setMovies] = useState([]);
+	const [randomMovies, setRandomMovies] = useState([]);
 	const [popularMovies, setPopularMovies] = useState([]);
 	const [topRatedMovies, setTopRatedMovies] = useState([]);
 	const [anticipatedMovies, setAnticipatedMovies] = useState([]);
 	const [upcomingMovies, setUpcomingMovies] = useState([]);
 
+	const [series, setSeries] = useState([]);
+	const [randomSeries, setRandomSeries] = useState([]);
 	const [popularSeries, setPopularSeries] = useState([]);
 	const [topRatedSeries, setTopRatedSeries] = useState([]);
 	const [upcomingSeries, setUpcomingSeries] = useState([]);
@@ -44,8 +48,10 @@ function App() {
 	const [topRatedGames, setTopRatedGames] = useState([]);
 	const [anticipatedGames, setAnticipatedGames] = useState([]);
 
-	const [moviesRoles, setMoviesRoles] = useState([]);
-	const [seriesRoles, setSeriesRoles] = useState([]);
+	const [movieRoles, setMovieRoles] = useState([]);
+	const [movieTopRatedRoles, setMovieTopRatedRoles] = useState([]);
+	const [serieRoles, setSerieRoles] = useState([]);
+	const [serieTopRatedRoles, setSerieTopRatedRoles] = useState([]);
 
 	const [randomArticles, setRandomArticles] = useState([]);
 	const [latestArticles, setLatestArticles] = useState([]);
@@ -66,26 +72,14 @@ function App() {
 
 	const checkDevice = () => {
 		if (window.innerWidth < 768) {
-			if (tabletView === true) {
-				setTabletView(false);
-			}
-			if (mobileView === false) {
-				setMobileView(true);
-			}
+			if (tabletView === true) setTabletView(false);
+			if (mobileView === false) setMobileView(true);
 		} else if (window.innerWidth >= 768 && window.innerWidth < 1024) {
-			if (mobileView === true) {
-				setMobileView(false);
-			}
-			if (tabletView === false) {
-				setTabletView(true);
-			}
+			if (mobileView === true) setMobileView(false);
+			if (tabletView === false) setTabletView(true);
 		} else if (window.innerWidth >= 1024) {
-			if (mobileView === true) {
-				setMobileView(false);
-			}
-			if (tabletView === true) {
-				setTabletView(false);
-			}
+			if (mobileView === true) setMobileView(false);
+			if (tabletView === true) setTabletView(false);
 		}
 	};
 
@@ -98,42 +92,46 @@ function App() {
 	// NOTE: Top rated movies, series and upcoming
 	// NOTE: Latest game articles
 
-	const fetchMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-	const fetchPopularMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies", { type: "popular", count: 20 });
-	const fetchTopRatedMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-top-rated", { count: 10 });
-	const fetchAnticipatedMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-most-anticipated", { count: 10 });
-	const fetchUpcomingMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-upcoming", { count: 10 });
+	const fetchMovies = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchRandomMovies = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-random", { count: 10 },);
+	const fetchPopularMovies = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-top-rated", { count: 20 },);
+	const fetchTopRatedMovies = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-top-rated", { count: 10 },);
+	const fetchAnticipatedMovies = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-most-anticipated", { count: 10 },);
+	const fetchUpcomingMovies = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-upcoming", { count: 10 },);
 
+	const fetchSeries = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-series", { count: 10 },);
+	const fetchRandomSeries = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-series-random", { count: 10 },);
 	// const fetchPopularSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-popular", { count: 20 });
-	const fetchTopRatedSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-top-rated", { count: 10 });
+	const fetchTopRatedSeries = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-series-top-rated", { count: 10 },);
 	// const fetchUpcomingSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-upcoming", { count: 10 });
-	const fetchLatestSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-latest", { sortByRating: true, count: 10 });
+	const fetchLatestSeries = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-series-latest", { sortByRating: true, count: 10 },);
 
 	const fetchAnimes = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-animes");
 	const fetchPopularAnimes = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
 	const fetchTopRatedAnimes = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
 	const fetchUpcomingAnimes = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
 
-	const fetchRandomGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-random", { count: 20 });
-	const fetchLatestGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-latest", { count: 20 });
-	const fetchTopRatedGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-top-rated", { count: 20 });
-	const fetchAnticipatedGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-anticipated", { sortByRating: true, count: 20 });
+	const fetchRandomGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-random", { count: 20, });
+	const fetchLatestGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-latest", { count: 20, });
+	const fetchTopRatedGames = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-games-top-rated", { count: 20 },);
+	const fetchAnticipatedGames = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-games-anticipated", { sortByRating: true, count: 20 },);
 
-	const fetchMoviesRoles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles", { sortByRating: true, type: "movies" });
-	const fetchSeriesRoles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles", { sortByRating: true, type: "series" });
+	const fetchMovieRoles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-movie", { count: 20, });
+	const fetchMovieTopRatedRoles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-movie-top-rated", { count: 20, });
+	const fetchSerieRoles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-serie", { count: 20 });
+	const fetchSerieTopRatedRoles  = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-serie-top-rated", { count: 20 });
 
+	const fetchRandomArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { random: true, count: 20, });
+	const fetchLatestArticles = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest", { count: 20 },);
+	const fetchLatestMoviesArticles = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-movies", { count: 20 },);
+	const fetchLatestSeriesArticles = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-series", { count: 20 },);
+	const fetchLatestGamesArticles = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-games", { count: 20 },);
 
-	const fetchRandomArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { random: true, count: 20 });
-	const fetchLatestArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest", { count: 20 });
-	const fetchLatestMoviesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-movies", { count: 20 });
-	const fetchLatestSeriesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-series", { count: 20 });
-	const fetchLatestGamesArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-games", { count: 20 });
-
-	const fetchRandomReviews = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-random", { count: 20 });
-	const fetchLatestReviews = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest", { count: 20 });
-	const fetchLatestMoviesReviews = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-movies", { count: 20 });
-	const fetchLatestSeriesReviews = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-series", { count: 20 });
-	const fetchLatestGamesReviews = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-games", { count: 20 });
+	const fetchRandomReviews = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-random", { count: 20 },);
+	const fetchLatestReviews = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest", { count: 20 },);
+	const fetchLatestMoviesReviews = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-movies", { count: 20 },);
+	const fetchLatestSeriesReviews = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-series", { count: 20 },);
+	const fetchLatestGamesReviews = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-games", { count: 20 },);
 
 	const fetchActors = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
 	const fetchCharacters = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-characters");
@@ -155,103 +153,121 @@ function App() {
 
 		// Use Promise.all to wait for all fetches to complete
 		Promise.all([
-      fetchPopularMovies(),
+      fetchMovies(),
+			fetchRandomMovies(),
+			fetchPopularMovies(),
 			fetchTopRatedMovies(),
-      fetchAnticipatedMovies(),
+			fetchAnticipatedMovies(),
 			fetchUpcomingMovies(),
 
-      // fetchPopularSeries(),
+      fetchSeries(),
+			fetchRandomSeries(),
+			// fetchPopularSeries(),
 			fetchTopRatedSeries(),
 			// fetchUpcomingSeries(),
 			fetchLatestSeries(),
 
-      fetchRandomGames(), 
-      fetchLatestGames(), 
-      fetchTopRatedGames(),
-      fetchAnticipatedGames(),
+			fetchRandomGames(),
+			fetchLatestGames(),
+			fetchTopRatedGames(),
+			fetchAnticipatedGames(),
 
-      fetchMoviesRoles(),
-      fetchSeriesRoles(),
+			fetchMovieRoles(),
+			fetchSerieRoles(),
+			fetchMovieTopRatedRoles(),
+			fetchSerieTopRatedRoles(),
 
-      fetchRandomArticles(),
-      fetchLatestArticles(),
-      fetchLatestMoviesArticles(),
-      fetchLatestSeriesArticles(),
-      fetchLatestGamesArticles(),
+			fetchRandomArticles(),
+			fetchLatestArticles(),
+			fetchLatestMoviesArticles(),
+			fetchLatestSeriesArticles(),
+			fetchLatestGamesArticles(),
 
-      fetchRandomReviews(),
-      fetchLatestReviews(),
-      fetchLatestMoviesReviews(),
-      fetchLatestSeriesReviews(),
-      fetchLatestGamesReviews(),
+			fetchRandomReviews(),
+			fetchLatestReviews(),
+			fetchLatestMoviesReviews(),
+			fetchLatestSeriesReviews(),
+			fetchLatestGamesReviews(),
 
 			fetchActors(),
-      fetchCharacters(),
+			fetchCharacters(),
 		])
 			.then(
 				([
-          popularMoviesResponse,
-          topRatedMoviesResponse,
-          anticipatedMoviesResponse,
-          upcomingMoviesResponse,
-          
-          // popularSeriesResponse,
-          topRatedSeriesResponse,
-          // upcomingSeriesResponse,
-          latestSeriesResponse,
+          moviesResponse,
+					randomMoviesResponse,
+					popularMoviesResponse,
+					topRatedMoviesResponse,
+					anticipatedMoviesResponse,
+					upcomingMoviesResponse,
 
-          randomGamesResponse,
-          latestGamesResponse,
-          topRatedGamesResponse,
-          anticipatedGamesResponse,
+          seriesResponse,
+					randomSeriesResponse,
+					// popularSeriesResponse,
+					topRatedSeriesResponse,
+					// upcomingSeriesResponse,
+					latestSeriesResponse,
 
-          moviesRolesResponse,
-          seriesRolesResponse,
+					randomGamesResponse,
+					latestGamesResponse,
+					topRatedGamesResponse,
+					anticipatedGamesResponse,
 
-          randomArticlesResponse,
-          latestArticlesResponse,
-          latestMoviesArticlesResponse,
-          latestSeriesArticlesResponse,
-          latestGamesArticlesResponse,
+					movieRolesResponse,
+					serieRolesResponse,
+					movieTopRatedRolesResponse,
+					serieTopRatedRolesResponse,
 
-          randomReviewsResponse,
-          latestReviewsResponse,
-          latestMoviesReviewsResponse,
-          latestSeriesReviewsResponse,
-          latestGamesReviewsResponse,
+					randomArticlesResponse,
+					latestArticlesResponse,
+					latestMoviesArticlesResponse,
+					latestSeriesArticlesResponse,
+					latestGamesArticlesResponse,
 
-          actorsResponse,
-          charactersResponse,
+					randomReviewsResponse,
+					latestReviewsResponse,
+					latestMoviesReviewsResponse,
+					latestSeriesReviewsResponse,
+					latestGamesReviewsResponse,
+
+					actorsResponse,
+					charactersResponse,
 				]) => {
+          setMovies(moviesResponse.data.movies);
+          setRandomMovies(randomMoviesResponse.data.movies);
 					setPopularMovies(popularMoviesResponse.data.movies);
 					setTopRatedMovies(topRatedMoviesResponse.data.movies);
 					setAnticipatedMovies(anticipatedMoviesResponse.data.movies);
 					setUpcomingMovies(upcomingMoviesResponse.data.movies);
 
+          setSeries(seriesResponse.data.movies);
+          setRandomSeries(randomSeriesResponse.data.movies);
 					// setPopularSeries(popularSeriesResponse.data.series);
 					setTopRatedSeries(topRatedSeriesResponse.data.series);
 					// setUpcomingSeries(upcomingSeriesResponse.data.series);
 					setLatestSeries(latestSeriesResponse.data.series);
 
-          setRandomGames(randomGamesResponse.data.games)
-          setLatestGames(latestGamesResponse.data.games)
-          setTopRatedGames(topRatedGamesResponse.data.games)
-          setAnticipatedGames(anticipatedGamesResponse.data.games),
-    
-					setMoviesRoles(moviesRolesResponse.data.roles);
-					setSeriesRoles(seriesRolesResponse.data.roles);
+					setRandomGames(randomGamesResponse.data.games);
+					setLatestGames(latestGamesResponse.data.games);
+					setTopRatedGames(topRatedGamesResponse.data.games);
+					setAnticipatedGames(anticipatedGamesResponse.data.games),
+
+          setMovieRoles(movieRolesResponse.data.roles);
+          setMovieTopRatedRoles(movieTopRatedRolesResponse.data.roles);
+					setSerieRoles(serieRolesResponse.data.roles);
+					setSerieTopRatedRoles(serieTopRatedRolesResponse.data.roles);
 
 					setRandomArticles(randomArticlesResponse.data.articles);
-          setLatestArticles(latestArticlesResponse.data.articles)
-          setLatestMovieArticles(latestMoviesArticlesResponse.data.articles)
-          setLatestSeriesArticles(latestSeriesArticlesResponse.data.articles)
-          setLatestGamesArticles(latestGamesArticlesResponse.data.articles)
+					setLatestArticles(latestArticlesResponse.data.articles);
+					setLatestMovieArticles(latestMoviesArticlesResponse.data.articles);
+					setLatestSeriesArticles(latestSeriesArticlesResponse.data.articles);
+					setLatestGamesArticles(latestGamesArticlesResponse.data.articles);
 
 					setRandomReviews(randomReviewsResponse.data.reviews);
-          setLatestReviews(latestReviewsResponse.data.reviews)
-          setLatestMovieReviews(latestMoviesReviewsResponse.data.reviews)
-          setLatestSeriesReviews(latestSeriesReviewsResponse.data.reviews)
-          setLatestGamesReviews(latestGamesReviewsResponse.data.reviews)
+					setLatestReviews(latestReviewsResponse.data.reviews);
+					setLatestMovieReviews(latestMoviesReviewsResponse.data.reviews);
+					setLatestSeriesReviews(latestSeriesReviewsResponse.data.reviews);
+					setLatestGamesReviews(latestGamesReviewsResponse.data.reviews);
 
 					setActors(actorsResponse.data.actors);
 					setCharacters(charactersResponse.data.characters);
@@ -264,54 +280,58 @@ function App() {
 			});
 	}, []);
 
-  const dataContextObj = {
-    popularMovies, setPopularMovies,
-    topRatedMovies, setTopRatedMovies,
-    anticipatedMovies, setAnticipatedMovies,
-    upcomingMovies, setUpcomingMovies,
+	const dataContextObj = {
+    movies,
+    randomMovies,
+		popularMovies, 
+		topRatedMovies, 
+		anticipatedMovies, 
+		upcomingMovies, 
 
-    // popularSeries, setPopularSeries,
-    topRatedSeries, setTopRatedSeries,
+    series,
+    randomSeries,
+		// popularSeries, 
+		topRatedSeries, 
     // upcomingSeries, setUpcomingSeries,
-    latestSeries, setLatestSeries,
+		latestSeries,
 
-    animes, setAnimes,
-    popularAnimes, setPopularAnimes,
-    topRatedAnimes, setTopRatedAnimes,
-    upcomingAnimes, setUpcomingAnimes,
+		animes,
+		popularAnimes,
+		topRatedAnimes,
+		upcomingAnimes,
 
-    randomGames, setRandomGames,
-    latestGames, setLatestGames,
-    topRatedGames, setTopRatedGames,
-    anticipatedGames, setAnticipatedGames,
+		randomGames,
+		latestGames,
+		topRatedGames,
+		anticipatedGames,
 
-    moviesRoles, setMoviesRoles,
-    seriesRoles, setSeriesRoles,
+		movieRoles,
+    movieTopRatedRoles,
+		serieRoles,
+    serieTopRatedRoles,
 
-    randomArticles, setRandomArticles,
-    latestArticles, setLatestArticles,
-    latestMovieArticles, setLatestMovieArticles,
-    latestSeriesArticles, setLatestSeriesArticles,
-    latestGamesArticles, setLatestGamesArticles,
+		randomArticles,
+		latestArticles,
+		latestMovieArticles,
+		latestSeriesArticles,
+		latestGamesArticles,
 
-    randomReviews, setRandomReviews,
-    latestReviews, setLatestReviews,
-    latestMovieReviews, setLatestMovieReviews,
-    latestSeriesReviews, setLatestSeriesReviews,
-    latestGamesReviews, setLatestGamesReviews,
+		randomReviews,
+		latestReviews,
+		latestMovieReviews,
+		latestSeriesReviews,
+		latestGamesReviews,
 
-    actors, setActors,
-    characters, setCharacters,
-  }
+		actors,
+		characters,
+	};
 
 	return loading ? (
 		<Loader />
 	) : (
 		<MediaQueriesContext.Provider value={{ mobileView, tabletView }}>
 			<UserContext.Provider value={{ userAuth, setUserAuth }}>
-				<DataContext.Provider
-					value={dataContextObj}
-				>
+				<DataContext.Provider value={dataContextObj}>
 					<Routes>
 						<Route path="/" element={<Navbar />}>
 							<Route index element={<HomePage />} />

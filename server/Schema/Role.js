@@ -38,7 +38,7 @@ const roleSchema = mongoose.Schema({
 	},
 	anime: {
 		type: Schema.Types.ObjectId,
-		ref: "snimes",
+		ref: "animes",
 	},
 });
 

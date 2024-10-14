@@ -4,7 +4,7 @@ import RankingPoster from "../common/RankingPoster";
 import { DataContext } from "../App";
 
 const Ranking = ({ type, showCategories, anticipated = false }) => {
-	const { anticipatedMovies, topRatedMovies, latestSeries, anticipatedGames, topRatedGames } = useContext(DataContext);
+	const { anticipatedMovies, topRatedMovies, latestSeries, topRatedSeries, anticipatedGames, topRatedGames } = useContext(DataContext);
 
 	const [currentCategory, setCurrentCategory] = useState("");
 
@@ -25,7 +25,7 @@ const Ranking = ({ type, showCategories, anticipated = false }) => {
 	};
 
 	useEffect(() => {
-		if (currentCategory.toLowerCase() === categories[0].title.toLowerCase()) setCurrentSlidesArray(upcomingMovies);
+		if (currentCategory.toLowerCase() === categories[0].title.toLowerCase()) setCurrentSlidesArray(anticipatedMovies);
 		if (currentCategory.toLowerCase() === categories[1].title.toLowerCase()) setCurrentSlidesArray(topRatedMovies);
 		if (currentCategory.toLowerCase() === categories[2].title.toLowerCase()) setCurrentSlidesArray(topRatedSeries);
 	}, [currentCategory]);

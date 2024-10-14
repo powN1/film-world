@@ -4,14 +4,13 @@ import { IoMdClose } from "react-icons/io";
 import { IoFilter } from "react-icons/io5";
 import SpecificFilterModal from "../common/SpecificFilterModal";
 import { MediaQueriesContext } from "../App";
+import { RankingContext } from "../pages/RankingPage";
 
 const categories = [
 	"movies",
 	"series",
-	"animes",
 	"movie roles",
 	"serie roles",
-	"anime roles",
 	"actors",
 	"games",
 ];
@@ -94,8 +93,9 @@ for (let year = new Date().getFullYear(); year >= 1839; year--) {
 }
 
 const RankingFilter = () => {
-	const [currentCategory, setCurrentCategory] = useState("movies");
-	const [currentSubCategory, setCurrentSubCategory] = useState("top 500");
+  const { currentCategory, setCurrentCategory, currentSubCategory, setCurrentSubCategory } = useContext(RankingContext)
+	// const [currentCategory, setCurrentCategory] = useState("movies");
+	// const [currentSubCategory, setCurrentSubCategory] = useState("top 500");
 
 	const [filterModalVisible, setFilterModalVisible] = useState(false);
 
@@ -116,16 +116,19 @@ const RankingFilter = () => {
 		country: countryModalVisible,
 		years: yearModalVisible,
 	};
+
 	const setModalFunctionMap = {
 		genre: setGenreModalVisible,
 		country: setCountryModalVisible,
 		years: setYearModalVisible,
 	};
+
 	const filterFunctionMap = {
 		genre: currentGenre,
 		country: currentCountry,
 		years: currentYear,
 	};
+
 	const setFilterFunctionMap = {
 		genre: setCurrentGenre,
 		country: setCurrentCountry,
@@ -138,6 +141,7 @@ const RankingFilter = () => {
 		setCountryModalVisible(false);
 		setYearModalVisible(false);
 	};
+
 	const clearAllFilters = () => {
 		setCurrentGenre(null);
 		setCurrentCountry(null);

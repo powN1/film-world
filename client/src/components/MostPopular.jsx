@@ -4,7 +4,7 @@ import { DataContext, MediaQueriesContext } from "../App";
 import MostPopularSlide from "../common/MostPopularSlide";
 
 const MostPopular = ({ type, category }) => {
-	const { moviesRoles, seriesRoles, characters, topRatedGames } = useContext(DataContext);
+	const { movieRoles, serieRoles, characters, topRatedGames } = useContext(DataContext);
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
 	const [roles, setRoles] = useState([]);
@@ -27,8 +27,8 @@ const MostPopular = ({ type, category }) => {
 
 	useEffect(() => {
 		if (type === "roles") {
-			if (category === "movies") setRoles(moviesRoles);
-			else if (category === "series") setRoles(seriesRoles);
+			if (category === "movies") setRoles(movieRoles);
+			else if (category === "series") setRoles(serieRoles);
 		}
 		if (type === "characters") setCurrentCharacters(characters);
 		if (type === "games") setGames(topRatedGames);

@@ -2,7 +2,6 @@ import { FaRegEye } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 
 const RankingPoster = ({ title, img, rating, peopleAwaiting }) => {
-  console.log(peopleAwaiting)
 	return (
 		<div className="w-full max-lg:w-[30%] flex flex-col gap-y-3 group cursor-pointer">
 			<div className="[box-shadow:_2px_2px_6px_rgb(0_0_0_/_30%)]">
