@@ -853,6 +853,64 @@ const listOfMovies2 = [
 // 	setTimeout(() => {}, 3500);
 // });
 
+async function updateRatings() {
+	try {
+		const medias = await Game.find({});
+
+		// Loop through each document
+		for (const media of medias) {
+			// Generate a random number between 0.00 and 0.09
+      const originalRating = media.activity.rating;
+      const randomAddition = parseFloat((Math.random() * 0.09).toFixed(2));
+      const newRating = (originalRating + randomAddition).toFixed(2); 
+
+			// Update the activity.rating field
+			media.activity.rating = newRating; // Add random number to existing rating
+
+			// Save the updated document
+			await media.save();
+      console.log('movie rating saved!')
+		}
+	} catch (err) {
+		console.log(err);
+	}
+}
+
+// updateRatings();
+
+function hasMoreThanTwoDecimals(number) {
+  const numStr = number.toString();
+  const parts = numStr.split('.');
+  
+  // Check if there is a decimal part and if it has more than 2 digits
+  if (parts[1] && parts[1].length > 2) {
+    return true;
+  }
+  return false;
+}
+
+async function fixDecimals() {
+	try {
+		const series = await Serie.find({});
+
+		// Loop through each document
+		for (const serie of series) {
+
+			// Update the activity.rating field
+      if(hasMoreThanTwoDecimals(serie.activity.rating)) {
+        const ratingFixed = parseFloat(serie.activity.rating.toFixed(2));
+        serie.activity.rating = ratingFixed;
+      }
+
+			// Save the updated document
+			await serie.save();
+      console.log('serie rating fixed!')
+		}
+	} catch (err) {
+		console.log(err);
+	}
+}
+
 const uploadFileToAWSfromUrl = async (fileUrl) => {
 	try {
 		const imageResponse = await axios.get(fileUrl, {

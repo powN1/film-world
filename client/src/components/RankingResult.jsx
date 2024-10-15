@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const RankingResult = (props) => {
 	const { index, img, title, year, genre, rating, ratedByCount } = props;
 	return (
-		<div className={ "w-full flex gap-x-4 py-2 " + (index % 2 === 1 ? "bg-gray-200/25" : "") } >
+		<div className={ "w-full flex gap-x-4 py-2 px-3 md:px-0" + (index % 2 === 1 ? "bg-gray-200/25" : "") } >
       <div className="hidden lg:flex justify-center items-center text-xl pl-4 w-[5%]">{index+1}</div>
 			<Link className="relative min-w-[100px] w-[100px] min-h-[150px] md:min-w-[90px] md:w-[90px] md:min-h-[125px] border border-gray-300 cursor-pointer">
 				<img src={img} alt="" className="h-full w-full object-cover" />
@@ -17,10 +17,12 @@ const RankingResult = (props) => {
 						<span className="text-sm">{year}</span>
 					</div>
 
-					<div className="flex items-center gap-x-2 lg:pr-4">
-						<FaStar className="text-yellow-400 text-xl" />
-						<span className="text-xl">{rating}</span>
-						<div className="flex flex-col text-gray-400 text-xs leading-3">
+					<div className="flex flex-col justift-center md:items-end gap-x-2 lg:pr-4">
+						<div className="flex items-center gap-x-1">
+							<FaStar className="text-yellow-400 text-xl" />
+							<span className="text-xl">{rating}</span>
+						</div>
+						<div className="flex gap-x-1 text-gray-400 text-xs leading-3">
 							<span>{ratedByCount}</span>
 							<span>ratings</span>
 						</div>
