@@ -8,7 +8,7 @@ const roleSchema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
-	banner: {
+	characterBanner: {
 		type: String,
 		required: true,
 	},

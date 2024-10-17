@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 const RankingResult = (props) => {
 	const { index, img, title, year, genre, rating, ratedByCount } = props;
 	return (
-		<div className={ "w-full flex gap-x-4 py-2 px-3 md:px-0" + (index % 2 === 1 ? "bg-gray-200/25" : "") } >
+		<div className={ "w-full flex gap-x-4 py-2 px-3 md:px-0 " + (index % 2 === 1 ? "bg-gray-200/25" : "") } >
       <div className="hidden lg:flex justify-center items-center text-xl pl-4 w-[5%]">{index+1}</div>
-			<Link className="relative min-w-[100px] w-[100px] min-h-[150px] md:min-w-[90px] md:w-[90px] md:min-h-[125px] border border-gray-300 cursor-pointer">
+			<Link className="relative min-w-[100px] w-[100px] min-h-[150px] max-h-[150px] md:min-w-[90px] md:w-[90px] md:min-h-[125px] border border-gray-300 cursor-pointer">
 				<img src={img} alt="" className="h-full w-full object-cover" />
         <div className="md:hidden absolute bottom-0 left-0 h-[40px] w-[40px] bg-gray-100 border border-gray-300 flex justify-center items-center font-bold">{index + 1}</div>
 			</Link>
@@ -30,7 +30,7 @@ const RankingResult = (props) => {
 				</div>
 				<div>
 					<span className="text-gray-400">Genre</span>{" "}
-					<Link className="capitalize">{genre.join(", ")}</Link>
+					<Link className="capitalize">{genre.slice(0,2).join(", ")}</Link>
 				</div>
 			</div>
 		</div>

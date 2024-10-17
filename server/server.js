@@ -6,6 +6,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { nanoid } from "nanoid";
 import axios from "axios";
+import { load } from "cheerio";
+import puppeteer from "puppeteer";
 import "dotenv/config";
 // firebase
 import admin from "firebase-admin";
@@ -358,9 +360,247 @@ async function getMovieFromTheMovieDBById(movieId) {
 		.catch((err) => console.log(err));
 }
 
-const listOfMoviesByIdToFetch = [152532, 203801];
+// const listOfMoviesByIdToFetch = [98, 4553];
 
 // listOfMoviesByIdToFetch.forEach(async (movie) => {
+//   setTimeout(()=>{}, 1000)
+// 	await getMovieFromTheMovieDBById(movie);
+// });
+
+async function getRoleImageFromFilmwebPagePuppeteer(
+	type,
+	name,
+	year,
+	actorName,
+) {
+	const searchUrl =
+		type === "movie"
+			? `https://www.filmweb.pl/films/search?q=${encodeURIComponent(name)}`
+			: `https://www.filmweb.pl/serials/search?q=${encodeURIComponent(name)}`;
+
+	// Launch Puppeteer
+	const browser = await puppeteer.launch({ headless: true }); // headless: false will show the browser
+	const page = await browser.newPage();
+
+	// Navigate to a website
+	await page.goto(searchUrl, { waitUntil: "networkidle2" });
+	await page.waitForSelector("a.preview__link"); // Wait for any preview__link anchor
+
+	const mediaYear = year.toString();
+	// Fetch the search results page
+
+	// Wait for the content to be loaded (use an appropriate selector for the divs you're targeting)
+
+	// Extract the content of the divs
+	const movieLink = await page.evaluate(() => {
+		// Get all divs with the specific class
+		const movie = document.querySelector('a.preview__link[href^="/film/"]');
+		return movie ? movie.href : null;
+	});
+
+	if (movieLink.length && movieLink.includes(mediaYear)) {
+		console.log(movieLink);
+		const mediaUrl = `${movieLink}`;
+
+    page.on('console', (msg) => {
+      console.log('PAGE LOG:', msg.text());
+    });
+		await page.goto(mediaUrl, { waitUntil: "networkidle2" });
+		await page.waitForSelector(".poster__image"); // Wait for any preview__link anchor
+
+		const nameLink = await page.evaluate(() => {
+			// Get all divs with the specific class
+      
+			const parentDiv = document.querySelector(".crs__wrapper");
+			const name = document.querySelector("span[data-person-source]").textContent;
+			const characterName = document.querySelector("span[data-role-source]").textContent;
+			const roleImg = document.querySelector(".poster__image").getAttribute("src");
+			const rating = document.querySelector(".personRole__ratingRate").textContent.replace(",", ".");
+			const ratedByCount = document.querySelector(".personRole__ratingCount").textContent.replace(/\s/g, '').replace(/\D/g, '');;
+      // console.log(name.textContent, characterName.textContent)
+      console.log('lalalalalaalalalal')
+      return parentDiv.outerHTML;
+		});
+	}
+
+	// Close the browser
+	await browser.close();
+}
+
+getRoleImageFromFilmwebPagePuppeteer(
+	"movie",
+	"The Matrix",
+	1999,
+	"Keanu Reeves",
+);
+
+async function getRoleImageFromFilmwebPage(type, name, year, actorName) {
+	try {
+		// Format actor name for search query
+		const searchUrl =
+			type === "movie"
+				? `https://www.filmweb.pl/films/search?q=${encodeURIComponent(name)}`
+				: `https://www.filmweb.pl/serials/search?q=${encodeURIComponent(name)}`;
+
+		const mediaYear = year.toString();
+		// Fetch the search results page
+		const { data } = await axios.get(searchUrl);
+
+		// Load the HTML into Cheerio
+		const $ = load(data);
+
+		// Find the first search result for a person (actor)
+		const result = $('a.preview__link[href^="/film/"]').first();
+
+		if (result.length && result.attr("href").includes(mediaYear)) {
+			const movieUrl = result.attr("href"); // Get the href attribute (URL)
+
+			const mediaUrl = `https://www.filmweb.pl${movieUrl}`;
+			const { data } = await axios.get(mediaUrl);
+			const $2 = load(data);
+			const result2 = $2(".crs__wrapper").eq(1);
+			const children = result2.children();
+			// console.log(children)
+			// children.each((child) => {
+			// 	const actName = child .find(".PersonRole") .find(".personRole__container") .find(".personRole__title") .find("a") .find("span");
+			// 	console.log(actName);
+			// });
+			let roleImg;
+			children.each((index, element) => {
+				const childText = $(element)
+					.find(".PersonRole")
+					.find(".personRole__container")
+					.find(".personRole__title")
+					.find("a")
+					.find("span")
+					.text(); // Get the text of the child
+				console.log(`Child ${index + 1}: ${childText}`); // Display the child text
+				if (childText.toLowerCase() === actorName.toLowerCase()) {
+					console.log("found actor");
+					const imgElement = $(element)
+						.find(".PersonRole")
+						.find(".personRole__container")
+						.find(".personRole__posterRole")
+						.find(".poster");
+					console.log(imgElement.html());
+				}
+			});
+		} else {
+			console.log("Actor not found!");
+		}
+	} catch (error) {
+		console.error("Error fetching actor data:", error);
+	}
+}
+
+// getRoleImageFromFilmwebPage("movie", "The Matrix", 1999, "Keanu Reeves");
+
+async function addMovieRolesToMovies() {
+	const options = {
+		method: "GET",
+		headers: {
+			accept: "application/json",
+			Authorization:
+				"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjOWQ2YmZjMzcyY2ZlZjg0YjgyODgwNzE1M2ZhZDY0YiIsIm5iZiI6MTcyNjI1OTU3Ni45MzE4MTIsInN1YiI6IjYyOWM5NGI5Y2FhNTA4MWFlZjdkMzI1MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rLbp_pNyYzYdtEkKypNecCMCkTz7F-_-M5Nachm7fw8",
+		},
+	};
+
+	// Get all the movies from the db
+	const movies = await Movie.find({ title: "The Matrix" });
+	// Get all the acotrs from the db
+	const actors = await Actor.find({ "personal_info.name": "Keanu Reeves" });
+
+	for (const movie of movies) {
+		let movieTitle = movie.title;
+		let encodedTitle = encodeURIComponent(movieTitle).replace(/%20/g, "+");
+
+		console.log(movieTitle);
+		const movieYear = movie.year;
+
+		// For each movie find a relative movie in the themovieDB database using api
+
+		axios
+			.get(
+				`https://api.themoviedb.org/3/search/movie?query=${encodedTitle}`,
+				options,
+			)
+			.then(({ data }) => {
+				const allMovies = data.results;
+
+				// Return a movie that has the same title and release year
+				const matchingMovies = allMovies.filter((movie) => {
+					const matchingMovieYear = movie["release_date"].substring(0, 4);
+					return (
+						movie.title.toLowerCase() === movieTitle.toLowerCase() &&
+						Number(matchingMovieYear) === Number(movieYear)
+					);
+				});
+				const movieId = matchingMovies.length > 0 ? matchingMovies[0].id : null;
+				const urlMovieCredits = `https://api.themoviedb.org/3/movie/${movieId}/credits?language=en-US`;
+
+				// If a movie was found then
+				if (movieId) {
+					axios
+						.get(urlMovieCredits, options)
+						.then(async ({ data }) => {
+							const cast = data.cast;
+							// Get the actors that played in the movie
+							const castActing = cast.filter(
+								(actor) => actor["known_for_department"] === "Acting",
+							);
+							for (const actor of actors) {
+								// For every actor in the db find if he has played in this movie
+								const playedActor = castActing.filter(
+									(castActor) => castActor.name === actor.personal_info.name,
+								);
+
+								// If actor played in the movie
+								if (playedActor.length > 0) {
+									const awsImageUrl =
+										await uploadFileToAWSfromUrl(characterBanner);
+
+									let role = new Role({
+										filmTitle: movie.title,
+										characterName: playedActor[0].character,
+										characterBanner: awsImageUrl,
+										actor: actor._id,
+										movie: movie._id,
+									});
+
+									role
+										.save()
+										.then((role) => {
+											Actor.findByIdAndUpdate(actor, {
+												$push: { roles: role._id },
+											})
+												.then((user) => res.status(200).json({ role }))
+												.catch((err) =>
+													res.status(500).json({ error: err.message }),
+												);
+										})
+										.catch((err) => {
+											return res.status(500).json({ error: err.message });
+										});
+								} else {
+								}
+							}
+						})
+						.catch((err) => console.log(err));
+				} else {
+					return res.status(500).json({ err: "No movie id found" });
+				}
+			})
+			.catch((err) => console.log(err));
+	}
+}
+
+setTimeout(() => {}, 3000);
+// addMovieRolesToMovies();
+
+// const listOfMoviesByIdToFetch = [98, 4553];
+
+// listOfMoviesByIdToFetch.forEach(async (movie) => {
+//   setTimeout(()=>{}, 1000)
 // 	await getMovieFromTheMovieDBById(movie);
 // });
 
@@ -860,16 +1100,16 @@ async function updateRatings() {
 		// Loop through each document
 		for (const media of medias) {
 			// Generate a random number between 0.00 and 0.09
-      const originalRating = media.activity.rating;
-      const randomAddition = parseFloat((Math.random() * 0.09).toFixed(2));
-      const newRating = (originalRating + randomAddition).toFixed(2); 
+			const originalRating = media.activity.rating;
+			const randomAddition = parseFloat((Math.random() * 0.09).toFixed(2));
+			const newRating = (originalRating + randomAddition).toFixed(2);
 
 			// Update the activity.rating field
 			media.activity.rating = newRating; // Add random number to existing rating
 
 			// Save the updated document
 			await media.save();
-      console.log('movie rating saved!')
+			console.log("movie rating saved!");
 		}
 	} catch (err) {
 		console.log(err);
@@ -879,14 +1119,14 @@ async function updateRatings() {
 // updateRatings();
 
 function hasMoreThanTwoDecimals(number) {
-  const numStr = number.toString();
-  const parts = numStr.split('.');
-  
-  // Check if there is a decimal part and if it has more than 2 digits
-  if (parts[1] && parts[1].length > 2) {
-    return true;
-  }
-  return false;
+	const numStr = number.toString();
+	const parts = numStr.split(".");
+
+	// Check if there is a decimal part and if it has more than 2 digits
+	if (parts[1] && parts[1].length > 2) {
+		return true;
+	}
+	return false;
 }
 
 async function fixDecimals() {
@@ -895,16 +1135,15 @@ async function fixDecimals() {
 
 		// Loop through each document
 		for (const serie of series) {
-
 			// Update the activity.rating field
-      if(hasMoreThanTwoDecimals(serie.activity.rating)) {
-        const ratingFixed = parseFloat(serie.activity.rating.toFixed(2));
-        serie.activity.rating = ratingFixed;
-      }
+			if (hasMoreThanTwoDecimals(serie.activity.rating)) {
+				const ratingFixed = parseFloat(serie.activity.rating.toFixed(2));
+				serie.activity.rating = ratingFixed;
+			}
 
 			// Save the updated document
 			await serie.save();
-      console.log('serie rating fixed!')
+			console.log("serie rating fixed!");
 		}
 	} catch (err) {
 		console.log(err);
@@ -1043,6 +1282,7 @@ app.post("/get-actors-top-rated", (req, res) => {
 	Actor.find()
 		.limit(count)
 		.sort(sortQuery)
+		.populate("roles", "characterBanner serie movie characterName")
 		.then((actors) => {
 			return res.status(200).json({ actors });
 		})
@@ -2389,7 +2629,6 @@ app.post("/add-role", async (req, res) => {
 		serie,
 		anime,
 	} = req.body;
-
 	const awsImageUrl = await uploadFileToAWSfromUrl(characterBanner);
 
 	let role = new Role({

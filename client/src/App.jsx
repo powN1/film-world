@@ -66,6 +66,7 @@ function App() {
 	const [latestGamesReviews, setLatestGamesReviews] = useState([]);
 
 	const [actors, setActors] = useState([]);
+	const [actorsTopRated, setActorsTopRated] = useState([]);
 	const [characters, setCharacters] = useState([]);
 
 	const [loading, setLoading] = useState(true);
@@ -134,6 +135,7 @@ function App() {
 	const fetchLatestGamesReviews = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-games", { count: 20 },);
 
 	const fetchActors = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
+	const fetchActorsTopRated = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors-top-rated", { count: 20 });
 	const fetchCharacters = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-characters");
 
 	useEffect(() => {
@@ -190,6 +192,7 @@ function App() {
 			fetchLatestGamesReviews(),
 
 			fetchActors(),
+			fetchActorsTopRated(),
 			fetchCharacters(),
 		])
 			.then(
@@ -231,6 +234,7 @@ function App() {
 					latestGamesReviewsResponse,
 
 					actorsResponse,
+					actorsTopRatedResponse,
 					charactersResponse,
 				]) => {
           setMovies(moviesResponse.data.movies);
@@ -270,6 +274,7 @@ function App() {
 					setLatestGamesReviews(latestGamesReviewsResponse.data.reviews);
 
 					setActors(actorsResponse.data.actors);
+					setActorsTopRated(actorsTopRatedResponse.data.actors);
 					setCharacters(charactersResponse.data.characters);
 					setLoading(false);
 				},
@@ -323,6 +328,7 @@ function App() {
 		latestGamesReviews,
 
 		actors,
+    actorsTopRated,
 		characters,
 	};
 

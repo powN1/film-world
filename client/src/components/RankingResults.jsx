@@ -14,13 +14,14 @@ const RankingResults = () => {
 		topRatedGames,
 		movieTopRatedRoles,
 		serieTopRatedRoles,
+    actorsTopRated,
 	} = useContext(DataContext);
 
-  const [mediaToShow, setMediaToShow] = useState([]);
+	const [mediaToShow, setMediaToShow] = useState([]);
 	const [localCurrentCategory, setLocalCurrentCategory] = useState([]);
 
 	useEffect(() => {
-    // Show specific media given specific category that user chose
+		// Show specific media given specific category that user chose
 		if (currentCategory.toLowerCase() === "movies") {
 			setLocalCurrentCategory("movies");
 			setMediaToShow(topRatedMovies);
@@ -36,7 +37,10 @@ const RankingResults = () => {
 		} else if (currentCategory.toLowerCase() === "serie roles") {
 			setLocalCurrentCategory("serie roles");
 			setMediaToShow(serieTopRatedRoles);
-		}
+		} else if (currentCategory.toLowerCase() === "actors") {
+			setLocalCurrentCategory("actors");
+			setMediaToShow(actorsTopRated);
+    }
 	}, [currentCategory]);
 
 	return (
@@ -48,8 +52,14 @@ const RankingResults = () => {
 				<div className="flex flex-col w-full md:w-[85%] lg:w-2/3 items-center">
 					{mediaToShow.map((media, i) => {
 						// console.log(currentCategory);
-						if ( localCurrentCategory === "movies" || localCurrentCategory === "series" || localCurrentCategory === "games") {
-							const year = media.releaseDate ? getFullYear(media.releaseDate) : getFullYear(media.firstAirDate);
+						if (
+							localCurrentCategory === "movies" ||
+							localCurrentCategory === "series" ||
+							localCurrentCategory === "games"
+						) {
+							const year = media.releaseDate
+								? getFullYear(media.releaseDate)
+								: getFullYear(media.firstAirDate);
 
 							return (
 								<RankingResult
@@ -64,15 +74,17 @@ const RankingResults = () => {
 								/>
 							);
 						} else if ( localCurrentCategory === "movie roles" || localCurrentCategory === "serie roles") {
-							const year = media.movie ? getFullYear(media.movie.releaseDate) : getFullYear(media.serie.firstAirDate);
-              const title = media.movie ? media.movie.title : media.serie.title;
+							const year = media.movie
+								? getFullYear(media.movie.releaseDate)
+								: getFullYear(media.serie.firstAirDate);
+							const title = media.movie ? media.movie.title : media.serie.title;
 							return (
 								<RankingResultRole
 									key={i}
 									index={i}
 									img={media.characterBanner}
-                  title={title}
-                  year={year}
+									title={title}
+									year={year}
 									actor={media.actor}
 									role={media.characterName}
 									rating={media.activity.rating}
@@ -80,7 +92,17 @@ const RankingResults = () => {
 								/>
 							);
 						} else if (localCurrentCategory === "actors") {
-							return <RankingResultActor />;
+							return (
+								<RankingResultActor
+									key={i}
+									index={i}
+									img={media.banner}
+									name={media.personal_info.name}
+									roles={media.roles}
+									rating={media.activity.rating}
+									ratedByCount={media.activity.ratedByCount}
+								/>
+							);
 						}
 					})}
 				</div>
