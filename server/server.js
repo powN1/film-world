@@ -237,7 +237,7 @@ async function getMovieFromTheMovieDBById(movieId) {
 		},
 	};
 
-	axios
+	await axios
 		.get(urlMovie, options)
 		.then(async (res) => {
 			const {
@@ -307,7 +307,7 @@ async function getMovieFromTheMovieDBById(movieId) {
 						.slice(0, randomImageMaxCount)
 						.map(async (photo, i) => {
 							const bannerUrl = `https://image.tmdb.org/t/p/original${photo.file_path}`;
-							console.log("uploading img" + i);
+							// console.log("uploading img" + i);
 							const banner = await uploadFileToAWSfromUrl(bannerUrl);
 							setTimeout(() => {}, 700);
 							photos.push(banner); // Store the uploaded image URL
@@ -354,7 +354,7 @@ async function getMovieFromTheMovieDBById(movieId) {
 
 			movie
 				.save()
-				.then(console.log("movie saved in the db"))
+				.then(console.log(`Movie ${title} saved in the db`))
 				.catch((err) => console.log(err));
 		})
 		.catch((err) => console.log(err));
@@ -367,133 +367,136 @@ async function getMovieFromTheMovieDBById(movieId) {
 // 	await getMovieFromTheMovieDBById(movie);
 // });
 
-async function getRoleImageFromFilmwebPagePuppeteer(
-	type,
-	name,
-	year,
-	actorName,
+
+async function getRoleImageAndNameFromFilmwebPagePuppeteer( type, name, year, actorName,
 ) {
 	const searchUrl =
 		type === "movie"
 			? `https://www.filmweb.pl/films/search?q=${encodeURIComponent(name)}`
 			: `https://www.filmweb.pl/serials/search?q=${encodeURIComponent(name)}`;
 
+	const filmwebHeaders = { headers: { "x-locale": "en-US" } };
 	// Launch Puppeteer
 	const browser = await puppeteer.launch({ headless: true }); // headless: false will show the browser
 	const page = await browser.newPage();
 
-	// Navigate to a website
+	// Navigate to a search filmweb website
 	await page.goto(searchUrl, { waitUntil: "networkidle2" });
 	await page.waitForSelector("a.preview__link"); // Wait for any preview__link anchor
 
 	const mediaYear = year.toString();
 	// Fetch the search results page
 
-	// Wait for the content to be loaded (use an appropriate selector for the divs you're targeting)
-
 	// Extract the content of the divs
 	const movieLink = await page.evaluate(() => {
 		// Get all divs with the specific class
 		const movie = document.querySelector('a.preview__link[href^="/film/"]');
-		return movie ? movie.href : null;
+		const serie = document.querySelector('a.preview__link[href^="/serial/"]');
+
+		return movie ? movie.href : serie ? serie.href : null;
 	});
-
-	if (movieLink.length && movieLink.includes(mediaYear)) {
-		console.log(movieLink);
-		const mediaUrl = `${movieLink}`;
-
-    page.on('console', (msg) => {
-      console.log('PAGE LOG:', msg.text());
-    });
-		await page.goto(mediaUrl, { waitUntil: "networkidle2" });
-		await page.waitForSelector(".poster__image"); // Wait for any preview__link anchor
-
-		const nameLink = await page.evaluate(() => {
-			// Get all divs with the specific class
-      
-			const parentDiv = document.querySelector(".crs__wrapper");
-			const name = document.querySelector("span[data-person-source]").textContent;
-			const characterName = document.querySelector("span[data-role-source]").textContent;
-			const roleImg = document.querySelector(".poster__image").getAttribute("src");
-			const rating = document.querySelector(".personRole__ratingRate").textContent.replace(",", ".");
-			const ratedByCount = document.querySelector(".personRole__ratingCount").textContent.replace(/\s/g, '').replace(/\D/g, '');;
-      // console.log(name.textContent, characterName.textContent)
-      console.log('lalalalalaalalalal')
-      return parentDiv.outerHTML;
-		});
-	}
 
 	// Close the browser
 	await browser.close();
-}
+	let movieId;
 
-getRoleImageFromFilmwebPagePuppeteer(
-	"movie",
-	"The Matrix",
-	1999,
-	"Keanu Reeves",
-);
+	if (movieLink.length && movieLink.includes(mediaYear)) {
+		movieId = movieLink.split("-").at(-1);
 
-async function getRoleImageFromFilmwebPage(type, name, year, actorName) {
-	try {
-		// Format actor name for search query
-		const searchUrl =
-			type === "movie"
-				? `https://www.filmweb.pl/films/search?q=${encodeURIComponent(name)}`
-				: `https://www.filmweb.pl/serials/search?q=${encodeURIComponent(name)}`;
+		try {
+			const movieRolesApiUrl = `https://www.filmweb.pl/api/v1/film/${movieId}/top-roles`;
+			let movieActors = await axios.get(movieRolesApiUrl, filmwebHeaders);
+			movieActors = movieActors.data;
 
-		const mediaYear = year.toString();
-		// Fetch the search results page
-		const { data } = await axios.get(searchUrl);
+			for (const actor of movieActors) {
+				await new Promise((resolve) => setTimeout(resolve, 150));
+				// Insert "name" property into every actor object
+				const actorApiUrl = `https://www.filmweb.pl/api/v1/person/${actor.person}/info`;
 
-		// Load the HTML into Cheerio
-		const $ = load(data);
+        try {
+          let actorRes = await axios.get(actorApiUrl, filmwebHeaders);
+          actorRes = actorRes.data;
 
-		// Find the first search result for a person (actor)
-		const result = $('a.preview__link[href^="/film/"]').first();
+          // Update the actor object with "name" property
+          const actorName = actorRes.name;
+          const imgPath = actorRes.poster ? actorRes.poster.path ? actorRes.poster.path.replace("$", "1") : null : null;
 
-		if (result.length && result.attr("href").includes(mediaYear)) {
-			const movieUrl = result.attr("href"); // Get the href attribute (URL)
+          const actorImgPath = imgPath ? `https://fwcdn.pl/ppo${imgPath}` : null;
+          actor.name = actorName;
+          actor.actorImgPath = actorImgPath;
 
-			const mediaUrl = `https://www.filmweb.pl${movieUrl}`;
-			const { data } = await axios.get(mediaUrl);
-			const $2 = load(data);
-			const result2 = $2(".crs__wrapper").eq(1);
-			const children = result2.children();
-			// console.log(children)
-			// children.each((child) => {
-			// 	const actName = child .find(".PersonRole") .find(".personRole__container") .find(".personRole__title") .find("a") .find("span");
-			// 	console.log(actName);
-			// });
-			let roleImg;
-			children.each((index, element) => {
-				const childText = $(element)
-					.find(".PersonRole")
-					.find(".personRole__container")
-					.find(".personRole__title")
-					.find("a")
-					.find("span")
-					.text(); // Get the text of the child
-				console.log(`Child ${index + 1}: ${childText}`); // Display the child text
-				if (childText.toLowerCase() === actorName.toLowerCase()) {
-					console.log("found actor");
-					const imgElement = $(element)
-						.find(".PersonRole")
-						.find(".personRole__container")
-						.find(".personRole__posterRole")
-						.find(".poster");
-					console.log(imgElement.html());
-				}
-			});
-		} else {
-			console.log("Actor not found!");
+          // Delay for 300ms
+          await new Promise((resolve) => setTimeout(resolve, 200));
+        } catch (err) {
+          console.error("Failed getting actor info from filmweb", err);
+        }
+			}
+
+			const filteredActor = movieActors.filter( (actor) =>
+					actor.name.toLowerCase().includes(actorName.toLowerCase()) ||
+					actorName.toLowerCase().includes(actor.name.toLowerCase()),
+			);
+
+			const roleApiUrl = `https://www.filmweb.pl/api/v1/role/${filteredActor[0].id}/preview`;
+
+			let photoId;
+
+      try {
+        let roleRes = await axios.get(roleApiUrl, filmwebHeaders);
+        roleRes = roleRes.data;
+        // Check if there's a photo for the role
+        photoId = roleRes.representingPhoto ? roleRes.representingPhoto.id : null;
+        const imgPath = roleRes.representingPhoto ? roleRes.representingPhoto.sourcePath ? roleRes.representingPhoto.sourcePath.replace("$", "2") : null : null;
+        const roleImgPath = imgPath ? `https://fwcdn.pl/fph${imgPath}` : null;
+
+        // Update the actor object with new properties
+        filteredActor[0].roleImgPath = roleImgPath;
+
+        // Delay for 300ms
+        await new Promise((resolve) => setTimeout(resolve, 200));
+
+      } catch (err) {
+        console.error("Failed getting role info from filmweb", err)
+      }
+
+
+			if (photoId) {
+        try {
+          const photoApiUrl = `https://www.filmweb.pl/api/v1/photo/${photoId}/info`;
+          let photoRes = await axios.get(photoApiUrl, filmwebHeaders);
+          photoRes = photoRes.data;
+          const characterId = photoRes.captions[0].character
+            ? photoRes.captions[0].character
+            : null;
+          // Delay for 300ms
+          await new Promise((resolve) => setTimeout(resolve, 300));
+
+          if (characterId) {
+            try {
+              const characterApiUrl = `https://filmweb.pl/api/v1/character/${characterId}/info`;
+              let characterRes = await axios.get(characterApiUrl, filmwebHeaders);
+              characterRes = characterRes.data;
+              const characterName = characterRes.name;
+
+              filteredActor[0].characterName = characterName;
+
+              // Delay for 300ms
+              await new Promise((resolve) => setTimeout(resolve, 200));
+            } catch (err) {
+              console.error("Failed getting character info from filmweb", err)
+            }
+          }
+        } catch (err) {
+          console.error("Failed getting photo info from filmweb", err)
+        }
+			}
+			console.log("fitered actor array before returning", filteredActor);
+			return filteredActor[0];
+		} catch (err) {
+			console.error("Failed getting top roles", err);
 		}
-	} catch (error) {
-		console.error("Error fetching actor data:", error);
 	}
 }
-
-// getRoleImageFromFilmwebPage("movie", "The Matrix", 1999, "Keanu Reeves");
 
 async function addMovieRolesToMovies() {
 	const options = {
@@ -506,96 +509,222 @@ async function addMovieRolesToMovies() {
 	};
 
 	// Get all the movies from the db
-	const movies = await Movie.find({ title: "The Matrix" });
+	const movies = await Movie.find();
 	// Get all the acotrs from the db
-	const actors = await Actor.find({ "personal_info.name": "Keanu Reeves" });
+	const actors = await Actor.find();
 
 	for (const movie of movies) {
+		await new Promise((resolve) => setTimeout(resolve, 200));
 		let movieTitle = movie.title;
 		let encodedTitle = encodeURIComponent(movieTitle).replace(/%20/g, "+");
-
-		console.log(movieTitle);
 		const movieYear = movie.year;
 
 		// For each movie find a relative movie in the themovieDB database using api
+    try {
+      const { data } = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${encodedTitle}`, options);
+      const allMovies = data.results;
 
-		axios
-			.get(
-				`https://api.themoviedb.org/3/search/movie?query=${encodedTitle}`,
-				options,
-			)
-			.then(({ data }) => {
-				const allMovies = data.results;
+      // Return a movie that has the same title and release year
+      const matchingMovies = allMovies.filter((movie) => {
+        const matchingMovieYear = movie["release_date"].substring(0, 4);
+        return (movie.title.toLowerCase() === movieTitle.toLowerCase() && Number(matchingMovieYear) === Number(movieYear));
+      });
 
-				// Return a movie that has the same title and release year
-				const matchingMovies = allMovies.filter((movie) => {
-					const matchingMovieYear = movie["release_date"].substring(0, 4);
-					return (
-						movie.title.toLowerCase() === movieTitle.toLowerCase() &&
-						Number(matchingMovieYear) === Number(movieYear)
-					);
-				});
-				const movieId = matchingMovies.length > 0 ? matchingMovies[0].id : null;
-				const urlMovieCredits = `https://api.themoviedb.org/3/movie/${movieId}/credits?language=en-US`;
+      const movieId = matchingMovies.length > 0 ? matchingMovies[0].id : null;
 
-				// If a movie was found then
-				if (movieId) {
-					axios
-						.get(urlMovieCredits, options)
-						.then(async ({ data }) => {
-							const cast = data.cast;
-							// Get the actors that played in the movie
-							const castActing = cast.filter(
-								(actor) => actor["known_for_department"] === "Acting",
-							);
-							for (const actor of actors) {
-								// For every actor in the db find if he has played in this movie
-								const playedActor = castActing.filter(
-									(castActor) => castActor.name === actor.personal_info.name,
-								);
+      if(movieId) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
-								// If actor played in the movie
-								if (playedActor.length > 0) {
-									const awsImageUrl =
-										await uploadFileToAWSfromUrl(characterBanner);
+        let creditsData;
+        try {
+          const urlMovieCredits = `https://api.themoviedb.org/3/movie/${movieId}/credits?language=en-US`;
+          const { data } = await axios.get(urlMovieCredits, options);
+          creditsData = data;
+        } catch (err) {
+          console.error("Error getting credits data from themoviedm", err);
+        }
 
-									let role = new Role({
-										filmTitle: movie.title,
-										characterName: playedActor[0].character,
-										characterBanner: awsImageUrl,
-										actor: actor._id,
-										movie: movie._id,
-									});
+        // Get the actors that played in the movie
+        const cast = creditsData.cast;
+        const castActing = cast.filter((actor) => actor.known_for_department === "Acting");
 
-									role
-										.save()
-										.then((role) => {
-											Actor.findByIdAndUpdate(actor, {
-												$push: { roles: role._id },
-											})
-												.then((user) => res.status(200).json({ role }))
-												.catch((err) =>
-													res.status(500).json({ error: err.message }),
-												);
-										})
-										.catch((err) => {
-											return res.status(500).json({ error: err.message });
-										});
-								} else {
-								}
-							}
-						})
-						.catch((err) => console.log(err));
-				} else {
-					return res.status(500).json({ err: "No movie id found" });
-				}
-			})
-			.catch((err) => console.log(err));
+        for (const actor of actors) {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+
+          // For every actor in the db find if he has played in this movie
+          const playedActor = castActing.filter( (castActor) => castActor.name.toLowerCase().includes(actor.personal_info.name.toLowerCase()) 
+          || actor.personal_info.name.toLowerCase().includes(castActor.name.toLowerCase()));
+
+          if (playedActor.length > 0) {
+            try {
+              const existingRole = await Role.findOne({
+                filmTitle: movie.title,
+								characterName: playedActor[0].character,
+							});
+
+              if(!existingRole) {
+                console.log("Role not in the db, proceeding");
+                const filmwebRole = await getRoleImageAndNameFromFilmwebPagePuppeteer( "movie", movie.title, movie.year, actor.personal_info.name,);
+                const roleImg = filmwebRole.roleImgPath ? filmwebRole.roleImgPath : null;
+                const awsImageUrl = roleImg ? await uploadFileToAWSfromUrl(roleImg) : null;
+
+                const newRole = new Role({
+                  filmTitle: movie.title,
+                  characterName: playedActor[0].character,
+                  characterBanner: awsImageUrl || null,
+                  actor: actor._id,
+                  movie: movie._id,
+                  activity: {
+                    rating: filmwebRole.rate,
+                    ratedByCount: filmwebRole.count,
+                  },
+                });
+
+                // Save the new role and wait for the operation to finish
+								const savedRole = await newRole.save();
+								console.log("Role saved, proceeding to add the role to the actor");
+
+                // Add the role to the actor and wait for the update to finish
+								await Actor.findByIdAndUpdate(actor._id, { $push: { roles: savedRole._id } });
+								console.log("Role added to actor");
+
+              } else {
+                console.log("Role already in the db");
+              };
+
+            } catch (err) {
+              console.error("Error processing role:", err)
+            };
+          } else {
+            console.log("No playedActor found");
+          };
+        };
+      };
+
+    }
+    catch (err) {
+      console.error("Something went wrong", err);
+    }
 	}
+  console.log('all movies and actors checked');
 }
 
+async function addSerieRolesToSeries() {
+	const options = {
+		method: "GET",
+		headers: {
+			accept: "application/json",
+			Authorization:
+				"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjOWQ2YmZjMzcyY2ZlZjg0YjgyODgwNzE1M2ZhZDY0YiIsIm5iZiI6MTcyNjI1OTU3Ni45MzE4MTIsInN1YiI6IjYyOWM5NGI5Y2FhNTA4MWFlZjdkMzI1MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rLbp_pNyYzYdtEkKypNecCMCkTz7F-_-M5Nachm7fw8",
+		},
+	};
+
+	// Get all the series from the db
+	const movies = await Serie.find();
+	// Get all the acotrs from the db
+	const actors = await Actor.find();
+
+	for (const movie of movies) {
+		await new Promise((resolve) => setTimeout(resolve, 200));
+		let movieTitle = movie.title;
+		let encodedTitle = encodeURIComponent(movieTitle).replace(/%20/g, "+");
+
+    let date = new Date(movie.firstAirDate);
+		let movieYear = date.getFullYear();
+    console.log('serie release year is:', movieYear);
+
+		// For each movie find a relative movie in the themovieDB database using api
+    try {
+      const { data } = await axios.get( `https://api.themoviedb.org/3/search/tv?query=${encodedTitle}`, options);
+      const allMovies = data.results;
+
+      // Return a movie that has the same title and release year
+      const matchingMovies = allMovies.filter((movie) => {
+        const matchingMovieYear = movie["first_air_date"].substring(0, 4);
+        return ( movie.name.toLowerCase() === movieTitle.toLowerCase() && Number(matchingMovieYear) === Number(movieYear));
+      });
+
+      const movieId = matchingMovies.length > 0 ? matchingMovies[0].id : null;
+
+      if(movieId) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        let creditsData;
+        try {
+          const urlMovieCredits = `https://api.themoviedb.org/3/tv/${movieId}/credits?language=en-US`;
+          const { data } = await axios.get(urlMovieCredits, options);
+          creditsData = data;
+        } catch (err) {
+          console.error("Error getting credits data from themoviedm", err);
+        }
+
+        // Get the actors that played in the movie
+        const cast = creditsData.cast;
+        const castActing = cast.filter((actor) => actor.known_for_department === "Acting");
+
+        for (const actor of actors) {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+
+          // For every actor in the db find if he has played in this movie
+          const playedActor = castActing.filter( (castActor) => castActor.name.toLowerCase().includes(actor.personal_info.name.toLowerCase()) 
+          || actor.personal_info.name.toLowerCase().includes(castActor.name.toLowerCase()));
+
+          if (playedActor.length > 0) {
+            try {
+              const existingRole = await Role.findOne({
+                filmTitle: movie.title,
+								characterName: playedActor[0].character,
+							});
+
+              if(!existingRole) {
+                console.log("Role not in the db, proceeding");
+                const filmwebRole = await getRoleImageAndNameFromFilmwebPagePuppeteer( "serie", movie.title, movieYear , actor.personal_info.name,);
+                const roleImg = filmwebRole.roleImgPath ? filmwebRole.roleImgPath : null;
+                const awsImageUrl = roleImg ? await uploadFileToAWSfromUrl(roleImg) : null;
+
+                const newRole = new Role({
+                  filmTitle: movie.title,
+                  characterName: playedActor[0].character,
+                  characterBanner: awsImageUrl || null,
+                  actor: actor._id,
+                  serie: movie._id,
+                  activity: {
+                    rating: filmwebRole.rate,
+                    ratedByCount: filmwebRole.count,
+                  },
+                });
+
+                // Save the new role and wait for the operation to finish
+								const savedRole = await newRole.save();
+								console.log("Role saved, proceeding to add the role to the actor");
+
+                // Add the role to the actor and wait for the update to finish
+								await Actor.findByIdAndUpdate(actor._id, { $push: { roles: savedRole._id } });
+								console.log("Role added to actor");
+
+              } else {
+                console.log("Role already in the db");
+              };
+
+            } catch (err) {
+              console.error("Error processing role:", err)
+            };
+          } else {
+            console.log("No playedActor found");
+          };
+        };
+      };
+
+    }
+    catch (err) {
+      console.error("Something went wrong", err);
+    }
+	}
+  console.log('all movies and actors checked');
+}
 setTimeout(() => {}, 3000);
-// addMovieRolesToMovies();
+addMovieRolesToMovies();
+// addSerieRolesToSeries();
 
 // const listOfMoviesByIdToFetch = [98, 4553];
 
@@ -686,7 +815,7 @@ async function getSerieFromTheMovieDBById(serieId) {
 		},
 	};
 
-	axios
+	await axios
 		.get(urlSerie, options)
 		.then(async (res) => {
 			const {
@@ -776,7 +905,7 @@ async function getSerieFromTheMovieDBById(serieId) {
 						.slice(0, randomImageMaxCount)
 						.map(async (photo, i) => {
 							const bannerUrl = `https://image.tmdb.org/t/p/original${photo.file_path}`;
-							console.log("uploading img" + i);
+							// console.log("uploading img" + i);
 							const banner = await uploadFileToAWSfromUrl(bannerUrl);
 							setTimeout(() => {}, 700);
 							photos.push(banner); // Store the uploaded image URL
@@ -820,7 +949,7 @@ async function getSerieFromTheMovieDBById(serieId) {
 
 			serie
 				.save()
-				.then(console.log("serie saved in the db"))
+				.then(console.log(`Serie ${title} saved in the db`))
 				.catch((err) => console.log(err));
 		})
 		.catch((err) => console.log(err));
@@ -1012,6 +1141,92 @@ const listOfMovies = [
 // listOfMovies.forEach(async (movie) => {
 // 	await pushReleaseDatesToMovie(movie);
 // });
+
+async function addMoviesAndSeriesBasedOnActors() {
+
+	const options = {
+		method: "GET",
+		headers: {
+			accept: "application/json",
+			Authorization:
+				"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjOWQ2YmZjMzcyY2ZlZjg0YjgyODgwNzE1M2ZhZDY0YiIsIm5iZiI6MTcyNjI1OTU3Ni45MzE4MTIsInN1YiI6IjYyOWM5NGI5Y2FhNTA4MWFlZjdkMzI1MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rLbp_pNyYzYdtEkKypNecCMCkTz7F-_-M5Nachm7fw8",
+		},
+	};
+
+	// Get all the acotrs from the db
+	const actors = await Actor.find();
+	const movies = await Movie.find();
+	const series = await Serie.find();
+
+  for (const actor of actors) {
+    // Cycle throuh every actor
+		let actorName = actor.personal_info.name;
+		let encodedName = encodeURIComponent(actorName).replace(/%20/g, "+");
+    try {
+      // Get actor details from themoviedb api
+      const actorResponse = await axios.get(`https://api.themoviedb.org/3/search/person?query=${encodedName}`, options);
+      const actors = actorResponse.data.results
+      const filteredActor = actors.filter(actorRes => actor.personal_info.name === actorRes.name && actorRes.known_for_department === "Acting")
+
+      if(filteredActor.length > 0) {
+        // If actor from the db matches the actor from themoviedb api response
+        const actorId = filteredActor[0].id;
+        try {
+          // Get actor film details
+          let actorDetails = await axios.get(`https://api.themoviedb.org/3/person/${actorId}/combined_credits`, options);
+          actorDetails = actorDetails.data.cast;
+
+          // Get actors popular movies and series that he played in
+          const actorPopularMovies = actorDetails.filter(film => film.title).filter(film => film.popularity > 50).sort((a, b) => b.popularity - a.popularity);
+          const actorPopularSeries = actorDetails.filter(film => film.name).filter(film => film.popularity > 50).sort((a, b) => b.popularity - a.popularity);
+
+          // Create a Set of property values from movies array to easily check for duplicates
+          const valuesSetMovies = new Set(movies.map(item => item['title']));
+          const actorMoviesToAdd = actorPopularMovies.filter(item => !valuesSetMovies.has(item['title'])).slice(0, 10);
+          
+          // Create a Set of property values from series to easily check for duplicates
+          const valuesSetSeries = new Set(movies.map(item => item['title']));
+          const actorSeriesToAdd = actorPopularSeries.filter(item => !valuesSetSeries.has(item['name'])).slice(0, 5);
+
+              console.log(`Actor: ${actor.personal_info.name}`)
+          for (const movieToAdd of actorMoviesToAdd) {
+            try {
+              await getMovieFromTheMovieDBById(movieToAdd.id);
+              await new Promise((resolve) => setTimeout(resolve, 1500));
+              
+            } catch (err) {
+              console.log('Failed adding the movie to the db');
+            }
+          }
+
+          for (const serieToAdd of actorSeriesToAdd) {
+            try {
+              await getSerieFromTheMovieDBById(serieToAdd.id);
+              await new Promise((resolve) => setTimeout(resolve, 1500));
+              
+            } catch (err) {
+              console.log('Failed adding the movie to the db');
+            }
+          }
+
+
+
+        } catch (err) {
+          console.error("Error getting actor movies and series", err);
+        }
+      } else {
+        console.log('No actor with that name found');
+      }
+    }
+    catch (err) {
+      console.error("Error getting actor id", err);
+    };
+
+  };
+
+}
+// setTimeout(() => {}, 2000);
+// addMoviesAndSeriesBasedOnActors();
 
 async function pushPhotosAndVideosToMovie(movieId) {
 	const urlMovie = `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`;

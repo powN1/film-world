@@ -52,13 +52,9 @@ const RankingResults = () => {
 				<div className="flex flex-col w-full md:w-[85%] lg:w-2/3 items-center">
 					{mediaToShow.map((media, i) => {
 						// console.log(currentCategory);
-						if (
-							localCurrentCategory === "movies" ||
-							localCurrentCategory === "series" ||
-							localCurrentCategory === "games"
-						) {
+						if ( localCurrentCategory === "movies" || localCurrentCategory === "series" || localCurrentCategory === "games" ) {
 							const year = media.releaseDate
-								? getFullYear(media.releaseDate)
+							? getFullYear(media.releaseDate)
 								: getFullYear(media.firstAirDate);
 
 							return (
