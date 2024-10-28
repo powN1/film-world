@@ -367,8 +367,11 @@ async function getMovieFromTheMovieDBById(movieId) {
 // 	await getMovieFromTheMovieDBById(movie);
 // });
 
-
-async function getRoleImageAndNameFromFilmwebPagePuppeteer( type, name, year, actorName,
+async function getRoleImageAndNameFromFilmwebPagePuppeteer(
+	type,
+	name,
+	year,
+	actorName,
 ) {
 	const searchUrl =
 		type === "movie"
@@ -382,7 +385,7 @@ async function getRoleImageAndNameFromFilmwebPagePuppeteer( type, name, year, ac
 
 	// Navigate to a search filmweb website
 	await page.goto(searchUrl, { waitUntil: "networkidle2" });
-	await page.waitForSelector("a.preview__link"); // Wait for any preview__link anchor
+	await page.waitForSelector("a.preview__link", { timeout: 6000 }); // Wait for any preview__link anchor
 
 	const mediaYear = year.toString();
 	// Fetch the search results page
@@ -413,26 +416,33 @@ async function getRoleImageAndNameFromFilmwebPagePuppeteer( type, name, year, ac
 				// Insert "name" property into every actor object
 				const actorApiUrl = `https://www.filmweb.pl/api/v1/person/${actor.person}/info`;
 
-        try {
-          let actorRes = await axios.get(actorApiUrl, filmwebHeaders);
-          actorRes = actorRes.data;
+				try {
+					let actorRes = await axios.get(actorApiUrl, filmwebHeaders);
+					actorRes = actorRes.data;
 
-          // Update the actor object with "name" property
-          const actorName = actorRes.name;
-          const imgPath = actorRes.poster ? actorRes.poster.path ? actorRes.poster.path.replace("$", "1") : null : null;
+					// Update the actor object with "name" property
+					const actorName = actorRes.name;
+					const imgPath = actorRes.poster
+						? actorRes.poster.path
+							? actorRes.poster.path.replace("$", "1")
+							: null
+						: null;
 
-          const actorImgPath = imgPath ? `https://fwcdn.pl/ppo${imgPath}` : null;
-          actor.name = actorName;
-          actor.actorImgPath = actorImgPath;
+					const actorImgPath = imgPath
+						? `https://fwcdn.pl/ppo${imgPath}`
+						: null;
+					actor.name = actorName;
+					actor.actorImgPath = actorImgPath;
 
-          // Delay for 300ms
-          await new Promise((resolve) => setTimeout(resolve, 200));
-        } catch (err) {
-          console.error("Failed getting actor info from filmweb", err);
-        }
+					// Delay for 300ms
+					await new Promise((resolve) => setTimeout(resolve, 200));
+				} catch (err) {
+					console.error("Failed getting actor info from filmweb", err);
+				}
 			}
 
-			const filteredActor = movieActors.filter( (actor) =>
+			const filteredActor = movieActors.filter(
+				(actor) =>
 					actor.name.toLowerCase().includes(actorName.toLowerCase()) ||
 					actorName.toLowerCase().includes(actor.name.toLowerCase()),
 			);
@@ -441,54 +451,61 @@ async function getRoleImageAndNameFromFilmwebPagePuppeteer( type, name, year, ac
 
 			let photoId;
 
-      try {
-        let roleRes = await axios.get(roleApiUrl, filmwebHeaders);
-        roleRes = roleRes.data;
-        // Check if there's a photo for the role
-        photoId = roleRes.representingPhoto ? roleRes.representingPhoto.id : null;
-        const imgPath = roleRes.representingPhoto ? roleRes.representingPhoto.sourcePath ? roleRes.representingPhoto.sourcePath.replace("$", "2") : null : null;
-        const roleImgPath = imgPath ? `https://fwcdn.pl/fph${imgPath}` : null;
+			try {
+				let roleRes = await axios.get(roleApiUrl, filmwebHeaders);
+				roleRes = roleRes.data;
+				// Check if there's a photo for the role
+				photoId = roleRes.representingPhoto
+					? roleRes.representingPhoto.id
+					: null;
+				const imgPath = roleRes.representingPhoto
+					? roleRes.representingPhoto.sourcePath
+						? roleRes.representingPhoto.sourcePath.replace("$", "2")
+						: null
+					: null;
+				const roleImgPath = imgPath ? `https://fwcdn.pl/fph${imgPath}` : null;
 
-        // Update the actor object with new properties
-        filteredActor[0].roleImgPath = roleImgPath;
+				// Update the actor object with new properties
+				filteredActor[0].roleImgPath = roleImgPath;
 
-        // Delay for 300ms
-        await new Promise((resolve) => setTimeout(resolve, 200));
-
-      } catch (err) {
-        console.error("Failed getting role info from filmweb", err)
-      }
-
+				// Delay for 300ms
+				await new Promise((resolve) => setTimeout(resolve, 200));
+			} catch (err) {
+				console.error("Failed getting role info from filmweb", err);
+			}
 
 			if (photoId) {
-        try {
-          const photoApiUrl = `https://www.filmweb.pl/api/v1/photo/${photoId}/info`;
-          let photoRes = await axios.get(photoApiUrl, filmwebHeaders);
-          photoRes = photoRes.data;
-          const characterId = photoRes.captions[0].character
-            ? photoRes.captions[0].character
-            : null;
-          // Delay for 300ms
-          await new Promise((resolve) => setTimeout(resolve, 300));
+				try {
+					const photoApiUrl = `https://www.filmweb.pl/api/v1/photo/${photoId}/info`;
+					let photoRes = await axios.get(photoApiUrl, filmwebHeaders);
+					photoRes = photoRes.data;
+					const characterId = photoRes.captions[0].character
+						? photoRes.captions[0].character
+						: null;
+					// Delay for 300ms
+					await new Promise((resolve) => setTimeout(resolve, 300));
 
-          if (characterId) {
-            try {
-              const characterApiUrl = `https://filmweb.pl/api/v1/character/${characterId}/info`;
-              let characterRes = await axios.get(characterApiUrl, filmwebHeaders);
-              characterRes = characterRes.data;
-              const characterName = characterRes.name;
+					if (characterId) {
+						try {
+							const characterApiUrl = `https://filmweb.pl/api/v1/character/${characterId}/info`;
+							let characterRes = await axios.get(
+								characterApiUrl,
+								filmwebHeaders,
+							);
+							characterRes = characterRes.data;
+							const characterName = characterRes.name;
 
-              filteredActor[0].characterName = characterName;
+							filteredActor[0].characterName = characterName;
 
-              // Delay for 300ms
-              await new Promise((resolve) => setTimeout(resolve, 200));
-            } catch (err) {
-              console.error("Failed getting character info from filmweb", err)
-            }
-          }
-        } catch (err) {
-          console.error("Failed getting photo info from filmweb", err)
-        }
+							// Delay for 300ms
+							await new Promise((resolve) => setTimeout(resolve, 200));
+						} catch (err) {
+							console.error("Failed getting character info from filmweb", err);
+						}
+					}
+				} catch (err) {
+					console.error("Failed getting photo info from filmweb", err);
+				}
 			}
 			console.log("fitered actor array before returning", filteredActor);
 			return filteredActor[0];
@@ -514,99 +531,129 @@ async function addMovieRolesToMovies() {
 	const actors = await Actor.find();
 
 	for (const movie of movies) {
-		await new Promise((resolve) => setTimeout(resolve, 200));
+		console.log(`Checking movie: ${movie.title}`);
+		await new Promise((resolve) => setTimeout(resolve, 100));
 		let movieTitle = movie.title;
 		let encodedTitle = encodeURIComponent(movieTitle).replace(/%20/g, "+");
 		const movieYear = movie.year;
 
 		// For each movie find a relative movie in the themovieDB database using api
-    try {
-      const { data } = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${encodedTitle}`, options);
-      const allMovies = data.results;
+		try {
+			const { data } = await axios.get(
+				`https://api.themoviedb.org/3/search/movie?query=${encodedTitle}`,
+				options,
+			);
+			const allMovies = data.results;
 
-      // Return a movie that has the same title and release year
-      const matchingMovies = allMovies.filter((movie) => {
-        const matchingMovieYear = movie["release_date"].substring(0, 4);
-        return (movie.title.toLowerCase() === movieTitle.toLowerCase() && Number(matchingMovieYear) === Number(movieYear));
-      });
+			// Return a movie that has the same title and release year
+			const matchingMovies = allMovies.filter((movie) => {
+				const matchingMovieYear = movie["release_date"].substring(0, 4);
+				return (
+					movie.title.toLowerCase() === movieTitle.toLowerCase() &&
+					Number(matchingMovieYear) === Number(movieYear)
+				);
+			});
 
-      const movieId = matchingMovies.length > 0 ? matchingMovies[0].id : null;
+			const movieId = matchingMovies.length > 0 ? matchingMovies[0].id : null;
 
-      if(movieId) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
+			if (movieId) {
+				await new Promise((resolve) => setTimeout(resolve, 100));
 
-        let creditsData;
-        try {
-          const urlMovieCredits = `https://api.themoviedb.org/3/movie/${movieId}/credits?language=en-US`;
-          const { data } = await axios.get(urlMovieCredits, options);
-          creditsData = data;
-        } catch (err) {
-          console.error("Error getting credits data from themoviedm", err);
-        }
+				let creditsData;
+				try {
+					const urlMovieCredits = `https://api.themoviedb.org/3/movie/${movieId}/credits?language=en-US`;
+					const { data } = await axios.get(urlMovieCredits, options);
+					creditsData = data;
+				} catch (err) {
+					console.error("Error getting credits data from themoviedm", err);
+				}
 
-        // Get the actors that played in the movie
-        const cast = creditsData.cast;
-        const castActing = cast.filter((actor) => actor.known_for_department === "Acting");
+				// Get the actors that played in the movie
+				const cast = creditsData.cast;
+				const castActing = cast.filter(
+					(actor) => actor.known_for_department === "Acting",
+				);
 
-        for (const actor of actors) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
+				for (const actor of actors) {
+					// console.log(`Checking actor: ${actor.personal_info.name}`)
+					// await new Promise((resolve) => setTimeout(resolve, 100));
 
-          // For every actor in the db find if he has played in this movie
-          const playedActor = castActing.filter( (castActor) => castActor.name.toLowerCase().includes(actor.personal_info.name.toLowerCase()) 
-          || actor.personal_info.name.toLowerCase().includes(castActor.name.toLowerCase()));
+					// For every actor in the db find if he has played in this movie
+					const playedActor = castActing.filter(
+						(castActor) =>
+							castActor.name
+								.toLowerCase()
+								.includes(actor.personal_info.name.toLowerCase()) ||
+							actor.personal_info.name
+								.toLowerCase()
+								.includes(castActor.name.toLowerCase()),
+					);
 
-          if (playedActor.length > 0) {
-            try {
-              const existingRole = await Role.findOne({
-                filmTitle: movie.title,
+					if (playedActor.length > 0) {
+						try {
+							const existingRole = await Role.findOne({
+								filmTitle: movie.title,
 								characterName: playedActor[0].character,
 							});
 
-              if(!existingRole) {
-                console.log("Role not in the db, proceeding");
-                const filmwebRole = await getRoleImageAndNameFromFilmwebPagePuppeteer( "movie", movie.title, movie.year, actor.personal_info.name,);
-                const roleImg = filmwebRole.roleImgPath ? filmwebRole.roleImgPath : null;
-                const awsImageUrl = roleImg ? await uploadFileToAWSfromUrl(roleImg) : null;
+							if (!existingRole) {
+								console.log("Role not in the db, proceeding");
+								const filmwebRole =
+									await getRoleImageAndNameFromFilmwebPagePuppeteer(
+										"movie",
+										movie.title,
+										movie.year,
+										actor.personal_info.name,
+									);
+								const roleImg = filmwebRole.roleImgPath
+									? filmwebRole.roleImgPath
+									: null;
+								const awsImageUrl = roleImg
+									? await uploadFileToAWSfromUrl(roleImg)
+									: null;
 
-                const newRole = new Role({
-                  filmTitle: movie.title,
-                  characterName: playedActor[0].character,
-                  characterBanner: awsImageUrl || null,
-                  actor: actor._id,
-                  movie: movie._id,
-                  activity: {
-                    rating: filmwebRole.rate,
-                    ratedByCount: filmwebRole.count,
-                  },
-                });
+								const newRole = new Role({
+									filmTitle: movie.title,
+									characterName: playedActor[0].character,
+									characterBanner: awsImageUrl || null,
+									actor: actor._id,
+									movie: movie._id,
+									activity: {
+										rating: filmwebRole.rate,
+										ratedByCount: filmwebRole.count,
+									},
+								});
 
-                // Save the new role and wait for the operation to finish
+								// Save the new role and wait for the operation to finish
 								const savedRole = await newRole.save();
-								console.log("Role saved, proceeding to add the role to the actor");
+								console.log(
+									"Role saved, proceeding to add the role to the actor",
+								);
 
-                // Add the role to the actor and wait for the update to finish
-								await Actor.findByIdAndUpdate(actor._id, { $push: { roles: savedRole._id } });
+								// Add the role to the actor and wait for the update to finish
+								await Actor.findByIdAndUpdate(actor._id, {
+									$push: { roles: savedRole._id },
+								});
 								console.log("Role added to actor");
-
-              } else {
-                console.log("Role already in the db");
-              };
-
-            } catch (err) {
-              console.error("Error processing role:", err)
-            };
-          } else {
-            console.log("No playedActor found");
-          };
-        };
-      };
-
-    }
-    catch (err) {
-      console.error("Something went wrong", err);
-    }
+							} else {
+								console.log("Role already in the db");
+							}
+						} catch (err) {
+							console.error(
+								`Error processing role for ${playedActor[0].name} in movie ${movie.title}`,
+								err,
+							);
+						}
+					} else {
+						// console.log("No playedActor found");
+					}
+				}
+			}
+		} catch (err) {
+			console.error("Something went wrong", err);
+		}
 	}
-  console.log('all movies and actors checked');
+	console.log("all movies and actors checked");
 }
 
 async function addSerieRolesToSeries() {
@@ -629,101 +676,126 @@ async function addSerieRolesToSeries() {
 		let movieTitle = movie.title;
 		let encodedTitle = encodeURIComponent(movieTitle).replace(/%20/g, "+");
 
-    let date = new Date(movie.firstAirDate);
+		let date = new Date(movie.firstAirDate);
 		let movieYear = date.getFullYear();
-    console.log('serie release year is:', movieYear);
+		console.log("serie release year is:", movieYear);
 
 		// For each movie find a relative movie in the themovieDB database using api
-    try {
-      const { data } = await axios.get( `https://api.themoviedb.org/3/search/tv?query=${encodedTitle}`, options);
-      const allMovies = data.results;
+		try {
+			const { data } = await axios.get(
+				`https://api.themoviedb.org/3/search/tv?query=${encodedTitle}`,
+				options,
+			);
+			const allMovies = data.results;
 
-      // Return a movie that has the same title and release year
-      const matchingMovies = allMovies.filter((movie) => {
-        const matchingMovieYear = movie["first_air_date"].substring(0, 4);
-        return ( movie.name.toLowerCase() === movieTitle.toLowerCase() && Number(matchingMovieYear) === Number(movieYear));
-      });
+			// Return a movie that has the same title and release year
+			const matchingMovies = allMovies.filter((movie) => {
+				const matchingMovieYear = movie["first_air_date"].substring(0, 4);
+				return (
+					movie.name.toLowerCase() === movieTitle.toLowerCase() &&
+					Number(matchingMovieYear) === Number(movieYear)
+				);
+			});
 
-      const movieId = matchingMovies.length > 0 ? matchingMovies[0].id : null;
+			const movieId = matchingMovies.length > 0 ? matchingMovies[0].id : null;
 
-      if(movieId) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
+			if (movieId) {
+				await new Promise((resolve) => setTimeout(resolve, 100));
 
-        let creditsData;
-        try {
-          const urlMovieCredits = `https://api.themoviedb.org/3/tv/${movieId}/credits?language=en-US`;
-          const { data } = await axios.get(urlMovieCredits, options);
-          creditsData = data;
-        } catch (err) {
-          console.error("Error getting credits data from themoviedm", err);
-        }
+				let creditsData;
+				try {
+					const urlMovieCredits = `https://api.themoviedb.org/3/tv/${movieId}/credits?language=en-US`;
+					const { data } = await axios.get(urlMovieCredits, options);
+					creditsData = data;
+				} catch (err) {
+					console.error("Error getting credits data from themoviedm", err);
+				}
 
-        // Get the actors that played in the movie
-        const cast = creditsData.cast;
-        const castActing = cast.filter((actor) => actor.known_for_department === "Acting");
+				// Get the actors that played in the movie
+				const cast = creditsData.cast;
+				const castActing = cast.filter(
+					(actor) => actor.known_for_department === "Acting",
+				);
 
-        for (const actor of actors) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
+				for (const actor of actors) {
+					await new Promise((resolve) => setTimeout(resolve, 100));
 
-          // For every actor in the db find if he has played in this movie
-          const playedActor = castActing.filter( (castActor) => castActor.name.toLowerCase().includes(actor.personal_info.name.toLowerCase()) 
-          || actor.personal_info.name.toLowerCase().includes(castActor.name.toLowerCase()));
+					// For every actor in the db find if he has played in this movie
+					const playedActor = castActing.filter(
+						(castActor) =>
+							castActor.name
+								.toLowerCase()
+								.includes(actor.personal_info.name.toLowerCase()) ||
+							actor.personal_info.name
+								.toLowerCase()
+								.includes(castActor.name.toLowerCase()),
+					);
 
-          if (playedActor.length > 0) {
-            try {
-              const existingRole = await Role.findOne({
-                filmTitle: movie.title,
+					if (playedActor.length > 0) {
+						try {
+							const existingRole = await Role.findOne({
+								filmTitle: movie.title,
 								characterName: playedActor[0].character,
 							});
 
-              if(!existingRole) {
-                console.log("Role not in the db, proceeding");
-                const filmwebRole = await getRoleImageAndNameFromFilmwebPagePuppeteer( "serie", movie.title, movieYear , actor.personal_info.name,);
-                const roleImg = filmwebRole.roleImgPath ? filmwebRole.roleImgPath : null;
-                const awsImageUrl = roleImg ? await uploadFileToAWSfromUrl(roleImg) : null;
+							if (!existingRole) {
+								console.log("Role not in the db, proceeding");
+								const filmwebRole =
+									await getRoleImageAndNameFromFilmwebPagePuppeteer(
+										"serie",
+										movie.title,
+										movieYear,
+										actor.personal_info.name,
+									);
+								const roleImg = filmwebRole.roleImgPath
+									? filmwebRole.roleImgPath
+									: null;
+								const awsImageUrl = roleImg
+									? await uploadFileToAWSfromUrl(roleImg)
+									: null;
 
-                const newRole = new Role({
-                  filmTitle: movie.title,
-                  characterName: playedActor[0].character,
-                  characterBanner: awsImageUrl || null,
-                  actor: actor._id,
-                  serie: movie._id,
-                  activity: {
-                    rating: filmwebRole.rate,
-                    ratedByCount: filmwebRole.count,
-                  },
-                });
+								const newRole = new Role({
+									filmTitle: movie.title,
+									characterName: playedActor[0].character,
+									characterBanner: awsImageUrl || null,
+									actor: actor._id,
+									serie: movie._id,
+									activity: {
+										rating: filmwebRole.rate,
+										ratedByCount: filmwebRole.count,
+									},
+								});
 
-                // Save the new role and wait for the operation to finish
+								// Save the new role and wait for the operation to finish
 								const savedRole = await newRole.save();
-								console.log("Role saved, proceeding to add the role to the actor");
+								console.log(
+									"Role saved, proceeding to add the role to the actor",
+								);
 
-                // Add the role to the actor and wait for the update to finish
-								await Actor.findByIdAndUpdate(actor._id, { $push: { roles: savedRole._id } });
+								// Add the role to the actor and wait for the update to finish
+								await Actor.findByIdAndUpdate(actor._id, {
+									$push: { roles: savedRole._id },
+								});
 								console.log("Role added to actor");
-
-              } else {
-                console.log("Role already in the db");
-              };
-
-            } catch (err) {
-              console.error("Error processing role:", err)
-            };
-          } else {
-            console.log("No playedActor found");
-          };
-        };
-      };
-
-    }
-    catch (err) {
-      console.error("Something went wrong", err);
-    }
+							} else {
+								console.log("Role already in the db");
+							}
+						} catch (err) {
+							console.error("Error processing role:", err);
+						}
+					} else {
+						console.log("No playedActor found");
+					}
+				}
+			}
+		} catch (err) {
+			console.error("Something went wrong", err);
+		}
 	}
-  console.log('all movies and actors checked');
+	console.log("all movies and actors checked");
 }
-setTimeout(() => {}, 3000);
-addMovieRolesToMovies();
+// setTimeout(() => {}, 3000);
+// addMovieRolesToMovies();
 // addSerieRolesToSeries();
 
 // const listOfMoviesByIdToFetch = [98, 4553];
@@ -1143,7 +1215,6 @@ const listOfMovies = [
 // });
 
 async function addMoviesAndSeriesBasedOnActors() {
-
 	const options = {
 		method: "GET",
 		headers: {
@@ -1158,72 +1229,84 @@ async function addMoviesAndSeriesBasedOnActors() {
 	const movies = await Movie.find();
 	const series = await Serie.find();
 
-  for (const actor of actors) {
-    // Cycle throuh every actor
+	for (const actor of actors) {
+		// Cycle throuh every actor
 		let actorName = actor.personal_info.name;
 		let encodedName = encodeURIComponent(actorName).replace(/%20/g, "+");
-    try {
-      // Get actor details from themoviedb api
-      const actorResponse = await axios.get(`https://api.themoviedb.org/3/search/person?query=${encodedName}`, options);
-      const actors = actorResponse.data.results
-      const filteredActor = actors.filter(actorRes => actor.personal_info.name === actorRes.name && actorRes.known_for_department === "Acting")
+		try {
+			// Get actor details from themoviedb api
+			const actorResponse = await axios.get(
+				`https://api.themoviedb.org/3/search/person?query=${encodedName}`,
+				options,
+			);
+			const actors = actorResponse.data.results;
+			const filteredActor = actors.filter(
+				(actorRes) =>
+					actor.personal_info.name === actorRes.name &&
+					actorRes.known_for_department === "Acting",
+			);
 
-      if(filteredActor.length > 0) {
-        // If actor from the db matches the actor from themoviedb api response
-        const actorId = filteredActor[0].id;
-        try {
-          // Get actor film details
-          let actorDetails = await axios.get(`https://api.themoviedb.org/3/person/${actorId}/combined_credits`, options);
-          actorDetails = actorDetails.data.cast;
+			if (filteredActor.length > 0) {
+				// If actor from the db matches the actor from themoviedb api response
+				const actorId = filteredActor[0].id;
+				try {
+					// Get actor film details
+					let actorDetails = await axios.get(
+						`https://api.themoviedb.org/3/person/${actorId}/combined_credits`,
+						options,
+					);
+					actorDetails = actorDetails.data.cast;
 
-          // Get actors popular movies and series that he played in
-          const actorPopularMovies = actorDetails.filter(film => film.title).filter(film => film.popularity > 50).sort((a, b) => b.popularity - a.popularity);
-          const actorPopularSeries = actorDetails.filter(film => film.name).filter(film => film.popularity > 50).sort((a, b) => b.popularity - a.popularity);
+					// Get actors popular movies and series that he played in
+					const actorPopularMovies = actorDetails
+						.filter((film) => film.title)
+						.filter((film) => film.popularity > 50)
+						.sort((a, b) => b.popularity - a.popularity);
+					const actorPopularSeries = actorDetails
+						.filter((film) => film.name)
+						.filter((film) => film.popularity > 50)
+						.sort((a, b) => b.popularity - a.popularity);
 
-          // Create a Set of property values from movies array to easily check for duplicates
-          const valuesSetMovies = new Set(movies.map(item => item['title']));
-          const actorMoviesToAdd = actorPopularMovies.filter(item => !valuesSetMovies.has(item['title'])).slice(0, 10);
-          
-          // Create a Set of property values from series to easily check for duplicates
-          const valuesSetSeries = new Set(movies.map(item => item['title']));
-          const actorSeriesToAdd = actorPopularSeries.filter(item => !valuesSetSeries.has(item['name'])).slice(0, 5);
+					// Create a Set of property values from movies array to easily check for duplicates
+					const valuesSetMovies = new Set(movies.map((item) => item["title"]));
+					const actorMoviesToAdd = actorPopularMovies
+						.filter((item) => !valuesSetMovies.has(item["title"]))
+						.slice(0, 10);
 
-              console.log(`Actor: ${actor.personal_info.name}`)
-          for (const movieToAdd of actorMoviesToAdd) {
-            try {
-              await getMovieFromTheMovieDBById(movieToAdd.id);
-              await new Promise((resolve) => setTimeout(resolve, 1500));
-              
-            } catch (err) {
-              console.log('Failed adding the movie to the db');
-            }
-          }
+					// Create a Set of property values from series to easily check for duplicates
+					const valuesSetSeries = new Set(movies.map((item) => item["title"]));
+					const actorSeriesToAdd = actorPopularSeries
+						.filter((item) => !valuesSetSeries.has(item["name"]))
+						.slice(0, 5);
 
-          for (const serieToAdd of actorSeriesToAdd) {
-            try {
-              await getSerieFromTheMovieDBById(serieToAdd.id);
-              await new Promise((resolve) => setTimeout(resolve, 1500));
-              
-            } catch (err) {
-              console.log('Failed adding the movie to the db');
-            }
-          }
+					console.log(`Actor: ${actor.personal_info.name}`);
+					for (const movieToAdd of actorMoviesToAdd) {
+						try {
+							await getMovieFromTheMovieDBById(movieToAdd.id);
+							await new Promise((resolve) => setTimeout(resolve, 1500));
+						} catch (err) {
+							console.log("Failed adding the movie to the db");
+						}
+					}
 
-
-
-        } catch (err) {
-          console.error("Error getting actor movies and series", err);
-        }
-      } else {
-        console.log('No actor with that name found');
-      }
-    }
-    catch (err) {
-      console.error("Error getting actor id", err);
-    };
-
-  };
-
+					for (const serieToAdd of actorSeriesToAdd) {
+						try {
+							await getSerieFromTheMovieDBById(serieToAdd.id);
+							await new Promise((resolve) => setTimeout(resolve, 1500));
+						} catch (err) {
+							console.log("Failed adding the movie to the db");
+						}
+					}
+				} catch (err) {
+					console.error("Error getting actor movies and series", err);
+				}
+			} else {
+				console.log("No actor with that name found");
+			}
+		} catch (err) {
+			console.error("Error getting actor id", err);
+		}
+	}
 }
 // setTimeout(() => {}, 2000);
 // addMoviesAndSeriesBasedOnActors();
@@ -1307,6 +1390,62 @@ const listOfMovies2 = [
 // 	await pushPhotosAndVideosToMovie(movie);
 // 	setTimeout(() => {}, 3500);
 // });
+
+async function addSexesToActors() {
+	const options = {
+		method: "GET",
+		headers: {
+			accept: "application/json",
+			Authorization:
+				"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjOWQ2YmZjMzcyY2ZlZjg0YjgyODgwNzE1M2ZhZDY0YiIsIm5iZiI6MTcyNjI1OTU3Ni45MzE4MTIsInN1YiI6IjYyOWM5NGI5Y2FhNTA4MWFlZjdkMzI1MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rLbp_pNyYzYdtEkKypNecCMCkTz7F-_-M5Nachm7fw8",
+		},
+	};
+
+	// Get all the acotrs from the db
+	const actors = await Actor.find();
+
+	for (const actor of actors) {
+		// Cycle throuh every actor
+		let actorName = actor.personal_info.name;
+		let encodedName = encodeURIComponent(actorName).replace(/%20/g, "+");
+		try {
+			// Get actor details from themoviedb api
+			const actorResponse = await axios.get(
+				`https://api.themoviedb.org/3/search/person?query=${encodedName}`,
+				options,
+			);
+			const actors = actorResponse.data.results;
+			const filteredActor = actors.filter(
+				(actorRes) =>
+					actor.personal_info.name === actorRes.name &&
+					actorRes.known_for_department === "Acting",
+			);
+
+			if (filteredActor.length > 0) {
+				// If actor from the db matches the actor from themoviedb api response
+				const actorId = filteredActor[0].id;
+				try {
+					// Get actor film details
+					let actorDetails = await axios.get( `https://api.themoviedb.org/3/person/${actorId}`, options);
+					const actorSex = actorDetails.data.gender === 2 ? "male" : "female";
+          if (!actor.personal_info.sex) {
+            await Actor.updateOne({ _id: actor._id }, { "personal_info.sex": actorSex });
+            console.log(`Updated ${actorName} with sex: ${actorSex}`);
+          }
+
+
+				} catch (err) {
+					console.error("Error getting actor movies and series", err);
+				}
+			} else {
+				console.log("No actor with that name found");
+			}
+		} catch (err) {
+			console.error("Error getting actor id", err);
+		}
+	}
+}
+// addSexesToActors();
 
 async function updateRatings() {
 	try {
@@ -1497,7 +1636,14 @@ app.post("/get-actors-top-rated", (req, res) => {
 	Actor.find()
 		.limit(count)
 		.sort(sortQuery)
-		.populate("roles", "characterBanner serie movie characterName")
+		.populate({
+			path: "roles",
+			select: "characterName characterBanner",
+			populate: [
+				{ path: "movie", select: "title" },
+				{ path: "serie", select: "title" },
+			],
+		})
 		.then((actors) => {
 			return res.status(200).json({ actors });
 		})
@@ -1893,6 +2039,37 @@ app.post("/get-movies", (req, res) => {
 		});
 });
 
+app.post("/get-movies-latest", (req, res) => {
+	const { count } = req.body;
+
+	const findQuery = {};
+	const sortQuery = {};
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong movie count. Please type a number" });
+		countQuery = count;
+	}
+
+	const today = new Date();
+	findQuery.releaseDate = { $lt: today };
+	sortQuery["releaseDate"] = -1;
+
+	Movie.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
+		.then((movies) => {
+			return res.status(200).json({ movies });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
 app.post("/get-movies-most-anticipated", (req, res) => {
 	const { count } = req.body;
 
@@ -2217,6 +2394,119 @@ app.post("/get-roles-movie-top-rated", (req, res) => {
 		.catch((err) => res.status(500).json({ error: err.message }));
 });
 
+app.post("/get-roles-movie-top-rated-male", async (req, res) => {
+	const { count } = req.body;
+  const limit = Number(count) || 5;
+
+	try {
+		const roles = await Role.aggregate([
+			// Step 1: Match roles that have a movie associated
+			{ $match: { movie: { $exists: true } } },
+
+			// Step 2: Populate actor data and filter for female actors
+			{
+				$lookup: {
+					from: "actors",
+					localField: "actor",
+					foreignField: "_id",
+					as: "actor",
+				},
+			},
+			// Step 3: Filter for female actors
+			{ $unwind: "$actor" },
+			{ $match: { "actor.personal_info.sex": "male" } },
+
+			// Step 4: Populate movie data
+			{
+				$lookup: {
+					from: "movies",
+					localField: "movie",
+					foreignField: "_id",
+					as: "movie",
+				},
+			},
+			{ $unwind: "$movie" },
+
+			// Step 5: Sort by activity.rating in descending order
+			{ $sort: { "actor.activity.rating": -1 } },
+
+			// Step 6: Limit to the requested count
+			{ $limit: count },
+
+			// Step 7: Project fields to control the final output
+			{
+				$project: {
+					"actor.activity": 1,
+					"actor.personal_info.name": 1,
+					"movie.title": 1,
+					"movie.releaseDate": 1,
+          "role.filmTitle": 1
+				},
+			},
+		]);
+
+		return res.status(200).json({ roles });
+	} catch (err) {
+		return res.status(500).json({ error: err.message });
+	}
+});
+
+app.post("/get-roles-movie-top-rated-female", async (req, res) => {
+	const { count } = req.body;
+  const limit = Number(count) || 5;
+
+	try {
+		const roles = await Role.aggregate([
+			// Step 1: Match roles that have a movie associated
+			{ $match: { movie: { $exists: true } } },
+
+			// Step 2: Populate actor data and filter for female actors
+			{
+				$lookup: {
+					from: "actors",
+					localField: "actor",
+					foreignField: "_id",
+					as: "actor",
+				},
+			},
+			// Step 3: Filter for female actors
+			{ $unwind: "$actor" },
+			{ $match: { "actor.personal_info.sex": "female" } },
+
+			// Step 4: Populate movie data
+			{
+				$lookup: {
+					from: "movies",
+					localField: "movie",
+					foreignField: "_id",
+					as: "movie",
+				},
+			},
+			{ $unwind: "$movie" },
+
+			// Step 5: Sort by activity.rating in descending order
+			{ $sort: { "actor.activity.rating": -1 } },
+
+			// Step 6: Limit to the requested count
+			{ $limit: count },
+
+			// Step 7: Project fields to control the final output
+			{
+				$project: {
+					"actor.activity.rating": 1,
+					"actor.personal_info.name": 1,
+					"movie.title": 1,
+					"movie.releaseDate": 1,
+				},
+			},
+		]);
+
+		return res.status(200).json({ roles });
+	} catch (err) {
+		return res.status(500).json({ error: err.message });
+	}
+});
+
 app.post("/get-roles-serie", (req, res) => {
 	const { count } = req.body;
 
@@ -2253,6 +2543,116 @@ app.post("/get-roles-serie-top-rated", (req, res) => {
 		.catch((err) => res.status(500).json({ error: err.message }));
 });
 
+app.post("/get-roles-serie-top-rated-male", async (req, res) => {
+	const { count } = req.body;
+  const limit = Number(count) || 5;
+
+	try {
+		const roles = await Role.aggregate([
+			// Step 1: Match roles that have a movie associated
+			{ $match: { serie: { $exists: true } } },
+
+			// Step 2: Populate actor data and filter for female actors
+			{
+				$lookup: {
+					from: "actors",
+					localField: "actor",
+					foreignField: "_id",
+					as: "actor",
+				},
+			},
+			// Step 3: Filter for female actors
+			{ $unwind: "$actor" },
+			{ $match: { "actor.personal_info.sex": "male" } },
+
+			// Step 4: Populate movie data
+			{
+				$lookup: {
+					from: "series",
+					localField: "serie",
+					foreignField: "_id",
+					as: "serie",
+				},
+			},
+			{ $unwind: "$serie" },
+
+			// Step 5: Sort by activity.rating in descending order
+			{ $sort: { "actor.activity.rating": -1 } },
+
+			// Step 6: Limit to the requested count
+			{ $limit: count },
+
+			// Step 7: Project fields to control the final output
+			{
+				$project: {
+					"actor.activity.rating": 1,
+					"actor.personal_info.name": 1,
+					"movie.title": 1,
+					"movie.releaseDate": 1,
+				},
+			},
+		]);
+
+		return res.status(200).json({ roles });
+	} catch (err) {
+		return res.status(500).json({ error: err.message });
+	}
+});
+app.post("/get-roles-serie-top-rated-female", async (req, res) => {
+	const { count } = req.body;
+  const limit = Number(count) || 5;
+
+	try {
+		const roles = await Role.aggregate([
+			// Step 1: Match roles that have a movie associated
+			{ $match: { serie: { $exists: true } } },
+
+			// Step 2: Populate actor data and filter for female actors
+			{
+				$lookup: {
+					from: "actors",
+					localField: "actor",
+					foreignField: "_id",
+					as: "actor",
+				},
+			},
+			// Step 3: Filter for female actors
+			{ $unwind: "$actor" },
+			{ $match: { "actor.personal_info.sex": "female" } },
+
+			// Step 4: Populate serie data
+			{
+				$lookup: {
+					from: "series",
+					localField: "serie",
+					foreignField: "_id",
+					as: "serie",
+				},
+			},
+			{ $unwind: "$serie" },
+
+			// Step 5: Sort by activity.rating in descending order
+			{ $sort: { "actor.activity.rating": -1 } },
+
+			// Step 6: Limit to the requested count
+			{ $limit: count },
+
+			// Step 7: Project fields to control the final output
+			{
+				$project: {
+					"actor.activity.rating": 1,
+					"actor.personal_info.name": 1,
+					"movie.title": 1,
+					"movie.releaseDate": 1,
+				},
+			},
+		]);
+
+		return res.status(200).json({ roles });
+	} catch (err) {
+		return res.status(500).json({ error: err.message });
+	}
+});
 app.post("/get-series", (req, res) => {
 	const { count } = req.body;
 

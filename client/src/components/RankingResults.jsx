@@ -9,13 +9,22 @@ import RankingResultRole from "./RankingResultRole";
 const RankingResults = () => {
 	const { currentCategory, currentSubCategory } = useContext(RankingContext);
 	const {
+		latestMovies,
 		topRatedMovies,
 		topRatedSeries,
+		latestSeries,
 		topRatedGames,
 		movieTopRatedRoles,
+		movieTopRatedMaleRoles,
+		movieTopRatedFemaleRoles,
 		serieTopRatedRoles,
-    actorsTopRated,
+		serieTopRatedMaleRoles,
+		serieTopRatedFemaleRoles,
+		actorsTopRated,
 	} = useContext(DataContext);
+  console.log("male movie roles", movieTopRatedMaleRoles)
+  console.log("movie roles", movieTopRatedRoles)
+  // console.log("female movie roles", movieTopRatedFemaleRoles)
 
 	const [mediaToShow, setMediaToShow] = useState([]);
 	const [localCurrentCategory, setLocalCurrentCategory] = useState([]);
@@ -24,24 +33,39 @@ const RankingResults = () => {
 		// Show specific media given specific category that user chose
 		if (currentCategory.toLowerCase() === "movies") {
 			setLocalCurrentCategory("movies");
-			setMediaToShow(topRatedMovies);
+			if (currentSubCategory === "top 500") {
+				setMediaToShow(topRatedMovies);
+			} else if (currentSubCategory === "new") {
+				setMediaToShow(latestMovies);
+			}
 		} else if (currentCategory.toLowerCase() === "series") {
 			setLocalCurrentCategory("series");
-			setMediaToShow(topRatedSeries);
+			if (currentSubCategory === "top 500") {
+				setMediaToShow(topRatedSeries);
+			} else if (currentSubCategory === "new") {
+				setMediaToShow(latestSeries);
+			}
+
 		} else if (currentCategory.toLowerCase() === "games") {
 			setLocalCurrentCategory("games");
 			setMediaToShow(topRatedGames);
+
 		} else if (currentCategory.toLowerCase() === "movie roles") {
 			setLocalCurrentCategory("movie roles");
-			setMediaToShow(movieTopRatedRoles);
+			if (currentSubCategory === "male") {
+				setMediaToShow(movieTopRatedMaleRoles);
+			} else if (currentSubCategory === "female") {
+				setMediaToShow(movieTopRatedFemaleRoles);
+			}
+
 		} else if (currentCategory.toLowerCase() === "serie roles") {
 			setLocalCurrentCategory("serie roles");
 			setMediaToShow(serieTopRatedRoles);
 		} else if (currentCategory.toLowerCase() === "actors") {
 			setLocalCurrentCategory("actors");
 			setMediaToShow(actorsTopRated);
-    }
-	}, [currentCategory]);
+		}
+	}, [currentCategory, currentSubCategory]);
 
 	return (
 		<section className="bg-white gap-y-3">
@@ -52,9 +76,13 @@ const RankingResults = () => {
 				<div className="flex flex-col w-full md:w-[85%] lg:w-2/3 items-center">
 					{mediaToShow.map((media, i) => {
 						// console.log(currentCategory);
-						if ( localCurrentCategory === "movies" || localCurrentCategory === "series" || localCurrentCategory === "games" ) {
+						if (
+							localCurrentCategory === "movies" ||
+							localCurrentCategory === "series" ||
+							localCurrentCategory === "games"
+						) {
 							const year = media.releaseDate
-							? getFullYear(media.releaseDate)
+								? getFullYear(media.releaseDate)
 								: getFullYear(media.firstAirDate);
 
 							return (
@@ -69,7 +97,10 @@ const RankingResults = () => {
 									ratedByCount={media.activity.ratedByCount}
 								/>
 							);
-						} else if ( localCurrentCategory === "movie roles" || localCurrentCategory === "serie roles") {
+						} else if (
+							localCurrentCategory === "movie roles" ||
+							localCurrentCategory === "serie roles"
+						) {
 							const year = media.movie
 								? getFullYear(media.movie.releaseDate)
 								: getFullYear(media.serie.firstAirDate);

@@ -7,15 +7,13 @@ import { MediaQueriesContext } from "../App";
 import { RankingContext } from "../pages/RankingPage";
 
 const categories = [
-	"movies",
-	"series",
-	"movie roles",
-	"serie roles",
-	"actors",
-	"games",
+  { name: "movies", subCategories: ["top 500", "new"]},
+  { name: "series", subCategories: ["top 500", "new"]},
+  { name: "movie roles", subCategories: ["male", "female"]},
+  { name: "serie roles", subCategories: ["male", "female"]},
+  { name: "actors", subCategories: ["actors"]},
+  { name: "games", subCategories: ["top 100", "most anticipated"]},
 ];
-
-const subCategories = ["top 500", "new"];
 
 const filters = [
 	{
@@ -151,12 +149,10 @@ const RankingFilter = () => {
 	const handleShowUnderline = (e) => {
 		const category = e.target.innerText.toLowerCase();
 
-		if (category !== currentCategory && categories.includes(category)) {
+		if (category !== currentCategory && categories.map(category => category.name).includes(category)) {
 			setCurrentCategory(category);
-		} else if (
-			category !== currentSubCategory &&
-			subCategories.includes(category)
-		) {
+			setCurrentSubCategory(categories.filter(cat => cat.name === category)[0].subCategories[0]);
+		} else if (category !== currentSubCategory) {
 			setCurrentSubCategory(category);
 		}
 	};
@@ -217,13 +213,13 @@ const RankingFilter = () => {
 									path="/"
 									className={
 										"block px-5 py-3 relative text-[18px] duration-300 capitalize after:content-[''] after:z-10 after:absolute after:bottom-0 after:h-[3px] after:bg-yellow-400 after:duration-300 after:transition-[width_left] whitespace-nowrap " +
-										(currentCategory === category.toLowerCase()
+										(currentCategory === category.name.toLowerCase()
 											? "after:w-[100%] after:left-0 "
 											: "after:w-[0%] after:left-[50%] text-gray-400 hover:text-white")
 									}
 									onClick={handleShowUnderline}
 								>
-									{category}
+									{category.name}
 								</Link>
 							</li>
 						);
@@ -231,7 +227,7 @@ const RankingFilter = () => {
 				</ul>
 
 				<div className="flex items-center gap-x-2 px-3 lg:px-0">
-					{subCategories.map((subCategory, i) => {
+					{categories.filter(category => category.name === currentCategory)[0].subCategories.map((subCategory, i) => {
 						return (
 							<Link
 								key={i}
