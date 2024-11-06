@@ -14,6 +14,7 @@ import WriteArticlePage from "./pages/WriteArticlePage";
 import WriteReviewPage from "./pages/WriteReviewPage";
 import Loader from "./components/Loader";
 import WritePage from "./pages/WritePage";
+import MoviePage from "./pages/MoviePage";
 
 export const UserContext = createContext({});
 export const MediaQueriesContext = createContext({});
@@ -25,7 +26,7 @@ function App() {
 	const [userAuth, setUserAuth] = useState({});
 
 	const [movies, setMovies] = useState([]);
-  const [latestMovies, setLatestMovies] = useState([]);
+	const [latestMovies, setLatestMovies] = useState([]);
 	const [randomMovies, setRandomMovies] = useState([]);
 	const [popularMovies, setPopularMovies] = useState([]);
 	const [topRatedMovies, setTopRatedMovies] = useState([]);
@@ -98,55 +99,189 @@ function App() {
 	// NOTE: Top rated movies, series and upcoming
 	// NOTE: Latest game articles
 
-	const fetchMovies = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-	const fetchLatestMovies = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-latest", { count: 100 });
-	const fetchRandomMovies = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-random", { count: 10 },);
-	const fetchPopularMovies = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-top-rated", { count: 20 },);
-	const fetchTopRatedMovies = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-top-rated", { count: 100 },);
-	const fetchAnticipatedMovies = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-most-anticipated", { count: 10 },);
-	const fetchUpcomingMovies = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-upcoming", { count: 10 },);
+	const fetchMovies = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchLatestMovies = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-latest",
+			{ count: 100 },
+		);
+	const fetchRandomMovies = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-random",
+			{ count: 10 },
+		);
+	const fetchPopularMovies = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-top-rated",
+			{ count: 20 },
+		);
+	const fetchTopRatedMovies = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-top-rated",
+			{ count: 100 },
+		);
+	const fetchAnticipatedMovies = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-most-anticipated",
+			{ count: 10 },
+		);
+	const fetchUpcomingMovies = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-upcoming",
+			{ count: 10 },
+		);
 
-	const fetchSeries = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-series", { count: 10 },);
-	const fetchRandomSeries = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-series-random", { count: 10 },);
+	const fetchSeries = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series", {
+			count: 10,
+		});
+	const fetchRandomSeries = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-series-random",
+			{ count: 10 },
+		);
 	// const fetchPopularSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-popular", { count: 20 });
-	const fetchTopRatedSeries = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-series-top-rated", { count: 100 },);
+	const fetchTopRatedSeries = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-series-top-rated",
+			{ count: 100 },
+		);
 	// const fetchUpcomingSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-upcoming", { count: 10 });
-	const fetchLatestSeries = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-series-latest", { sortByRating: true, count: 10 },);
+	const fetchLatestSeries = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-series-latest",
+			{ sortByRating: true, count: 10 },
+		);
 
-	const fetchAnimes = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-animes");
-	const fetchPopularAnimes = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-	const fetchTopRatedAnimes = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-	const fetchUpcomingAnimes = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchAnimes = async () =>
+		await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-animes");
+	const fetchPopularAnimes = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchTopRatedAnimes = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchUpcomingAnimes = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
 
-	const fetchRandomGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-random", { count: 20, });
-	const fetchLatestGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-latest", { count: 20, });
-	const fetchTopRatedGames = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-games-top-rated", { count: 100 },);
-	const fetchAnticipatedGames = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-games-anticipated", { sortByRating: true, count: 20 },);
+	const fetchRandomGames = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-random", {
+			count: 20,
+		});
+	const fetchLatestGames = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-latest", {
+			count: 20,
+		});
+	const fetchTopRatedGames = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-games-top-rated",
+			{ count: 100 },
+		);
+	const fetchAnticipatedGames = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-games-anticipated",
+			{ sortByRating: true, count: 20 },
+		);
 
-	const fetchMovieRoles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-movie", { count: 20, });
-	const fetchMovieTopRatedRoles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-movie-top-rated", { count: 100 });
-	const fetchMovieTopRatedMaleRoles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-movie-top-rated-male", { count: 100 });
-	const fetchMovieTopRatedFemaleRoles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-movie-top-rated-female", { count: 100 });
-	const fetchSerieRoles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-serie", { count: 20 });
-	const fetchSerieTopRatedRoles  = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-serie-top-rated", { count: 100 });
-	const fetchSerieTopRatedMaleRoles  = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-serie-top-rated-male", { count: 100 });
-	const fetchSerieTopRatedFemaleRoles  = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-serie-top-rated-female", { count: 100 });
+	const fetchMovieRoles = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-movie", {
+			count: 20,
+		});
+	const fetchMovieTopRatedRoles = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-movie-top-rated",
+			{ count: 100 },
+		);
+	const fetchMovieTopRatedMaleRoles = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-movie-top-rated-male",
+			{ count: 100 },
+		);
+	const fetchMovieTopRatedFemaleRoles = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-movie-top-rated-female",
+			{ count: 100 },
+		);
+	const fetchSerieRoles = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-serie", {
+			count: 20,
+		});
+	const fetchSerieTopRatedRoles = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-serie-top-rated",
+			{ count: 100 },
+		);
+	const fetchSerieTopRatedMaleRoles = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-serie-top-rated-male",
+			{ count: 100 },
+		);
+	const fetchSerieTopRatedFemaleRoles = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-serie-top-rated-female",
+			{ count: 100 },
+		);
 
-	const fetchRandomArticles = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", { random: true, count: 20, });
-	const fetchLatestArticles = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest", { count: 20 },);
-	const fetchLatestMoviesArticles = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-movies", { count: 20 },);
-	const fetchLatestSeriesArticles = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-series", { count: 20 },);
-	const fetchLatestGamesArticles = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-games", { count: 20 },);
+	const fetchRandomArticles = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", {
+			random: true,
+			count: 20,
+		});
+	const fetchLatestArticles = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest",
+			{ count: 20 },
+		);
+	const fetchLatestMoviesArticles = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-movies",
+			{ count: 20 },
+		);
+	const fetchLatestSeriesArticles = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-series",
+			{ count: 20 },
+		);
+	const fetchLatestGamesArticles = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-games",
+			{ count: 20 },
+		);
 
-	const fetchRandomReviews = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-random", { count: 20 },);
-	const fetchLatestReviews = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest", { count: 20 },);
-	const fetchLatestMoviesReviews = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-movies", { count: 20 },);
-	const fetchLatestSeriesReviews = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-series", { count: 20 },);
-	const fetchLatestGamesReviews = async () => await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-games", { count: 20 },);
+	const fetchRandomReviews = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-random",
+			{ count: 20 },
+		);
+	const fetchLatestReviews = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest",
+			{ count: 20 },
+		);
+	const fetchLatestMoviesReviews = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-movies",
+			{ count: 20 },
+		);
+	const fetchLatestSeriesReviews = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-series",
+			{ count: 20 },
+		);
+	const fetchLatestGamesReviews = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-games",
+			{ count: 20 },
+		);
 
-	const fetchActors = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
-	const fetchActorsTopRated = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors-top-rated", { count: 100 });
-	const fetchCharacters = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-characters");
+	const fetchActors = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
+	const fetchActorsTopRated = async () =>
+		await axios.post(
+			import.meta.env.VITE_SERVER_DOMAIN + "/get-actors-top-rated",
+			{ count: 100 },
+		);
+	const fetchCharacters = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-characters");
 
 	useEffect(() => {
 		checkDevice();
@@ -165,15 +300,15 @@ function App() {
 
 		// Use Promise.all to wait for all fetches to complete
 		Promise.all([
-      fetchMovies(),
-      fetchLatestMovies(), 
+			fetchMovies(),
+			fetchLatestMovies(),
 			fetchRandomMovies(),
 			fetchPopularMovies(),
 			fetchTopRatedMovies(),
 			fetchAnticipatedMovies(),
 			fetchUpcomingMovies(),
 
-      fetchSeries(),
+			fetchSeries(),
 			fetchRandomSeries(),
 			// fetchPopularSeries(),
 			fetchTopRatedSeries(),
@@ -187,13 +322,13 @@ function App() {
 
 			fetchMovieRoles(),
 			fetchMovieTopRatedRoles(),
-      fetchMovieTopRatedMaleRoles(),
-      fetchMovieTopRatedFemaleRoles(), 
+			fetchMovieTopRatedMaleRoles(),
+			fetchMovieTopRatedFemaleRoles(),
 
 			fetchSerieRoles(),
 			fetchSerieTopRatedRoles(),
-      fetchSerieTopRatedMaleRoles(),
-      fetchSerieTopRatedFemaleRoles(), 
+			fetchSerieTopRatedMaleRoles(),
+			fetchSerieTopRatedFemaleRoles(),
 
 			fetchRandomArticles(),
 			fetchLatestArticles(),
@@ -213,15 +348,15 @@ function App() {
 		])
 			.then(
 				([
-          moviesResponse,
-          latestMoviesResponse,
+					moviesResponse,
+					latestMoviesResponse,
 					randomMoviesResponse,
 					popularMoviesResponse,
 					topRatedMoviesResponse,
 					anticipatedMoviesResponse,
 					upcomingMoviesResponse,
 
-          seriesResponse,
+					seriesResponse,
 					randomSeriesResponse,
 					// popularSeriesResponse,
 					topRatedSeriesResponse,
@@ -259,16 +394,16 @@ function App() {
 					actorsTopRatedResponse,
 					charactersResponse,
 				]) => {
-          setMovies(moviesResponse.data.movies);
-          setLatestMovies(latestMoviesResponse.data.movies);
-          setRandomMovies(randomMoviesResponse.data.movies);
+					setMovies(moviesResponse.data.movies);
+					setLatestMovies(latestMoviesResponse.data.movies);
+					setRandomMovies(randomMoviesResponse.data.movies);
 					setPopularMovies(popularMoviesResponse.data.movies);
 					setTopRatedMovies(topRatedMoviesResponse.data.movies);
 					setAnticipatedMovies(anticipatedMoviesResponse.data.movies);
 					setUpcomingMovies(upcomingMoviesResponse.data.movies);
 
-          setSeries(seriesResponse.data.movies);
-          setRandomSeries(randomSeriesResponse.data.movies);
+					setSeries(seriesResponse.data.movies);
+					setRandomSeries(randomSeriesResponse.data.movies);
 					// setPopularSeries(popularSeriesResponse.data.series);
 					setTopRatedSeries(topRatedSeriesResponse.data.series);
 					// setUpcomingSeries(upcomingSeriesResponse.data.series);
@@ -278,15 +413,18 @@ function App() {
 					setLatestGames(latestGamesResponse.data.games);
 					setTopRatedGames(topRatedGamesResponse.data.games);
 					setAnticipatedGames(anticipatedGamesResponse.data.games),
-
-          setMovieRoles(movieRolesResponse.data.roles);
-          setMovieTopRatedRoles(movieTopRatedRolesResponse.data.roles);
-          setMovieTopRatedMaleRoles(movieTopRatedMaleRolesResponse.data.roles);
-          setMovieTopRatedFemaleRoles(movieTopRatedFemaleRolesResponse.data.roles);
+						setMovieRoles(movieRolesResponse.data.roles);
+					setMovieTopRatedRoles(movieTopRatedRolesResponse.data.roles);
+					setMovieTopRatedMaleRoles(movieTopRatedMaleRolesResponse.data.roles);
+					setMovieTopRatedFemaleRoles(
+						movieTopRatedFemaleRolesResponse.data.roles,
+					);
 					setSerieRoles(serieRolesResponse.data.roles);
 					setSerieTopRatedRoles(serieTopRatedRolesResponse.data.roles);
-          setSerieTopRatedMaleRoles(serieTopRatedMaleRolesResponse.data.roles);
-          setSerieTopRatedFemaleRoles(serieTopRatedFemaleRolesResponse.data.roles);
+					setSerieTopRatedMaleRoles(serieTopRatedMaleRolesResponse.data.roles);
+					setSerieTopRatedFemaleRoles(
+						serieTopRatedFemaleRolesResponse.data.roles,
+					);
 
 					setRandomArticles(randomArticlesResponse.data.articles);
 					setLatestArticles(latestArticlesResponse.data.articles);
@@ -313,19 +451,19 @@ function App() {
 	}, []);
 
 	const dataContextObj = {
-    movies,
-    latestMovies,
-    randomMovies,
-		popularMovies, 
-		topRatedMovies, 
-		anticipatedMovies, 
-		upcomingMovies, 
+		movies,
+		latestMovies,
+		randomMovies,
+		popularMovies,
+		topRatedMovies,
+		anticipatedMovies,
+		upcomingMovies,
 
-    series,
-    randomSeries,
-		// popularSeries, 
-		topRatedSeries, 
-    // upcomingSeries, setUpcomingSeries,
+		series,
+		randomSeries,
+		// popularSeries,
+		topRatedSeries,
+		// upcomingSeries, setUpcomingSeries,
 		latestSeries,
 
 		animes,
@@ -339,13 +477,13 @@ function App() {
 		anticipatedGames,
 
 		movieRoles,
-    movieTopRatedRoles,
-    movieTopRatedMaleRoles,
-    movieTopRatedFemaleRoles,
+		movieTopRatedRoles,
+		movieTopRatedMaleRoles,
+		movieTopRatedFemaleRoles,
 		serieRoles,
-    serieTopRatedRoles,
-    serieTopRatedMaleRoles,
-    serieTopRatedFemaleRoles,
+		serieTopRatedRoles,
+		serieTopRatedMaleRoles,
+		serieTopRatedFemaleRoles,
 
 		randomArticles,
 		latestArticles,
@@ -360,7 +498,7 @@ function App() {
 		latestGamesReviews,
 
 		actors,
-    actorsTopRated,
+		actorsTopRated,
 		characters,
 	};
 
@@ -373,14 +511,15 @@ function App() {
 					<Routes>
 						<Route path="/" element={<Navbar />}>
 							<Route index element={<HomePage />} />
-							<Route path="/movies" element={<MoviesPage />} />
-							<Route path="/series" element={<SeriesPage />} />
-							<Route path="/games" element={<GamesPage />} />
-							<Route path="/ranking" element={<RankingPage />} />
-							<Route path="/my" element={<MyFilmwebPage />} />
-							<Route path="/write" element={<WritePage />} />
-							<Route path="/write-article" element={<WriteArticlePage />} />
-							<Route path="/write-review" element={<WriteReviewPage />} />
+							<Route path="movies" element={<MoviesPage />} />
+							<Route path="/movie/:movieId" element={<MoviePage />} />
+							<Route path="series" element={<SeriesPage />} />
+							<Route path="games" element={<GamesPage />} />
+							<Route path="ranking" element={<RankingPage />} />
+							<Route path="my" element={<MyFilmwebPage />} />
+							<Route path="write" element={<WritePage />} />
+							<Route path="write-article" element={<WriteArticlePage />} />
+							<Route path="write-review" element={<WriteReviewPage />} />
 						</Route>
 					</Routes>
 				</DataContext.Provider>

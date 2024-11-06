@@ -22,8 +22,6 @@ const RankingResults = () => {
 		serieTopRatedFemaleRoles,
 		actorsTopRated,
 	} = useContext(DataContext);
-  console.log("male movie roles", movieTopRatedMaleRoles)
-  console.log("movie roles", movieTopRatedRoles)
   // console.log("female movie roles", movieTopRatedFemaleRoles)
 
 	const [mediaToShow, setMediaToShow] = useState([]);
@@ -60,7 +58,11 @@ const RankingResults = () => {
 
 		} else if (currentCategory.toLowerCase() === "serie roles") {
 			setLocalCurrentCategory("serie roles");
-			setMediaToShow(serieTopRatedRoles);
+			if (currentSubCategory === "male") {
+				setMediaToShow(serieTopRatedMaleRoles);
+			} else if (currentSubCategory === "female") {
+				setMediaToShow(serieTopRatedFemaleRoles);
+			}
 		} else if (currentCategory.toLowerCase() === "actors") {
 			setLocalCurrentCategory("actors");
 			setMediaToShow(actorsTopRated);
@@ -91,6 +93,7 @@ const RankingResults = () => {
 									index={i}
 									img={media.cover}
 									title={media.title}
+									titleId={media.titleId}
 									year={year}
 									genre={media.genre}
 									rating={media.activity.rating}

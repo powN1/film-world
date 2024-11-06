@@ -8,7 +8,7 @@ import PreviewSlide from "../common/PreviewSlide";
 import { DataContext } from "../App";
 import Loader from "./Loader";
 
-const MainPreview = ({ type }) => {
+const MainPreviewWithSlides = ({ type }) => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 	const { topRatedMovies, topRatedSeries } = useContext(DataContext);
 
@@ -184,4 +184,4 @@ const MainPreview = ({ type }) => {
 	);
 };
 
-export default MainPreview;
+export default MainPreviewWithSlides;

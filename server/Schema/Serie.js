@@ -5,6 +5,10 @@ const serieSchema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	titleId: {
+		type: String,
+		required: true,
+	},
 	banner: {
 		type: String,
 		required: true,

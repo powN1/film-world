@@ -10,7 +10,6 @@ const roleSchema = mongoose.Schema({
 	},
 	characterBanner: {
 		type: String,
-		required: true,
 	},
 	activity: {
 		rating: {

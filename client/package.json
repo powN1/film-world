@@ -20,6 +20,7 @@
     "@editorjs/quote": "^2.7.2",
     "axios": "^1.7.5",
     "firebase": "^10.13.0",
+    "lightgallery": "^2.7.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
