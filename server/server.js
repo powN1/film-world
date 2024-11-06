@@ -53,9 +53,9 @@ const s3 = new aws.S3({
 
 // Connect mongoose to the database
 mongoose.connect(process.env.DB_LOCATION, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  autoIndex: true 
+	useNewUrlParser: true,
+	useUnifiedTopology: true,
+	autoIndex: true,
 });
 
 // Regex for identifying whether the email and password are correctly formatted
@@ -459,8 +459,14 @@ async function getRoleImageAndNameFromFilmwebPagePuppeteer(
 				let roleRes = await axios.get(roleApiUrl, filmwebHeaders);
 				roleRes = roleRes.data;
 				// Check if there's a photo for the role
-				photoId = roleRes.representingPhoto ? roleRes.representingPhoto.id : null;
-				const imgPath = roleRes.representingPhoto ? roleRes.representingPhoto.sourcePath ? roleRes.representingPhoto.sourcePath.replace("$", "2") : null : null;
+				photoId = roleRes.representingPhoto
+					? roleRes.representingPhoto.id
+					: null;
+				const imgPath = roleRes.representingPhoto
+					? roleRes.representingPhoto.sourcePath
+						? roleRes.representingPhoto.sourcePath.replace("$", "2")
+						: null
+					: null;
 				const roleImgPath = imgPath ? `https://fwcdn.pl/fph${imgPath}` : null;
 
 				// Update the actor object with new properties
@@ -523,7 +529,12 @@ async function addMovieRolesToMovies() {
 		},
 	};
 
-  const findQuery = { $and: [ { roles: { $exists: true, $type: "array" } }, { $expr: { $lt: [{ $size: "$roles" }, 5] } } ] };
+	const findQuery = {
+		$and: [
+			{ roles: { $exists: true, $type: "array" } },
+			{ $expr: { $lt: [{ $size: "$roles" }, 5] } },
+		],
+	};
 	// Get all the movies from the db
 	const movies = await Movie.find();
 	// Get all the acotrs from the db
@@ -597,9 +608,19 @@ async function addMovieRolesToMovies() {
 
 							if (!existingRole) {
 								console.log("Role not in the db, proceeding");
-								const filmwebRole = await getRoleImageAndNameFromFilmwebPagePuppeteer( "movie", movie.title, movie.year, actor.personal_info.name);
-								const roleImg = filmwebRole.roleImgPath ? filmwebRole.roleImgPath : null;
-								const awsImageUrl = roleImg ? await uploadFileToAWSfromUrl(roleImg) : null;
+								const filmwebRole =
+									await getRoleImageAndNameFromFilmwebPagePuppeteer(
+										"movie",
+										movie.title,
+										movie.year,
+										actor.personal_info.name,
+									);
+								const roleImg = filmwebRole.roleImgPath
+									? filmwebRole.roleImgPath
+									: null;
+								const awsImageUrl = roleImg
+									? await uploadFileToAWSfromUrl(roleImg)
+									: null;
 
 								const newRole = new Role({
 									filmTitle: movie.title,
@@ -671,7 +692,10 @@ async function addSerieRolesToSeries() {
 
 		// For each movie find a relative movie in the themovieDB database using api
 		try {
-			const { data } = await axios.get( `https://api.themoviedb.org/3/search/tv?query=${encodedTitle}`, options,);
+			const { data } = await axios.get(
+				`https://api.themoviedb.org/3/search/tv?query=${encodedTitle}`,
+				options,
+			);
 			const allMovies = data.results;
 
 			// Return a movie that has the same title and release year
@@ -1210,8 +1234,12 @@ async function addMoviesAndSeriesBasedOnActors() {
 		},
 	};
 
-  const findQuery = { $and: [ { roles: { $exists: true, $type: "array" } }, { $expr: { $lt: [{ $size: "$roles" }, 5] } } ]
-  }
+	const findQuery = {
+		$and: [
+			{ roles: { $exists: true, $type: "array" } },
+			{ $expr: { $lt: [{ $size: "$roles" }, 5] } },
+		],
+	};
 	// Get all the acotrs from the db
 	const actors = await Actor.find(findQuery);
 	const movies = await Movie.find();
@@ -1300,30 +1328,36 @@ async function addMoviesAndSeriesBasedOnActors() {
 // addMoviesAndSeriesBasedOnActors();
 
 async function addTitleIdsToMedias(type) {
-  try {
-    let medias;
-    if(type === "movies") medias = await Movie.find();
-    else if(type === "series") medias = await Serie.find();
-    else if(type === "games") medias = await Game.find();
+	try {
+		let medias;
+		if (type === "movies") medias = await Movie.find();
+		else if (type === "series") medias = await Serie.find();
+		else if (type === "games") medias = await Game.find();
 
-    for (const media of medias) {
-      const mediaTitle = media.title;
-      const mediaTitleCoded = mediaTitle.replace(/[^a-zA-Z0-9]/g, " ").replace(/\s+/g, "-").trim();
+		for (const media of medias) {
+			const mediaTitle = media.title;
+			const mediaTitleCoded = mediaTitle
+				.replace(/[^a-zA-Z0-9]/g, " ")
+				.replace(/\s+/g, "-")
+				.trim();
 
-      const mediaReleaseDate = (type === "movies" || type === "games") ? media.releaseDate: media.firstAirDate
-      let date = new Date(mediaReleaseDate );
-      const mediaYear = date.getFullYear();
-      const mediaTitleId = `${mediaTitleCoded}-${mediaYear}-${nanoid().slice(0,6)}`
-      media.titleId = mediaTitleId;
+			const mediaReleaseDate =
+				type === "movies" || type === "games"
+					? media.releaseDate
+					: media.firstAirDate;
+			let date = new Date(mediaReleaseDate);
+			const mediaYear = date.getFullYear();
+			const mediaTitleId = `${mediaTitleCoded}-${mediaYear}-${nanoid().slice(0, 6)}`;
+			media.titleId = mediaTitleId;
 
-      await media.save();
+			await media.save();
 
-      console.log(`Updated titleId for ${mediaTitle}:`, mediaTitleId);
-    }
-    console.log('All media titles updated')
-  } catch (err) {
-    console.error(err)
-  }
+			console.log(`Updated titleId for ${mediaTitle}:`, mediaTitleId);
+		}
+		console.log("All media titles updated");
+	} catch (err) {
+		console.error(err);
+	}
 }
 // addTitleIdsToMedias("movies");
 
@@ -2033,22 +2067,37 @@ app.get("/get-upload-url", (req, res) => {
 		});
 });
 
-app.post("/get-movie", (req, res) => {
+app.post("/get-movie", async (req, res) => {
 	const { titleId } = req.body;
 
 	// Error checking
 	if (!titleId) {
-    return res.status(400).json({ error: "Wrong movie title. Please provide a correct title." });
+		return res .status(400) .json({ error: "Wrong movie title. Please provide a correct title." });
 	}
 
-	Movie.findOne({ titleId })
-		.then((movie) => {
-			return res.status(200).json({ movie });
-		})
-		.catch((err) => {
-			return res.status(500).json({ error: err.message });
-		});
+	try {
+		// Fetch the movie by titleId and transform into plain js object
+		const movie = await Movie.findOne({ titleId }).lean();
+
+		// If movie not found, return an error
+		if (!movie) {
+			return res.status(404).json({ error: "Movie not found." });
+		}
+
+		// Fetch all roles for the movie and populate the actors in one query
+		const roles = await Role.find({ filmTitle: movie.title }).populate("actor").sort({ "activity.rating": -1 });
+
+		// Attach the roles with populated actors to the movie object
+		movie.roles = roles;
+
+		// Return the movie object with populated roles
+		return res.status(200).json({ movie });
+	} catch (err) {
+		console.error("Error fetching movie data:", err);
+		return res.status(500).json({ error: "Error getting the movie data" });
+	}
 });
+
 app.post("/get-movies", (req, res) => {
 	const { count } = req.body;
 
@@ -2430,7 +2479,6 @@ app.post("/get-roles-movie-top-rated", (req, res) => {
 		.catch((err) => res.status(500).json({ error: err.message }));
 });
 
-
 app.post("/get-roles-movie-top-rated-male", async (req, res) => {
 	const { count } = req.body;
 	const limit = Number(count) || 5;
@@ -2465,7 +2513,7 @@ app.post("/get-roles-movie-top-rated-male", async (req, res) => {
 			{ $unwind: "$movie" },
 
 			// Step 5: Sort by role rating
-      { $sort: { "activity.rating": -1 } },
+			{ $sort: { "activity.rating": -1 } },
 
 			// Step 6: Limit to the requested count
 			{ $limit: limit },
@@ -2475,9 +2523,9 @@ app.post("/get-roles-movie-top-rated-male", async (req, res) => {
 				$project: {
 					// Fields from Role document
 					_id: 1, // Role ID
-					"characterName": 1, 
-					"characterBanner": 1,
-          "activity": 1,
+					characterName: 1,
+					characterBanner: 1,
+					activity: 1,
 
 					// Specific fields from actor document
 					"actor.personal_info.name": 1,
@@ -2530,7 +2578,7 @@ app.post("/get-roles-movie-top-rated-female", async (req, res) => {
 			{ $unwind: "$movie" },
 
 			// Step 5: Sort by role rating
-      { $sort: { "activity.rating": -1 } },
+			{ $sort: { "activity.rating": -1 } },
 
 			// Step 6: Limit to the requested count
 			{ $limit: limit },
@@ -2540,9 +2588,9 @@ app.post("/get-roles-movie-top-rated-female", async (req, res) => {
 				$project: {
 					// Fields from Role document
 					_id: 1, // Role ID
-					"characterName": 1, 
-					"characterBanner": 1, 
-          "activity": 1,
+					characterName: 1,
+					characterBanner: 1,
+					activity: 1,
 
 					// Specific fields from actor document
 					"actor.personal_info.name": 1,
@@ -2631,7 +2679,7 @@ app.post("/get-roles-serie-top-rated-male", async (req, res) => {
 			{ $unwind: "$serie" },
 
 			// Step 5: Sort by role rating
-      { $sort: { "activity.rating": -1 } },
+			{ $sort: { "activity.rating": -1 } },
 
 			// Step 6: Limit to the requested count
 			{ $limit: limit },
@@ -2641,9 +2689,9 @@ app.post("/get-roles-serie-top-rated-male", async (req, res) => {
 				$project: {
 					// Fields from Role document
 					_id: 1, // Role ID
-					"characterName": 1, 
-					"characterBanner": 1, 
-					"activity": 1, 
+					characterName: 1,
+					characterBanner: 1,
+					activity: 1,
 
 					// Specific fields from actor document
 					"actor.personal_info.name": 1,
@@ -2696,7 +2744,7 @@ app.post("/get-roles-serie-top-rated-female", async (req, res) => {
 			{ $unwind: "$serie" },
 
 			// Step 5: Sort by role rating
-      { $sort: { "activity.rating": -1 } },
+			{ $sort: { "activity.rating": -1 } },
 
 			// Step 6: Limit to the requested count
 			{ $limit: limit },
@@ -2706,9 +2754,9 @@ app.post("/get-roles-serie-top-rated-female", async (req, res) => {
 				$project: {
 					// Fields from Role document
 					_id: 1, // Role ID
-					"characterName": 1, 
-					"characterBanner": 1,
-          "activity": 1, 
+					characterName: 1,
+					characterBanner: 1,
+					activity: 1,
 
 					// Specific fields from actor document
 					"actor.personal_info.name": 1,

@@ -8,6 +8,9 @@ import axios from "axios";
 import MainPreviewSingle from "../components/MainPreviewSingle";
 import FilmDetails from "../common/FilmDetails";
 import FilmPhotos from "../common/FilmPhotos";
+import FilmVideos from "../common/FilmVideos";
+import FilmCast from "../common/FilmCast";
+import FilmRolesRanking from "../common/FilmRolesRanking";
 
 const MoviePage = () => {
 	const { movieId } = useParams();
@@ -35,7 +38,7 @@ const MoviePage = () => {
 				if (ratedCount >= 1000 && ratedCount < 1000000)
 					movieData.activity.ratedByCount = (ratedCount / 1000).toFixed(0).replace(/\.0$/, "") + "k";
 				else if (ratedCount >= 1000000)
-					movieData.activity.ratedByCount = ratedCount = (ratedCount / 1000000).toFixed(0).replace(/\.0$/, "") + "m";
+					movieData.activity.ratedByCount = (ratedCount / 1000000).toFixed(0).replace(/\.0$/, "") + "m";
 				setMovie(movieData);
 			}
 			setLoading(false); // Set loading to false after fetching
@@ -51,6 +54,9 @@ const MoviePage = () => {
 			<MainPreviewSingle type="movie" media={movie} />
 			<FilmDetails type="movie" media={movie} />
       <FilmPhotos media={movie} />
+      <FilmVideos media={movie} />
+      <FilmCast media={movie} />
+      <FilmRolesRanking media={movie} />
 		</>
 	);
 };
