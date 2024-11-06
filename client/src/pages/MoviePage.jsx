@@ -50,7 +50,7 @@ const MoviePage = () => {
 		<>
 			<MainPreviewSingle type="movie" media={movie} />
 			<FilmDetails type="movie" media={movie} />
-      <FilmPhotos photos={movie.photos}/>
+      <FilmPhotos media={movie} />
 		</>
 	);
 };
