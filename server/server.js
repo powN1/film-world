@@ -1441,6 +1441,87 @@ const listOfMovies2 = [
 // 	setTimeout(() => {}, 3500);
 // });
 
+async function pushPhotosAndVideosToSeries() {
+	const options = {
+		method: "GET",
+		headers: {
+			accept: "application/json",
+			Authorization:
+				"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjOWQ2YmZjMzcyY2ZlZjg0YjgyODgwNzE1M2ZhZDY0YiIsIm5iZiI6MTcyNjI1OTU3Ni45MzE4MTIsInN1YiI6IjYyOWM5NGI5Y2FhNTA4MWFlZjdkMzI1MiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rLbp_pNyYzYdtEkKypNecCMCkTz7F-_-M5Nachm7fw8",
+		},
+	};
+
+	const series = await Serie.find();
+
+	for(const serie of series) {
+		// Cycle throuh every actor
+		let serieName = serie.title;
+    console.log(`serie name is ${serieName}`)
+		let encodedName = encodeURIComponent(serieName).replace(/%20/g, "+");
+		try {
+			// Get actor details from themoviedb api
+			const seriesResponse = await axios.get( `https://api.themoviedb.org/3/search/tv?query=${encodedName}`, options,);
+			const foundSeries = seriesResponse.data.results;
+			const filteredSerie = foundSeries.filter(
+				(serieRes) => serie.title === serieRes.name,
+			);
+
+			if (filteredSerie.length > 0) {
+				// If serie from the db matches the serie from themoviedb api response
+				const serieId = filteredSerie[0].id;
+				try {
+					// Get serie details
+					let seriePhotos = await axios.get( `https://api.themoviedb.org/3/tv/${serieId}/images`, options,);
+
+					const photos = [];
+					let videos = [];
+
+					const randomImageMaxCount = Math.floor(Math.random() * (13 - 5 + 1)) + 5;
+
+					const photoPromises = seriePhotos.data.backdrops
+						.slice(0, randomImageMaxCount)
+						.map(async (photo, i) => {
+							const bannerUrl = `https://image.tmdb.org/t/p/original${photo.file_path}`;
+							console.log("uploading img" + i);
+							const banner = await uploadFileToAWSfromUrl(bannerUrl);
+							setTimeout(() => {}, 700);
+							photos.push(banner); // Store the uploaded image URL
+						});
+
+					await Promise.all(photoPromises);
+
+					const videoRes = await axios.get(
+						`https://api.themoviedb.org/3/tv/${serieId}/videos`,
+						options,
+					);
+					const randomVideoMaxCount =
+						Math.floor(Math.random() * (6 - 3 + 1)) + 3;
+					console.log("getting videos");
+
+					videos = videoRes.data.results
+						.filter((video) => video.type == "Trailer")
+						.slice(0, randomVideoMaxCount)
+						.map((trailer) => `https://youtube.com/watch?v=${trailer.key}`);
+					console.log("got videos");
+
+					console.log("saving serie " + serie.title);
+					serie.photos = photos;
+					serie.videos = videos;
+					await serie.save();
+				} catch (err) {
+					console.error("Error getting serie images or videos", err);
+				}
+			} else {
+				console.log("No serie with that name found");
+			}
+		} catch (err) {
+			console.error("Error getting serie data", err);
+		}
+	}
+}
+
+// pushPhotosAndVideosToSeries();
+
 async function addSexesToActors() {
 	const options = {
 		method: "GET",
@@ -1913,6 +1994,31 @@ app.post("/get-characters", (req, res) => {
 		.catch((err) => res.status(500).json({ error: err.message }));
 });
 
+app.post("/get-game", async (req, res) => {
+	const { titleId } = req.body;
+
+	// Error checking
+	if (!titleId) {
+		return res .status(400) .json({ error: "Wrong game title. Please provide a correct title." });
+	}
+
+	try {
+		// Fetch the game by titleId and transform into plain js object
+		const game = await Game.findOne({ titleId }).lean();
+
+		// If game not found, return an error
+		if (!game) {
+			return res.status(404).json({ error: "Game not found." });
+		}
+
+		// Return the game object with populated roles
+		return res.status(200).json({ game });
+	} catch (err) {
+		console.error("Error fetching game data:", err);
+		return res.status(500).json({ error: "Error getting the game data" });
+	}
+});
+
 app.post("/get-games", (req, res) => {
 	const { count } = req.body;
 
@@ -2072,7 +2178,9 @@ app.post("/get-movie", async (req, res) => {
 
 	// Error checking
 	if (!titleId) {
-		return res .status(400) .json({ error: "Wrong movie title. Please provide a correct title." });
+		return res
+			.status(400)
+			.json({ error: "Wrong movie title. Please provide a correct title." });
 	}
 
 	try {
@@ -2085,7 +2193,9 @@ app.post("/get-movie", async (req, res) => {
 		}
 
 		// Fetch all roles for the movie and populate the actors in one query
-		const roles = await Role.find({ filmTitle: movie.title }).populate("actor").sort({ "activity.rating": -1 });
+		const roles = await Role.find({ filmTitle: movie.title })
+			.populate("actor")
+			.sort({ "activity.rating": -1 });
 
 		// Attach the roles with populated actors to the movie object
 		movie.roles = roles;
@@ -2774,6 +2884,42 @@ app.post("/get-roles-serie-top-rated-female", async (req, res) => {
 		return res.status(500).json({ error: err.message });
 	}
 });
+
+app.post("/get-serie", async (req, res) => {
+	const { titleId } = req.body;
+
+	// Error checking
+	if (!titleId) {
+		return res
+			.status(400)
+			.json({ error: "Wrong serie title. Please provide a correct title." });
+	}
+
+	try {
+		// Fetch the serie by titleId and transform into plain js object
+		const serie = await Serie.findOne({ titleId }).lean();
+
+		// If serie not found, return an error
+		if (!serie) {
+			return res.status(404).json({ error: "Serie not found." });
+		}
+
+		// Fetch all roles for the serie and populate the actors in one query
+		const roles = await Role.find({ filmTitle: serie.title })
+			.populate("actor")
+			.sort({ "activity.rating": -1 });
+
+		// Attach the roles with populated actors to the serie object
+		serie.roles = roles;
+
+		// Return the serie object with populated roles
+		return res.status(200).json({ serie });
+	} catch (err) {
+		console.error("Error fetching serie data:", err);
+		return res.status(500).json({ error: "Error getting the serie data" });
+	}
+});
+
 app.post("/get-series", (req, res) => {
 	const { count } = req.body;
 

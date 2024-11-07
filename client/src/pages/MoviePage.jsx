@@ -1,9 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { MediaQueriesContext } from "../App";
 import Loader from "../components/Loader";
-import { FaRegCirclePlay } from "react-icons/fa6";
-import { FaStar } from "react-icons/fa";
 import axios from "axios";
 import MainPreviewSingle from "../components/MainPreviewSingle";
 import FilmDetails from "../common/FilmDetails";
@@ -11,6 +8,9 @@ import FilmPhotos from "../common/FilmPhotos";
 import FilmVideos from "../common/FilmVideos";
 import FilmCast from "../common/FilmCast";
 import FilmRolesRanking from "../common/FilmRolesRanking";
+import FilmDetailsExpanded from "../common/FilmDetailsExpanded";
+import Footer from "../components/Footer";
+import Download from "../components/Download";
 
 const MoviePage = () => {
 	const { movieId } = useParams();
@@ -57,6 +57,9 @@ const MoviePage = () => {
       <FilmVideos media={movie} />
       <FilmCast media={movie} />
       <FilmRolesRanking media={movie} />
+			<FilmDetailsExpanded type="movie" media={movie} />
+			<Download />
+      <Footer />
 		</>
 	);
 };

@@ -1,28 +1,71 @@
 import { IoChevronForward } from "react-icons/io5";
 
 const FilmDetails = ({ type, media }) => {
-	const director = media.director.join(", ");
-	const screenplay = media.screenplay.join(", ");
-  const originCountry = media.originCountry.join(", ");
+	let director,
+		screenplay,
+		originCountry,
+		createdBy,
+		seasons,
+		dlcs,
+		platforms,
+		universe,
+		developers,
+		publishers;
+
+	if (type === "movie") {
+		director = media.director.join(", ");
+		screenplay = media.screenplay.join(", ");
+		originCountry = media.originCountry.join(", ");
+	} else if (type === "serie") {
+		createdBy = media.createdBy.join(", ");
+		seasons = media.numberOfSeasons;
+		originCountry = media.originCountry.join(", ");
+	} else if (type === "game") {
+		dlcs = media.dlcs;
+		platforms = media.platforms;
+		universe = media.universe.join(", ");
+		developers = media.developers.join(", ");
+		publishers = media.publishers.slice(0, 2).join(", ");
+	}
 
 	return (
 		<div className="w-full bg-white">
 			<div className="mx-auto lg:w-[55%]">
-				<div className="flex w-2/3 pt-8">
+				<div className="flex flex-col gap-y-3 md:flex-row w-full px-4 sm:px-12 lg:px-0 lg:w-2/3 py-4 lg:py-8">
+					{/* Mobile img and description */}
+					<div className="flex md:hidden">
+						{/* Img mobile */}
+						<div className="h-[150px] w-[105px] min-w-[105px] border border-gray-400/50">
+							<img
+								src={media.cover}
+								alt="media poster"
+								className="h-full w-full"
+							/>
+						</div>
+
+						{/* Description mobile */}
+						<p className="pl-4 line-clamp-4 leading-6 text-ellipsis">
+							{media.description}
+						</p>
+					</div>
+
 					{/* Img */}
-					<div className="h-[285px] w-[200px] min-w-[200px] bg-blue-200">
+					<div className="hidden md:block h-[285px] w-[200px] min-w-[200px] border border-gray-400/50">
 						<img
 							src={media.cover}
 							alt="media poster"
 							className="h-full w-full"
 						/>
 					</div>
-					{/* Media details */}
-					<div className="grow flex flex-col gap-y-6 px-8 py-1">
-            {/* Description */}
-						<p className="line-clamp-3 leading-7">{media.description}</p>
 
-						{/* Genres */}
+					{/* Media details */}
+					<div className="grow flex flex-col gap-y-6 md:px-4 py-1">
+						{/* Description */}
+						<p className="hidden md:block line-clamp-3 leading-7">
+							{media.description}
+						</p>
+
+						{/* Genres for large devides*/}
 						<div className="flex gap-x-2">
 							{media.genre.map((genre) => (
 								<div className="flex justify-center items-center gap-x-1 text-sm font-bold bg-white px-2 py-1 border border-gray-400/50 rounded-sm cursor-pointer hover:bg-gray-400/50 transition-all">
@@ -32,26 +75,93 @@ const FilmDetails = ({ type, media }) => {
 							))}
 						</div>
 
-						{/* Screenplay, director etc */}
-						<div className="flex flex-col gap-y-2 w-full text-sm">
-							<div className="flex">
-								<span className="text-gray-400 min-w-1/5 w-1/5">Director </span>
-								<p>{director}</p>
-							</div>
+						{/* Screenplay, director etc for large devices */}
+						<div className="flex flex-col gap-y-2 w-full lg:text-sm">
+							{director && (
+								<div className="flex">
+									<span className="text-gray-400 min-w-1/4 w-1/4 lg:min-w-1/5 lg:w-1/5">
+										Director{" "}
+									</span>
+									<p className="w-3/4 lg:w-4/5">{director}</p>
+								</div>
+							)}
 
-							<div className="flex">
-								<span className="text-gray-400 min-w-1/5 w-1/5">
-									Screenplay
-								</span>
-								<p>{screenplay}</p>
-							</div>
+							{createdBy && (
+								<div className="flex">
+									<span className="text-gray-400 min-w-1/4 w-1/4 lg:min-w-1/5 lg:w-1/5">
+										Creators{" "}
+									</span>
+									<p className="w-3/4 lg:w-4/5">{createdBy}</p>
+								</div>
+							)}
 
-							<div className="flex">
-								<span className="text-gray-400 min-w-1/5 w-1/5">
-									Country
-								</span>
-								<p>{originCountry}</p>
-							</div>
+							{screenplay && (
+								<div className="flex">
+									<span className="text-gray-400 min-w-1/4 w-1/4 lg:min-w-1/5 lg:w-1/5">
+										Screenplay
+									</span>
+									<p className="w-3/4 lg:w-4/5">{screenplay}</p>
+								</div>
+							)}
+
+							{originCountry && (
+								<div className="flex">
+									<span className="text-gray-400 min-w-1/4 w-1/4 lg:min-w-1/5 lg:w-1/5">
+										Country
+									</span>
+									<p className="w-3/4 lg:w-4/5">{originCountry}</p>
+								</div>
+							)}
+
+							{seasons && (
+								<div className="flex">
+									<span className="text-gray-400 min-w-1/4 w-1/4 lg:min-w-1/5 lg:w-1/5">
+										Seasons
+									</span>
+									<p className="w-3/4 lg:w-4/5">{seasons}</p>
+								</div>
+							)}
+
+							{platforms && (
+								<div className="flex">
+									<span className="text-gray-400 min-w-1/4 w-1/4 lg:min-w-1/5 lg:w-1/5">Platforms</span>
+									<div className="flex flex-wrap gap-x-1 md:gap-2 w-3/4 lg:w-4/5">
+										{platforms.map((platform, i) => (
+											<>
+												<div className="flex text-sm font-bold bg-white cursor-pointer hover:bg-gray-400/50 transition-all">
+													<p className="underline">{platform}</p>
+												</div>
+                        {i !== platforms.length - 1 ? <div>/</div> : null}
+											</>
+										))}
+									</div>
+								</div>
+							)}
+
+							{developers && (
+								<div className="flex">
+									<span className="text-gray-400 min-w-1/4 w-1/4 lg:min-w-1/5 lg:w-1/5">Developers</span>
+									<p className="w-3/4 lg:w-4/5">{developers}</p>
+								</div>
+							)}
+
+							{publishers && (
+								<div className="flex">
+									<span className="text-gray-400 min-w-1/4 w-1/4 lg:min-w-1/5 lg:w-1/5">
+										Publishers
+									</span>
+									<p className="w-3/4 lg:w-4/5">{publishers}</p>
+								</div>
+							)}
+
+							{universe && (
+								<div className="flex">
+									<span className="text-gray-400 min-w-1/4 w-1/4 lg:min-w-1/5 lg:w-1/5">
+										Universe
+									</span>
+									<p className="w-3/4 lg:w-4/5">{universe}</p>
+								</div>
+							)}
 						</div>
 					</div>
 				</div>

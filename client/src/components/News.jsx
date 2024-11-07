@@ -48,7 +48,7 @@ const News = ({ type }) => {
 				<h2 className="uppercase text-4xl text-center tracking-righter font-sansNarrow px-2">
 					News
 				</h2>
-				<div className="w-full self-center grid grid-cols-1 md:grid-cols-2 md:w-[90%] lg:grid-cols-3 gap-y-5 md:gap-y-10 md:gap-x-8">
+				<div className="w-full self-center grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-5 md:gap-y-10 md:gap-x-8">
 					{currentNews.slice(0, 6).map((article, i) => (
 						<SingleNews
 							key={i}

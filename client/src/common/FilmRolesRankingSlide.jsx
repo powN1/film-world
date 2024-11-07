@@ -5,7 +5,7 @@ const FilmRolesRankingSlide = ({ actor, role }) => {
 	return (
 		<Link
 			to=""
-			className="min-w-[185px] relative flex flex-col mx-3 items-center cursor-pointer group"
+			className="min-w-[185px] w-[185px] md:min-w-[155px] md:w-[155px] lg:min-w-[185px] lg:w-[185px] relative flex flex-col md:mx-3 items-center cursor-pointer group"
 		>
 			<div className="overflow-hidden border border-gray-400 aspect-square">
 				<img

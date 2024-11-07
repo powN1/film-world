@@ -15,6 +15,8 @@ import WriteReviewPage from "./pages/WriteReviewPage";
 import Loader from "./components/Loader";
 import WritePage from "./pages/WritePage";
 import MoviePage from "./pages/MoviePage";
+import SeriePage from "./pages/SeriePage";
+import GamePage from "./pages/GamePage";
 
 export const UserContext = createContext({});
 export const MediaQueriesContext = createContext({});
@@ -514,7 +516,9 @@ function App() {
 							<Route path="movies" element={<MoviesPage />} />
 							<Route path="/movie/:movieId" element={<MoviePage />} />
 							<Route path="series" element={<SeriesPage />} />
+							<Route path="/serie/:serieId" element={<SeriePage />} />
 							<Route path="games" element={<GamesPage />} />
+							<Route path="/game/:gameId" element={<GamePage />} />
 							<Route path="ranking" element={<RankingPage />} />
 							<Route path="my" element={<MyFilmwebPage />} />
 							<Route path="write" element={<WritePage />} />

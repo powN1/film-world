@@ -20,8 +20,8 @@ const MainPreviewSingle = ({ type, media }) => {
 				></Link>
 
 				{/* Media info */}
-				<div className="w-full absolute left-0 bottom-[5%] flex flex-col gap-y-1 lg:gap-y-2 transition-opacity duration-500">
-					<span className="text-yellow-500 font-black uppercase lg:text-xs -mb-2">
+				<div className="w-full absolute left-0 bottom-[5%] px-3 md:px-12 lg:px-0 flex flex-col gap-y-1 lg:gap-y-2 transition-opacity duration-500">
+					<span className="text-yellow-500 font-black uppercase text-xs -mb-2">
 						{type === "movie" ? "movie" : type === "serie" ? "serie" : type === "game" ? "game" : null}
 					</span>
 					<h2 className="text-3xl font-bold font-sansNarrow">{media.title}</h2>
@@ -50,7 +50,7 @@ const MainPreviewSingle = ({ type, media }) => {
 							<FaStar className="text-2xl text-yellow-400" />
 							<p className="text-2xl">{media.activity.rating}</p>
 						</div>
-						<p className="flex gap-x-1 items-center">
+						<p className="flex gap-x-1 items-center justify-center lg:justify-start">
 							<span className="text-sm">{media.activity.ratedByCount}</span>
 							<span className="text-sm">ratings</span>
 						</p>
