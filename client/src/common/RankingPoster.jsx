@@ -1,9 +1,10 @@
 import { FaRegEye } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
-const RankingPoster = ({ title, img, rating, peopleAwaiting }) => {
+const RankingPoster = ({ title, img, link, rating, peopleAwaiting }) => {
 	return (
-		<div className="w-full max-lg:w-[30%] flex flex-col gap-y-3 group cursor-pointer">
+		<Link to={`/movie/${link}`} className="w-full max-lg:w-[30%] flex flex-col gap-y-3 group cursor-pointer">
 			<div className="[box-shadow:_2px_2px_6px_rgb(0_0_0_/_30%)]">
 				<div className="h-[200px] max-lg:h-[150px] overflow-hidden">
 					<img
@@ -21,7 +22,7 @@ const RankingPoster = ({ title, img, rating, peopleAwaiting }) => {
 				</div>
 			</div>
 			<p className="text-center line-clamp-2">{title}</p>
-		</div>
+		</Link>
 	);
 };
 

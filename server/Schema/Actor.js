@@ -9,9 +9,13 @@ const actorSchema = mongoose.Schema({
 		fullname: {
 			type: String,
 		},
+		nameId: {
+			type: String,
+			required: true,
+		},
 		dateOfBirth: {
 			type: Date,
-      required: true,
+			required: true,
 		},
 		dateOfDeath: {
 			type: Date,
@@ -25,11 +29,11 @@ const actorSchema = mongoose.Schema({
 		height: {
 			type: Number,
 		},
-    sex: {
-      type: String,
-      enum: ['male', 'female'],
-      required: true,
-    },
+		sex: {
+			type: String,
+			enum: ["male", "female"],
+			required: true,
+		},
 		bio: {
 			type: String,
 		},

@@ -1361,6 +1361,31 @@ async function addTitleIdsToMedias(type) {
 }
 // addTitleIdsToMedias("movies");
 
+async function addNameIdsToPeople() {
+	try {
+		const actors = await Actor.find();
+
+		for (const actor of actors) {
+			const actorName = actor.personal_info.name;
+			const actorNameCoded = actorName
+				.replace(/[^a-zA-Z0-9]/g, " ")
+				.replace(/\s+/g, "-")
+				.trim();
+
+			const actorNameId = `${actorNameCoded}-${nanoid().slice(0, 6)}`;
+			actor.personal_info.nameId = actorNameId;
+
+			await actor.save();
+
+			console.log(`Updated nameId for ${actor}:`, actorNameId);
+		}
+		console.log("All actor nameIds updated");
+	} catch (err) {
+		console.error(err);
+	}
+}
+// addNameIdsToPeople();
+
 async function pushPhotosAndVideosToMovie(movieId) {
 	const urlMovie = `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`;
 	const urlMovieImages = `https://api.themoviedb.org/3/movie/${movieId}/images`;
@@ -1453,14 +1478,17 @@ async function pushPhotosAndVideosToSeries() {
 
 	const series = await Serie.find();
 
-	for(const serie of series) {
+	for (const serie of series) {
 		// Cycle throuh every actor
 		let serieName = serie.title;
-    console.log(`serie name is ${serieName}`)
+		console.log(`serie name is ${serieName}`);
 		let encodedName = encodeURIComponent(serieName).replace(/%20/g, "+");
 		try {
 			// Get actor details from themoviedb api
-			const seriesResponse = await axios.get( `https://api.themoviedb.org/3/search/tv?query=${encodedName}`, options,);
+			const seriesResponse = await axios.get(
+				`https://api.themoviedb.org/3/search/tv?query=${encodedName}`,
+				options,
+			);
 			const foundSeries = seriesResponse.data.results;
 			const filteredSerie = foundSeries.filter(
 				(serieRes) => serie.title === serieRes.name,
@@ -1471,12 +1499,16 @@ async function pushPhotosAndVideosToSeries() {
 				const serieId = filteredSerie[0].id;
 				try {
 					// Get serie details
-					let seriePhotos = await axios.get( `https://api.themoviedb.org/3/tv/${serieId}/images`, options,);
+					let seriePhotos = await axios.get(
+						`https://api.themoviedb.org/3/tv/${serieId}/images`,
+						options,
+					);
 
 					const photos = [];
 					let videos = [];
 
-					const randomImageMaxCount = Math.floor(Math.random() * (13 - 5 + 1)) + 5;
+					const randomImageMaxCount =
+						Math.floor(Math.random() * (13 - 5 + 1)) + 5;
 
 					const photoPromises = seriePhotos.data.backdrops
 						.slice(0, randomImageMaxCount)
@@ -1749,6 +1781,43 @@ app.get("/aws", async (req, res) => {
 	// res.status(200).json({ imageResponse });
 });
 
+app.post("/get-actor", async (req, res) => {
+	const { nameId } = req.body;
+
+	try {
+		const actor = await Actor.findOne({ "personal_info.nameId": nameId })
+			.populate({
+				path: "roles",
+				populate: {
+					path: "actor",
+				},
+			})
+			.populate({
+				path: "roles",
+				populate: {
+					path: "movie",
+				},
+				options: { sort: { "activity.rating": 1 } },
+			})
+			.populate({
+				path: "roles",
+				populate: {
+					path: "serie",
+				},
+				options: { sort: { "activity.rating": -1 } },
+			})
+
+		if (!actor) {
+			return res.status(404).json({ error: "Actor not found." });
+		}
+
+		return res.status(200).json({ actor });
+
+	} catch (err) {
+		return res.status(500).json({ error: err.message });
+	}
+});
+
 app.post("/get-actors", (req, res) => {
 	const { count } = req.body;
 
@@ -1999,7 +2068,9 @@ app.post("/get-game", async (req, res) => {
 
 	// Error checking
 	if (!titleId) {
-		return res .status(400) .json({ error: "Wrong game title. Please provide a correct title." });
+		return res
+			.status(400)
+			.json({ error: "Wrong game title. Please provide a correct title." });
 	}
 
 	try {

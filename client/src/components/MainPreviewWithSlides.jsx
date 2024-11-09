@@ -42,10 +42,10 @@ const MainPreviewWithSlides = ({ type }) => {
 		if (films.length > 0) changeSlideAnimation();
 	}, [activeSlide, films]);
 
-  useEffect(() => {
-    if(type === "movies") setFilms(topRatedMovies);
-    if(type === "series") setFilms(topRatedSeries);
-  }, [])
+	useEffect(() => {
+		if (type === "movies") setFilms(topRatedMovies);
+		if (type === "series") setFilms(topRatedSeries);
+	}, []);
 
 	const beforeChange = (prev, next) => {
 		setOldSlide(prev);
@@ -95,7 +95,7 @@ const MainPreviewWithSlides = ({ type }) => {
 			{films.length > 0 ? (
 				<section className="w-full mx-auto flex flex-col">
 					<div className="h-[50vh] lg:w-[55%] w-full mx-auto relative text-white">
-						<Link
+						<div
 							to={""}
 							style={{
 								backgroundImage: `linear-gradient(to bottom ,rgba(0,0,0,1) 2%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,1) 98%), ${mobileView ? "" : "linear-gradient(to right, rgba(0,0,0,1) 5%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,1) 95%),"} url(${currentSrc})`,
@@ -104,7 +104,7 @@ const MainPreviewWithSlides = ({ type }) => {
 								"h-full w-full block bg-cover bg-center bg-no-repeat transition-opactiy duration-500 " +
 								(fade ? "opacity-0" : "opacity-100")
 							}
-						></Link>
+						></div>
 						<div
 							className={
 								"absolute left-[50%] top-[5%] translate-x-[-50%] flex flex-col items-center gap-y-1 transition-opacity duration-500 " +
@@ -112,7 +112,11 @@ const MainPreviewWithSlides = ({ type }) => {
 							}
 						>
 							<h2 className="text-3xl font-bold uppercase font-sansNarrow">
-                {type === "movies" ? "Movies" : type === "series" ? "Series" : null}
+								{type === "movies"
+									? "Movies"
+									: type === "series"
+										? "Series"
+										: null}
 							</h2>
 							<p className="text-xl">Most popular</p>
 						</div>
@@ -122,9 +126,12 @@ const MainPreviewWithSlides = ({ type }) => {
 								(fade ? "opacity-0" : "opacity-100")
 							}
 						>
-							<h2 className="text-4xl font-bold uppercase font-sansNarrow">
+							<Link
+								to={`/movie/${films[activeSlide].titleId}`}
+								className="text-4xl font-bold uppercase font-sansNarrow"
+							>
 								{films[activeSlide].title}
-							</h2>
+							</Link>
 							<div
 								className={
 									"gap-x-5 flex text-sm " + (mobileView ? "hidden" : "")
@@ -152,12 +159,19 @@ const MainPreviewWithSlides = ({ type }) => {
 								{films[activeSlide].description}
 							</p>
 						</div>
-						<FaRegCirclePlay
-							className={
-								"absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-7xl transition-all duration-500 ease-in-out " +
-								(fade ? "opacity-0 translate-x-[-25%]" : "opacity-100")
-							}
-						/>
+						<Link
+							to={`${films[activeSlide].videos[0]}`}
+							target="_blank" // Opens video in a new tab
+							rel="noopener noreferrer"
+							className="cusror-pointer group"
+						>
+							<FaRegCirclePlay
+								className={
+									"absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-7xl transition-all duration-500 ease-in-out group-hover:text-yellow-400 " +
+									(fade ? "opacity-0 translate-x-[-25%]" : "opacity-100")
+								}
+							/>
+						</Link>
 					</div>
 
 					<div className="w-full bg-white pb-10">

@@ -7,7 +7,7 @@ const MovieSlide = ({ title, img, link = null, ranking = null, description = nul
 		switch (type) {
 			case "movie":
 				return (
-					<Link className="flex flex-col gap-y-2 mx-3 relative group">
+					<Link to={`/movie/${link}`} className="flex flex-col gap-y-2 mx-3 relative group">
 						<div className="h-[260px] border border-gray-700 overflow-hidden">
 							<img
 								src={img}

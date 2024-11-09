@@ -84,6 +84,7 @@ const Ranking = ({ type, showCategories, anticipated = false }) => {
 								key={i}
 								title={movie.title}
 								img={movie.cover}
+                link={movie.titleId}
 								rating={ currentCategory === "most anticipated" || anticipated ? null : movie.activity.rating ? movie.activity.rating : null }
 								peopleAwaiting={ movie.activity.peopleAwaiting ? movie.activity.peopleAwaiting : null }
 							/>
