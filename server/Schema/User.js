@@ -98,6 +98,37 @@ const userSchema = mongoose.Schema(
 			ref: "reviews",
 			default: [],
 		},
+		ratings: {
+			type: [
+				{
+					item_id: {
+						type: Schema.Types.ObjectId,
+						required: true,
+						refPath: "ratings.itemType", // Dynamically references the correct collection
+					},
+					itemType: {
+						type: String,
+						required: true,
+						enum: ["movies", "series", "games"], // Ensures the type is one of the three
+					},
+					rating: {
+						type: Number,
+						required: true,
+						min: 1,
+						max: 10,
+					},
+					reviewText: {
+						type: String,
+						maxlength: 160, // Optional field if you want to add short reviews
+					},
+					timestamp: {
+						type: Date,
+						default: Date.now,
+					},
+				},
+			],
+			default: [],
+		},
 	},
 	{
 		timestamps: {

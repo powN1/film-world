@@ -1,11 +1,23 @@
 import { Link } from "react-router-dom";
 
-const SearchPoster = ({ title, img, year = null, type }) => {
+const SearchPoster = ({
+	title,
+	img,
+	media,
+	link,
+	year = null,
+	type,
+	setSearchModalVisible,
+}) => {
 	const renderSearchPoster = () => {
 		switch (type) {
 			case "poster":
 				return (
-					<Link className="w-full relative group">
+					<Link
+						to={`/${media}/${link}`}
+						className="w-full relative group"
+						onClick={() => setSearchModalVisible(false)}
+					>
 						<div className="h-[220px] border border-gray-400 overflow-hidden">
 							<img
 								src={img}
@@ -23,13 +35,11 @@ const SearchPoster = ({ title, img, year = null, type }) => {
 							<img
 								src={img}
 								alt={title}
-								className="h-full object-cover group-hover:scale-110 duration-700"
+								className="h-full w-full object-cover group-hover:scale-110 duration-700"
 							/>
 						</div>
 						<p className="text-center">{title}</p>
-						<span className="text-center text-xs">
-							{year}
-						</span>
+						<span className="text-center text-xs">{year}</span>
 					</Link>
 				);
 

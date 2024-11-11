@@ -30,6 +30,7 @@ const MoviePage = () => {
 	const [movie, setMovie] = useState({});
 	const [loading, setLoading] = useState(true);
 
+
 	useEffect(() => {
 		const loadMovie = async () => {
 			const movieData = await fetchMovie(movieId);
@@ -40,6 +41,7 @@ const MoviePage = () => {
 				else if (ratedCount >= 1000000)
 					movieData.activity.ratedByCount = (ratedCount / 1000000).toFixed(0).replace(/\.0$/, "") + "m";
 				setMovie(movieData);
+        console.log(movieData)
 			}
 			setLoading(false); // Set loading to false after fetching
 		};

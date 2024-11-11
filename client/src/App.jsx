@@ -405,8 +405,8 @@ function App() {
 					setAnticipatedMovies(anticipatedMoviesResponse.data.movies);
 					setUpcomingMovies(upcomingMoviesResponse.data.movies);
 
-					setSeries(seriesResponse.data.movies);
-					setRandomSeries(randomSeriesResponse.data.movies);
+					setSeries(seriesResponse.data.series);
+					setRandomSeries(randomSeriesResponse.data.series);
 					// setPopularSeries(popularSeriesResponse.data.series);
 					setTopRatedSeries(topRatedSeriesResponse.data.series);
 					// setUpcomingSeries(upcomingSeriesResponse.data.series);

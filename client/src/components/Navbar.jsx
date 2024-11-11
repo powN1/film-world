@@ -20,7 +20,7 @@ import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 
 const Navbar = () => {
-	let { movies } = useContext(DataContext);
+	let { movies, series } = useContext(DataContext);
 	let { userAuth, userAuth: { access_token, admin, profile_img, firstName, surname }, setUserAuth, } = useContext(UserContext);
 
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
@@ -531,7 +531,7 @@ const Navbar = () => {
 											<SearchPoster
 												key={i}
 												title={movie.title}
-												img={movie.banner}
+												img={movie.cover}
 												year={movie.year}
 												type="searchResult"
 											/>
@@ -554,8 +554,9 @@ const Navbar = () => {
 												Best movies
 											</p>
 											<Link
-												to="/"
+												to="/movies"
 												className="text-xs text-yellow-700 hover:text-yellow-400 duration-500"
+                        onClick={() => setSearchModalVisible(false)}
 											>
 												See all
 											</Link>
@@ -565,8 +566,10 @@ const Navbar = () => {
 											{movies.slice(0, 3).map((movie, i) => (
 												<SearchPoster
 													key={i}
+                          media="movie"
 													title={movie.title}
-													img={movie.banner}
+                          link={movie.titleId}
+													img={movie.cover}
 													type="poster"
 												/>
 											))}
@@ -579,20 +582,24 @@ const Navbar = () => {
 												Best series
 											</p>
 											<Link
-												to="/"
+												to="/series"
 												className="text-xs text-yellow-700 hover:text-yellow-400 duration-500"
+                        onClick={() => setSearchModalVisible(false)}
 											>
 												See all
 											</Link>
 										</div>
 										<div className="grid grid-rows-1 grid-cols-3 gap-x-5">
 											{/* SLIDES */}
-											{movies.slice(0, 3).map((movie, i) => (
+											{series.slice(0, 3).map((movie, i) => (
 												<SearchPoster
 													key={i}
+                          media="serie"
 													title={movie.title}
-													img={movie.banner}
+													link={movie.titleId}
+													img={movie.cover}
 													type="poster"
+                          setSearchModalVisible={setSearchModalVisible}
 												/>
 											))}
 										</div>

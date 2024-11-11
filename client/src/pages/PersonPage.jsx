@@ -4,6 +4,10 @@ import { useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import PersonDetails from "../components/PersonDetails";
 import FilmRolesRanking from "../common/FilmRolesRanking";
+import PersonKnownFor from "../components/PersonKnownFor";
+import PersonFilmography from "../components/PersonFilmography";
+import Download from "../components/Download";
+import Footer from "../components/Footer";
 
 const PersonPage = () => {
 	const { personId } = useParams();
@@ -39,7 +43,11 @@ const PersonPage = () => {
 	) : (
 		<>
 			<PersonDetails person={actor} />
+      <PersonKnownFor person={actor} />
       <FilmRolesRanking media={actor} />
+      <PersonFilmography person={actor} />
+			<Download />
+      <Footer />
 		</>
 	);
 };

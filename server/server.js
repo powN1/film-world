@@ -1805,14 +1805,13 @@ app.post("/get-actor", async (req, res) => {
 					path: "serie",
 				},
 				options: { sort: { "activity.rating": -1 } },
-			})
+			});
 
 		if (!actor) {
 			return res.status(404).json({ error: "Actor not found." });
 		}
 
 		return res.status(200).json({ actor });
-
 	} catch (err) {
 		return res.status(500).json({ error: err.message });
 	}
@@ -3222,6 +3221,46 @@ app.post("/get-series-upcoming", (req, res) => {
 		});
 });
 
+app.post("/check-rating", verifyJWT, async (req, res) => {
+	const userId = req.user;
+	const { mediaId } = req.body;
+
+	if (!mediaId) {
+		return res
+			.status(400)
+			.json({ error: "Please provide both mediaId and type" });
+	}
+
+	try {
+		// Query to check if the user has rated this specific media item
+		const user = await User.findOne({
+			_id: userId,
+			ratings: {
+				$elemMatch: { item_id: mediaId },
+			},
+		});
+
+		if (user) {
+			// User has rated this movie, series, or game
+			const rating = user.ratings.find(
+				(rating) => rating.item_id.toString() === mediaId,
+			);
+			const { rating: userRating, reviewText, timestamp } = rating;
+			res
+				.status(200)
+				.json({ hasRated: true, rating: { userRating, reviewText, timestamp }, });
+		} else {
+			// User has not rated this item
+			res.status(200).json({ hasRated: false });
+		}
+	} catch (error) {
+		console.error(error);
+		res
+			.status(500)
+			.json({ error: "An error occurred while checking the rating" });
+	}
+});
+
 app.post("/create-article", verifyJWT, (req, res) => {
 	const authorId = req.user;
 
@@ -3572,6 +3611,109 @@ app.post("/add-character", async (req, res) => {
 		});
 });
 
+app.post("/add-rating", verifyJWT, async (req, res) => {
+	const userId = req.user;
+
+	let { mediaId, type, userRating, reviewText } = req.body;
+
+	if (!mediaId) {
+		return res
+			.status(403)
+			.json({ error: "Please choose movie, serie or game to rate" });
+	}
+	if (!type) {
+		return res.status(403).json({
+			error: "Please specify what is the rating for (movie, serie or game)",
+		});
+	} else {
+		if (type !== "movie" && type !== "serie" && type !== "game") {
+			return res
+				.status(403)
+				.json({ error: `Invalid type. Choose "movie", "serie" or "game"` });
+		}
+	}
+	if (!userRating || userRating > 10 || userRating < 1) {
+		return res
+			.status(403)
+			.json({ error: "Please select a rating from 1 to 10" });
+	}
+
+	try {
+		const user = await User.findById(userId);
+		if (!user) return res.status(404).json({ error: "User not found" });
+
+		const mediaModels = {
+			movie: Movie,
+			series: Serie,
+			game: Game,
+		};
+
+		const MediaModel = mediaModels[type];
+		const media = await MediaModel.findById(mediaId);
+
+		if (!media)
+			return res.status(404).json({ error: `No ${type} found with this ID` });
+
+		const existingRating = user.ratings.find(
+			(rating) => rating.item_id.toString() === mediaId,
+		);
+
+		// Calculate new rating for the movie/serie/game
+		const { rating: currentRating, ratedByCount } = media.activity;
+		let newRating;
+
+		if (existingRating) {
+			// If the user has already rated, update the rating
+			const oldUserRating = existingRating.rating;
+			existingRating.rating = userRating;
+			existingRating.reviewText = reviewText || existingRating.reviewText;
+			existingRating.timestamp = new Date();
+
+			// Recalculate the average by replacing old rating with new one
+			newRating =
+				(currentRating * ratedByCount - oldUserRating + userRating) /
+				ratedByCount;
+
+			media.activity.rating = newRating;
+			await media.save();
+			await user.save();
+
+			res.status(200).json({ rating: existingRating });
+		} else {
+			newRating =
+				(currentRating * ratedByCount + userRating) / (ratedByCount + 1);
+			media.activity.ratedByCount = ratedByCount + 1;
+
+			const ratingEntry = {
+				item_id: media._id,
+				itemType:
+					type === "movie"
+						? "movies"
+						: type === "serie"
+							? "series"
+							: type === "game"
+								? "games"
+								: null,
+				rating: userRating,
+				reviewText: reviewText || null,
+				timestamp: new Date(),
+			};
+
+			media.activity.rating = newRating;
+			user.ratings.push(ratingEntry);
+
+			await media.save();
+			await user.save();
+
+			res.status(200).json({ rating: ratingEntry });
+		}
+	} catch (err) {
+		res
+			.status(500)
+			.json({ error: "An error occurred while processing the rating" });
+	}
+});
+
 app.post("/add-role", async (req, res) => {
 	let {
 		filmTitle,
@@ -3711,6 +3853,63 @@ app.post("/add-anime", async (req, res) => {
 			return res.status(500).json({ error: err.message });
 		});
 });
+
+app.post("/remove-rating", verifyJWT, async (req, res) => {
+	const userId = req.user;
+
+	let { mediaId, type } = req.body;
+
+	if (!mediaId) {
+		return res
+			.status(403)
+			.json({ error: "Please choose movie, serie or game to rate" });
+	}
+
+	try {
+		const mediaModels = {
+			movie: Movie,
+			series: Serie,
+			game: Game,
+		};
+
+		const MediaModel = mediaModels[type];
+		const media = await MediaModel.findById(mediaId);
+
+		if (!media)
+			return res.status(404).json({ error: `No ${type} found with this ID` });
+
+		const user = await User.findById(userId);
+		if (!user) return res.status(404).json({ error: "User not found" });
+
+		const existingRating = user.ratings.find(
+			(rating) => rating.item_id.toString() === mediaId,
+		);
+		const userRating = existingRating.rating;
+
+		const { rating, ratedByCount } = media.activity;
+
+		console.log(userRating);
+		const newMediaRating =
+			(rating * ratedByCount - userRating) / (ratedByCount - 1);
+		media.activity.rating = newMediaRating;
+		media.activity.ratedByCount = ratedByCount - 1;
+
+		await media.save();
+
+		// Remove the rating from the user's ratings array using $pull
+		await User.updateOne(
+			{ _id: userId },
+			{ $pull: { ratings: { item_id: mediaId } } },
+		);
+
+		res.status(200).json({ message: `User rating deleted successfully` });
+
+		return;
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+});
+
 // Login related routes
 app.post("/signup", (req, res) => {
 	const { firstName, surname, username, email, password } = req.body;

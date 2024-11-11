@@ -22,7 +22,7 @@ const RankingResults = () => {
 		serieTopRatedFemaleRoles,
 		actorsTopRated,
 	} = useContext(DataContext);
-  // console.log("female movie roles", movieTopRatedFemaleRoles)
+	// console.log("female movie roles", movieTopRatedFemaleRoles)
 
 	const [mediaToShow, setMediaToShow] = useState([]);
 	const [localCurrentCategory, setLocalCurrentCategory] = useState([]);
@@ -43,11 +43,9 @@ const RankingResults = () => {
 			} else if (currentSubCategory === "new") {
 				setMediaToShow(latestSeries);
 			}
-
 		} else if (currentCategory.toLowerCase() === "games") {
 			setLocalCurrentCategory("games");
 			setMediaToShow(topRatedGames);
-
 		} else if (currentCategory.toLowerCase() === "movie roles") {
 			setLocalCurrentCategory("movie roles");
 			if (currentSubCategory === "male") {
@@ -55,7 +53,6 @@ const RankingResults = () => {
 			} else if (currentSubCategory === "female") {
 				setMediaToShow(movieTopRatedFemaleRoles);
 			}
-
 		} else if (currentCategory.toLowerCase() === "serie roles") {
 			setLocalCurrentCategory("serie roles");
 			if (currentSubCategory === "male") {
@@ -87,9 +84,15 @@ const RankingResults = () => {
 								? getFullYear(media.releaseDate)
 								: getFullYear(media.firstAirDate);
 
+							let type;
+							if (localCurrentCategory === "movies") type = "movie";
+							else if (localCurrentCategory === "series") type = "serie";
+							else if (localCurrentCategory === "games") type = "game";
+
 							return (
 								<RankingResult
 									key={i}
+									type={type}
 									index={i}
 									img={media.cover}
 									title={media.title}

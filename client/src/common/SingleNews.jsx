@@ -45,7 +45,7 @@ const SingleNews = ({ title, description, comments, date, img, type, gridarea = 
 								className="h-full w-full object-cover group-hover:scale-110 duration-700"
 							/>
 						</div>
-						<div className="flex flex-col max-md:w-[60%]">
+						<div className="flex flex-col justify-between max-md:w-[60%] lg:h-1/3">
 							<p className="text-sm py-1 group-hover:text-yellow-500 duration-300 text-ellipsis overflow-hidden line-clamp-2">
 								{description}
 							</p>
