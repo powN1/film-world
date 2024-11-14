@@ -32,6 +32,7 @@ const MainNews = () => {
 					return (
 						<SingleNews
 							key={i}
+              link={article.articleId}
 							description={article.description}
 							comments={article.activity.total_comments}
 							img={article.banner}

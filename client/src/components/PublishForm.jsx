@@ -10,7 +10,7 @@ import { UserContext } from "../App";
 const PublishForm = () => {
 	const availableTags = ["movies", "series", "games"];
 
-	const { article_id } = useParams();
+	const { articleId } = useParams();
 	const characterLimit = 80;
 	const tagLimit = 3;
 
@@ -78,7 +78,7 @@ const PublishForm = () => {
 		axios
 			.post(
 				import.meta.env.VITE_SERVER_DOMAIN + "/create-article",
-				{ ...articleObj, id: article_id },
+				{ ...articleObj, id: articleId },
 				{
 					headers: { Authorization: `${access_token}` },
 				},

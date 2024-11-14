@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const articleSchema = mongoose.Schema(
 	{
-		article_id: {
+		articleId: {
 			type: String,
 			required: true,
 			unique: true,

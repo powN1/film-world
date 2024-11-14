@@ -1,10 +1,11 @@
+import { Link } from "react-router-dom";
 import { getDay } from "../common/date";
-const SingleNews = ({ title, description, comments, date, img, type, gridarea = null, category, }) => {
+const SingleNews = ({ title, link, description, comments, date, img, type, gridarea = null, category, }) => {
 	const renderArticle = () => {
 		switch (type) {
 			case "tiny":
 				return (
-					<article className="flex justify-between group overflow-hidden cursor-pointer">
+					<Link to={`/article/${link}`} className="flex justify-between group overflow-hidden cursor-pointer">
 						<p className="w-[70%] text-sm group-hover:text-yellow-400 duration-300 overflow-hidden line-clamp-3">
 							{description}
 						</p>
@@ -15,11 +16,11 @@ const SingleNews = ({ title, description, comments, date, img, type, gridarea = 
 								className="h-full object-cover group-hover:scale-110 duration-700"
 							/>
 						</div>
-					</article>
+					</Link>
 				);
 			case "small":
 				return (
-					<article className="flex group overflow-hidden cursor-pointer max-md:col-span-2 max-md:row-span-1">
+					<Link to={`/article/${link}`} className="flex group overflow-hidden cursor-pointer max-md:col-span-2 max-md:row-span-1">
 						<div className="w-[40%] overflow-hidden border border-gray-800">
 							<img
 								src={img}
@@ -33,11 +34,11 @@ const SingleNews = ({ title, description, comments, date, img, type, gridarea = 
 							</p>
 							<span className="text-xs text-gray-400">{comments} comments</span>
 						</div>
-					</article>
+					</Link>
 				);
 			case "medium":
 				return (
-					<article className="flex md:flex-col gap-y-1 max-md:gap-x-2 group overflow-hidden cursor-pointer">
+					<Link to={`/article/${link}`} className="flex md:flex-col gap-y-1 max-md:gap-x-2 group overflow-hidden cursor-pointer">
 						<div className="h-[65%] max-md:h-full max-md:w-[40%] overflow-hidden border border-gray-300">
 							<img
 								src={img}
@@ -51,11 +52,11 @@ const SingleNews = ({ title, description, comments, date, img, type, gridarea = 
 							</p>
 							<span className="text-gray-400 text-xs">{comments} comments</span>
 						</div>
-					</article>
+					</Link>
 				);
 			case "big":
 				return (
-					<article
+					<Link to={`/article/${link}`} 
 						className={`relative group cursor-pointer max-md:flex max-md:flex-col max-md:col-span-1 max-md:row-span-2 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}`}
 					>
 						<div className="h-full max-md:h-1/2 overflow-hidden">
@@ -71,11 +72,11 @@ const SingleNews = ({ title, description, comments, date, img, type, gridarea = 
 							</p>
 							<span className="text-xs text-gray-400">{comments} comments</span>
 						</div>
-					</article>
+					</Link>
 				);
 			case "large":
 				return (
-					<article
+					<Link to={`/article/${link}`} 
 						className={`relative group overflow-hidden cursor-pointer max-md:row-span-2 max-md:col-span-1 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}`}
 					>
 						<img
@@ -91,11 +92,11 @@ const SingleNews = ({ title, description, comments, date, img, type, gridarea = 
 								{comments} comments
 							</span>
 						</div>
-					</article>
+					</Link>
 				);
 			case "gigantic":
 				return (
-					<article
+					<Link to={`/article/${link}`} 
 						className={`relative group overflow-hidden cursor-pointer max-md:row-span-3 max-md:col-span-2 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}`}
 					>
 						<img
@@ -111,11 +112,11 @@ const SingleNews = ({ title, description, comments, date, img, type, gridarea = 
 								{comments} comments
 							</span>
 						</div>
-					</article>
+					</Link>
 				);
 			case "categorized":
 				return (
-					<article className="flex md:flex-col gap-y-1 max-md:gap-x-2 group overflow-hidden cursor-pointer hover:[box-shadow:_0px_0px_6px_rgb(0_0_0_/_25%)] duration-300 ease-in-out">
+					<Link to={`/article/${link}`}  className="flex md:flex-col gap-y-1 max-md:gap-x-2 group overflow-hidden cursor-pointer hover:[box-shadow:_0px_0px_6px_rgb(0_0_0_/_25%)] duration-300 ease-in-out">
 						<div className="min-w-[150px] h-[150px] lg:h-auto aspect-square lg:aspect-video overflow-hidden border border-gray-300">
 							<img
 								src={img}
@@ -134,7 +135,7 @@ const SingleNews = ({ title, description, comments, date, img, type, gridarea = 
 								{getDay(date)} / {comments.length} comments
 							</span>
 						</div>
-					</article>
+					</Link>
 				);
 			default:
 				return <article></article>;

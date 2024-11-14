@@ -1865,6 +1865,23 @@ app.get("/get-animes", (req, res) => {
 		});
 });
 
+app.post("/get-article", async (req, res) => {
+	const { articleId } = req.body;
+
+	// Error checking
+	if (!articleId)
+		return res
+			.status(400)
+			.json({ error: "Wrong article id. Please provide a correct id." });
+
+	try {
+		const article = await Article.findOne({ articleId }).populate( "author",);
+		res.status(200).json({ article });
+	} catch (err) {
+		return res.status(500).json({ err: "Error getting the article" });
+	}
+});
+
 app.post("/get-articles", (req, res) => {
 	const { type, count, category, random } = req.body;
 
@@ -3246,9 +3263,10 @@ app.post("/check-rating", verifyJWT, async (req, res) => {
 				(rating) => rating.item_id.toString() === mediaId,
 			);
 			const { rating: userRating, reviewText, timestamp } = rating;
-			res
-				.status(200)
-				.json({ hasRated: true, rating: { userRating, reviewText, timestamp }, });
+			res.status(200).json({
+				hasRated: true,
+				rating: { rating: userRating, reviewText, timestamp },
+			});
 		} else {
 			// User has not rated this item
 			res.status(200).json({ hasRated: false });
@@ -3644,7 +3662,7 @@ app.post("/add-rating", verifyJWT, async (req, res) => {
 
 		const mediaModels = {
 			movie: Movie,
-			series: Serie,
+			serie: Serie,
 			game: Game,
 		};
 
@@ -3695,7 +3713,7 @@ app.post("/add-rating", verifyJWT, async (req, res) => {
 								? "games"
 								: null,
 				rating: userRating,
-				reviewText: reviewText || null,
+				reviewText: reviewText || "",
 				timestamp: new Date(),
 			};
 

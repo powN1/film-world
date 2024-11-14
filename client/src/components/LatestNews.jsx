@@ -80,6 +80,7 @@ const LastestNews = () => {
 								return (
 									<SingleNews
 										key={i}
+                    link={article.articleId}
 										description={article.description}
 										comments={article.activity.total_comments}
 										img={article.banner}
@@ -104,6 +105,7 @@ const LastestNews = () => {
 							return (
 								<SingleNews
 									key={i}
+                  link={article.articleId}
 									description={article.description}
 									comments={article.comments}
 									img={article.banner}
