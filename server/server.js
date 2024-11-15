@@ -1875,7 +1875,7 @@ app.post("/get-article", async (req, res) => {
 			.json({ error: "Wrong article id. Please provide a correct id." });
 
 	try {
-		const article = await Article.findOne({ articleId }).populate( "author",);
+		const article = await Article.findOne({ articleId }).populate("author");
 		res.status(200).json({ article });
 	} catch (err) {
 		return res.status(500).json({ err: "Error getting the article" });
@@ -3236,6 +3236,55 @@ app.post("/get-series-upcoming", (req, res) => {
 		.catch((err) => {
 			return res.status(500).json({ error: err.message });
 		});
+});
+
+app.post("/get-user", async (req, res) => {
+	const { userId } = req.body;
+
+	// Error checking
+	if (!userId)
+		return res
+			.status(400)
+			.json({ error: "Wrong user id. Please provide a correct id." });
+
+	try {
+		const user = await User.findOne({ "personal_info.username": userId })
+			.populate("reviews")
+			.populate("articles")
+			.populate("ratings");
+
+		const populatedRatings = await Promise.all(
+			user.ratings.map(async (rating) => {
+				let populatedItem;
+
+				// Dynamically query the appropriate model based on `itemType`
+				switch (rating.itemType) {
+					case "movies":
+						populatedItem = await Movie.findById(rating.item_id);
+						break;
+					case "series":
+						populatedItem = await Serie.findById(rating.item_id);
+						break;
+					case "games":
+						populatedItem = await Game.findById(rating.item_id);
+						break;
+					default:
+						return rating; // Return unmodified if itemType is invalid
+				}
+
+				// Return a new object with the populated item
+				return {
+					...rating.toObject(), // Convert to plain object if necessary
+					item: populatedItem, // Add the populated item as a new field
+				};
+			}),
+		);
+
+		const userObj = { ...user.toObject(), ratings: populatedRatings };
+		res.status(200).json({ user: userObj });
+	} catch (err) {
+		return res.status(500).json({ err: "Error getting the article" });
+	}
 });
 
 app.post("/check-rating", verifyJWT, async (req, res) => {
