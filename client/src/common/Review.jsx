@@ -40,7 +40,7 @@ const Review = ({img, name, title, year, author, rating, description, type}) => 
 						/>
 					</Link>
 					<div>
-						<Link className="text-xl md:text-base">{author.fullname}</Link>
+						<Link className="text-xl md:text-base capitalize">{author.firstName} {author.surname}</Link>
 
 						{/* Review rating */}
 						<div className="flex items-center gap-x-1">

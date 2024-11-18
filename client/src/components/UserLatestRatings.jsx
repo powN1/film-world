@@ -1,13 +1,16 @@
 import { Link } from "react-router-dom";
+import { MediaQueriesContext } from "../App";
+import { useContext } from "react";
 
 const UserLatestRatings = ({ ratings }) => {
+	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 	return (
 		ratings && (
 			<div className="w-full bg-white">
-				<div className="lg:w-[55%] flex flex-col gap-y-6 w-full py-16 mx-auto relative">
-					<h2 className="text-3xl font-bold">Latest ratings</h2>
-					<div className="flex gap-x-8">
-						{ratings.slice(0, 6).map((rating, i) => {
+				<div className="lg:w-[55%] flex flex-col gap-y-6 w-full py-8 md:py-12 lg:py-16 px-3 md:px-16 lg:px-0 mx-auto relative">
+					<h2 className="text-xl lg:text-3xl font-bold">Latest ratings</h2>
+					<div className="flex gap-x-4 lg:gap-x-8">
+						{ratings.slice(0, mobileView ? 3 : tabletView ? 4 : 6).map((rating, i) => {
 							// Link path to movie/serie/game
 							const basePath =
 								rating.itemType === "movies"
@@ -18,17 +21,17 @@ const UserLatestRatings = ({ ratings }) => {
 											? "game"
 											: "";
 							return (
-								<div className="flex flex-col gap-y-2 items-center">
+								<div className="w-[105px] md:w-[144px] flex flex-col gap-y-2 items-center">
 									<div
 										key={i}
 										className="group relative border border-gray-300"
 									>
-										<div className="z-10 absolute text-yellow-400 w-[36px] h-[36px] flex items-center justify-center bg-gray-900 rounded-br-lg text-xl">
+										<div className="z-10 absolute lg:text-xl text-yellow-400 w-[30px] h-[30px] md:w-[36px] md:h-[36px] flex items-center justify-center bg-gray-900 rounded-br-lg">
 											{rating.rating}
 										</div>
 										<Link
 											to={`/${basePath}/${rating.item.titleId}`}
-											className="block w-[144px] h-[205px] overflow-hidden"
+											className="block w-[108px] h-[155px] md:w-[144px] md:h-[205px] overflow-hidden"
 										>
 											<img
 												src={rating.item.cover}
@@ -40,7 +43,7 @@ const UserLatestRatings = ({ ratings }) => {
 
 									<Link
 										to={`/${basePath}/${rating.item.titleId}`}
-										className="px-2 text-center"
+										className="px-2 text-center line-clamp-2 md:line-clamp-3"
 									>
 										{rating.item.title}
 									</Link>

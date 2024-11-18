@@ -6,8 +6,9 @@ import axios from "axios";
 import Download from "../components/Download";
 import Footer from "../components/Footer";
 import UserLatestRatings from "../components/UserLatestRatings";
-import UserHighestMovieRatings from "../components/UserHighestMovieRatings";
+import UserHighestRatings from "../components/UserHighestRatings";
 import { CiLink } from "react-icons/ci";
+import UserLatestReviews from "../components/UserLatestReviews";
 
 const UserPage = () => {
 	const { userId } = useParams();
@@ -44,8 +45,11 @@ const UserPage = () => {
 	) : (
 		<>
 			<UserInfoPreview user={user} />
+			<UserLatestReviews author={user.personal_info} reviews={user.reviews} />
 			<UserLatestRatings ratings={user.ratings} />
-			<UserHighestMovieRatings ratings={user.ratings} />
+			<UserHighestRatings type="movies" ratings={user.ratings} />
+			<UserHighestRatings type="series" ratings={user.ratings} />
+			<UserHighestRatings type="games" ratings={user.ratings} />
 			<Download />
 			<Footer />
 		</>

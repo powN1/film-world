@@ -3102,7 +3102,6 @@ app.post("/get-series-popular", (req, res) => {
 				.json({ error: "Wrong serie count. Please type a number" });
 		countQuery = count;
 	}
-	console.log("this is sortQuery", sortQuery);
 	Serie.find(findQuery)
 		.sort(sortQuery)
 		.limit(countQuery)
@@ -3249,9 +3248,14 @@ app.post("/get-user", async (req, res) => {
 
 	try {
 		const user = await User.findOne({ "personal_info.username": userId })
-			.populate("reviews")
 			.populate("articles")
-			.populate("ratings");
+			.populate("ratings")
+			.populate({
+				path: "reviews",
+				populate: {
+					path: "referredMedia", // Assuming referredMedia contains the ObjectId
+				},
+			});
 
 		const populatedRatings = await Promise.all(
 			user.ratings.map(async (rating) => {
@@ -3283,7 +3287,7 @@ app.post("/get-user", async (req, res) => {
 		const userObj = { ...user.toObject(), ratings: populatedRatings };
 		res.status(200).json({ user: userObj });
 	} catch (err) {
-		return res.status(500).json({ err: "Error getting the article" });
+		return res.status(500).json({ err: "Error getting the user data" });
 	}
 });
 
