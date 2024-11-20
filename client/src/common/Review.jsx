@@ -1,12 +1,12 @@
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const Review = ({img, name, title, year, author, rating, description, type}) => {
+const Review = ({img, link, name, title, year, author, rating, description, type}) => {
 	return (
 		<div className="flex flex-col group">
 			{/* Movie img */}
 			<Link
-				to="/"
+				to={`/review/${link}`}
 				className={ "relative group overflow-hidden rounded-tl-sm rounded-tr-sm " + (type === "big" ? "h-[220px] lg:h-[280px]" : "h-[220px] lg:h-[180px]") }
 			>
 				<img

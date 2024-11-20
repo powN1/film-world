@@ -20,6 +20,8 @@ import GamePage from "./pages/GamePage";
 import PersonPage from "./pages/PersonPage";
 import ArticlePage from "./pages/ArticlePage";
 import UserPage from "./pages/UserPage";
+import SettingsPage from "./pages/SettingsPage";
+import LoginPage from "./components/LoginPage";
 
 export const UserContext = createContext({});
 export const MediaQueriesContext = createContext({});
@@ -530,6 +532,8 @@ function App() {
 							<Route path="write" element={<WritePage />} />
 							<Route path="write-article" element={<WriteArticlePage />} />
 							<Route path="write-review" element={<WriteReviewPage />} />
+							<Route path="settings" element={<SettingsPage />} />
+							<Route path="login" element={<LoginPage />} />
 						</Route>
 					</Routes>
 				</DataContext.Provider>

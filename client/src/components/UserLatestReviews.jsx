@@ -21,6 +21,7 @@ const UserLatestReviews = ({ author, reviews }) => {
 								<Review
 									key={i}
 									img={review.banner}
+                  link={review.review_id}
 									name={review.referredMedia.title}
 									title={review.title}
 									year={year}

@@ -21,7 +21,18 @@ import axios from "axios";
 
 const Navbar = () => {
 	let { movies, series } = useContext(DataContext);
-	let { userAuth, userAuth: { access_token, admin, profile_img, firstName, surname }, setUserAuth, } = useContext(UserContext);
+	let {
+		userAuth,
+		userAuth: {
+			access_token,
+			admin,
+			profile_img,
+			firstName,
+			surname,
+			username,
+		},
+		setUserAuth,
+	} = useContext(UserContext);
 
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
@@ -308,7 +319,7 @@ const Navbar = () => {
 						{access_token ? (
 							<div className="relative flex items-center gap-x-3 max-h-[40px]">
 								<Link
-									to="/"
+									to={`/user/${username}`}
 									className="rounded-full border border-gray-400 p-[1px] cursor-pointer"
 								>
 									<img
@@ -318,7 +329,7 @@ const Navbar = () => {
 									/>
 								</Link>
 								<Link
-									to="/"
+									to={`/user/${username}`}
 									className="hidden lg:block capitalize cursor-pointer"
 								>
 									{firstName} {surname}
@@ -334,7 +345,7 @@ const Navbar = () => {
 								{showProfilePanel ? (
 									<div className="absolute top-0 right-0 translate-y-[50%] translate-x-[35%] lg:translate-x-[0] -mt-3 bg-gray-100 text-gray-600 w-36 lg:w-80 flex flex-col [box-shadow:_1px_1px_6px_rgb(0_0_0_/_100%)]">
 										<Link
-											to="/asddd"
+											to={`/user/${username}`}
 											className="flex items-center gap-x-2 p-3 hover:bg-gray-200 duration-300"
 										>
 											<CiUser className="text-2xl" />
@@ -556,7 +567,7 @@ const Navbar = () => {
 											<Link
 												to="/movies"
 												className="text-xs text-yellow-700 hover:text-yellow-400 duration-500"
-                        onClick={() => setSearchModalVisible(false)}
+												onClick={() => setSearchModalVisible(false)}
 											>
 												See all
 											</Link>
@@ -566,9 +577,9 @@ const Navbar = () => {
 											{movies.slice(0, 3).map((movie, i) => (
 												<SearchPoster
 													key={i}
-                          media="movie"
+													media="movie"
 													title={movie.title}
-                          link={movie.titleId}
+													link={movie.titleId}
 													img={movie.cover}
 													type="poster"
 												/>
@@ -584,7 +595,7 @@ const Navbar = () => {
 											<Link
 												to="/series"
 												className="text-xs text-yellow-700 hover:text-yellow-400 duration-500"
-                        onClick={() => setSearchModalVisible(false)}
+												onClick={() => setSearchModalVisible(false)}
 											>
 												See all
 											</Link>
@@ -594,12 +605,12 @@ const Navbar = () => {
 											{series.slice(0, 3).map((movie, i) => (
 												<SearchPoster
 													key={i}
-                          media="serie"
+													media="serie"
 													title={movie.title}
 													link={movie.titleId}
 													img={movie.cover}
 													type="poster"
-                          setSearchModalVisible={setSearchModalVisible}
+													setSearchModalVisible={setSearchModalVisible}
 												/>
 											))}
 										</div>

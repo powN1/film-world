@@ -59,7 +59,7 @@ const SingleNews = ({ title, link, description, comments, date, img, type, grida
 					<Link to={`/article/${link}`} 
 						className={`relative group cursor-pointer max-md:flex max-md:flex-col max-md:col-span-1 max-md:row-span-2 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}`}
 					>
-						<div className="h-full max-md:h-1/2 overflow-hidden">
+						<div className="h-full max-md:h-1/2 overflow-hidden border border-gray-800">
 							<img
 								src={img}
 								alt={description}
@@ -97,7 +97,7 @@ const SingleNews = ({ title, link, description, comments, date, img, type, grida
 			case "gigantic":
 				return (
 					<Link to={`/article/${link}`} 
-						className={`relative group overflow-hidden cursor-pointer max-md:row-span-3 max-md:col-span-2 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}`}
+						className={`relative group overflow-hidden cursor-pointer max-md:row-span-3 max-md:col-span-2 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]} border border-gray-800`}
 					>
 						<img
 							src={img}

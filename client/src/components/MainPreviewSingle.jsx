@@ -48,7 +48,7 @@ const MainPreviewSingle = ({ type, media }) => {
 					<div className="flex flex-col gap-y-1 self-start">
 						<div className="flex items-center gap-x-2">
 							<FaStar className="text-2xl text-yellow-400" />
-							<p className="text-2xl">{media.activity.rating}</p>
+							<p className="text-2xl">{media.activity.rating.toFixed(2)}</p>
 						</div>
 						<p className="flex gap-x-1 items-center justify-center lg:justify-start">
 							<span className="text-sm">{media.activity.ratedByCount}</span>

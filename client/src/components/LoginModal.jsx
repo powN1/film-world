@@ -11,7 +11,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { storeInSession } from "../common/session";
 import { authWithGoogle, authWithFacebook } from "../common/firebase";
 
-const LoginModal = ({ setLoginModalVisible }) => {
+const LoginModal = ({ mode, setLoginModalVisible }) => {
 	let {
 		userAuth: { access_token },
 		setUserAuth,
@@ -58,7 +58,7 @@ const LoginModal = ({ setLoginModalVisible }) => {
 				// setTimeout(() => {
 				setNormalLoginClicked(false);
 				setNewAccountClicked(false);
-				setLoginModalVisible(false);
+				if (mode !== "static") setLoginModalVisible(false);
 				// }, 1000);
 			})
 			.catch(({ response }) => {
@@ -90,7 +90,10 @@ const LoginModal = ({ setLoginModalVisible }) => {
 			.then((user) => {
 				let serverRoute = "/facebook-auth";
 
-				let formData = { access_token: user.accessToken, facebook_access_token: user.facebookAccessToken };
+				let formData = {
+					access_token: user.accessToken,
+					facebook_access_token: user.facebookAccessToken,
+				};
 
 				userAuthThroughServer(serverRoute, formData);
 			})
@@ -158,9 +161,13 @@ const LoginModal = ({ setLoginModalVisible }) => {
 				<Toaster />
 				{!normalLoginClicked && !newAccountClicked ? (
 					<div className="w-full flex flex-col items-center gap-y-5 py-10">
-						<button onClick={() => setLoginModalVisible((prevVal) => !prevVal)}>
-							<IoMdClose className="absolute top-4 right-4 text-3xl" />
-						</button>
+						{mode !== "static" ? (
+							<button
+								onClick={() => setLoginModalVisible((prevVal) => !prevVal)}
+							>
+								<IoMdClose className="absolute top-4 right-4 text-3xl" />
+							</button>
+						) : null}
 						<p className="text-2xl">Log in or create account</p>
 						<div className="flex flex-col justify-center items-center gap-y-5 w-full">
 							<button
@@ -185,7 +192,11 @@ const LoginModal = ({ setLoginModalVisible }) => {
 								className="w-[90%] py-3 border border-gray-300 flex justify-center items-center gap-x-3 rounded bg-white text-black font-medium"
 								onClick={() => setNormalLoginClicked(true)}
 							>
-                <img src={filmwebLogoSmall} alt="" className="h-[20px] w-[20px]"/>
+								<img
+									src={filmwebLogoSmall}
+									alt=""
+									className="h-[20px] w-[20px]"
+								/>
 								<p className="">
 									Sign in through{" "}
 									<span className="font-bold">filmweb account</span>
