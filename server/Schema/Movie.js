@@ -32,9 +32,9 @@ const movieSchema = mongoose.Schema({
 	originalTitle: {
 		type: String,
 	},
-  releaseDate: {
-    type: Date
-  },
+	releaseDate: {
+		type: Date,
+	},
 	revenue: {
 		type: Number,
 	},
@@ -53,6 +53,14 @@ const movieSchema = mongoose.Schema({
 		},
 		popularity: {
 			type: Number,
+		},
+		totalComments: {
+			type: Number,
+			default: 0,
+		},
+		totalParentComments: {
+			type: Number,
+			default: 0,
 		},
 	},
 	genre: {

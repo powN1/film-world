@@ -1757,6 +1757,29 @@ const verifyJWT = (req, res, next) => {
 	});
 };
 
+const renameActivityFields = async () => {
+	try {
+		const result = await Article.updateMany(
+			{},
+			{
+				$rename: {
+					"activity.total_comments": "activity.totalComments",
+					"activity.total_parent_comments": "activity.totalParentComments",
+				},
+			},
+			{
+				// Strict allows to update keys that do not exist anymore in the schema
+				strict: false,
+			},
+		);
+		console.log("Update result:", result);
+	} catch (err) {
+		console.error("Error:", err);
+	}
+};
+
+// renameActivityFields();
+
 app.get("/aws", async (req, res) => {
 	const imageUrl =
 		"https://lh3.googleusercontent.com/a/ACg8ocLcigctbdVmKSfa_-1EmTY2zeHMj48TujAVIr1MC7DvYT3zO3Q=s384-c";
@@ -2260,6 +2283,25 @@ app.get("/get-upload-url", (req, res) => {
 		});
 });
 
+app.post("/get-media-comments", (req, res) => {
+	const { mediaId, skip } = req.body;
+
+	const maxLimit = 5;
+
+	Comment.find({ mediaId })
+		.populate(
+			"commentedBy",
+			"personal_info.username personal_info.firstName personal_info.surname personal_info.profile_img",
+		)
+		.skip(skip)
+		.limit(maxLimit)
+		.sort({ commentedAt: -1 })
+		.then((comment) => {
+			return res.status(200).json(comment);
+		})
+		.catch((err) => res.status(500).json({ error: err.message }));
+})
+
 app.post("/get-movie", async (req, res) => {
 	const { titleId } = req.body;
 
@@ -2477,15 +2519,20 @@ app.post("/get-review", async (req, res) => {
 
 	// Error checking
 	if (!reviewId)
-		return res .status(400) .json({ error: "Wrong review id. Please provide a correct id." });
+		return res
+			.status(400)
+			.json({ error: "Wrong review id. Please provide a correct id." });
 
 	try {
-		const review = await Review.findOne({ review_id: reviewId }).populate("author").populate("referredMedia");
+		const review = await Review.findOne({ review_id: reviewId })
+			.populate("author")
+			.populate("referredMedia");
 		res.status(200).json({ review });
 	} catch (err) {
 		return res.status(500).json({ err: "Error getting the review" });
 	}
 });
+
 app.post("/get-reviews-latest", (req, res) => {
 	const { count } = req.body;
 
@@ -3662,6 +3709,65 @@ app.post("/add-actor", async (req, res) => {
 		.catch((err) => {
 			return res.status(500).json({ error: err.message });
 		});
+});
+
+app.post("/add-comment", verifyJWT, async (req, res) => {
+	const userId = req.user;
+
+	const { type, mediaId, comment, mediaAuthor, replyingTo } =
+		req.body;
+
+
+	if (!comment.length) { res.status(403).json({ error: "Write something to leave a comment" }); }
+
+	if (!type) {
+		return res.status(403).json({ error: "Please specify what is the rating for (movie, serie or game)", });
+	} else {
+		if (type !== "movie" && type !== "serie" && type !== "game" && type !== "article" && type !== "review") {
+			return res .status(403) .json({ error: `Invalid type. Choose "movie", "serie", "game", "article" or "review"` });
+		}
+	}
+
+	const commentObj = {
+		mediaId: mediaId,
+		mediaAuthor,
+		comment,
+		commentedBy: userId,
+	};
+
+	if (replyingTo) {
+		commentObj.parent = replyingTo;
+		commentObj.isReply = true;
+	}
+
+	const commentRes = await new Comment(commentObj).save();
+	const { comment: commentFromRes, commentedAt, children } = commentRes;
+
+	const mediaModels = {
+		movie: Movie,
+		serie: Serie,
+		game: Game,
+		article: Article,
+		review: Review,
+	};
+
+	const MediaModel = mediaModels[type];
+	const media = await MediaModel.findOneAndUpdate(
+		{ mediaId },
+		{
+			$push: { comments: commentRes._id },
+			$inc: {
+				"activity.totalComments": 1,
+				"activity.totalParentComments": replyingTo ? 0 : 1,
+			},
+		},
+	);
+
+	if (replyingTo) {
+		const commentRes2 = await Comment.findOneAndUpdate( { _id: replyingTo }, { $push: { children: commentRes._id } },);
+	}
+
+	return res .status(200) .json({ commentFromRes, commentedAt, _id: commentRes._id, userId, children });
 });
 
 app.post("/add-character", async (req, res) => {

@@ -8,7 +8,7 @@ const UserRatingsMedias = ({ medias }) => {
 		<div className="w-full bg-white">
 			<div className="lg:w-[55%] w-full mx-auto relative text-white">
 				{/* Movies, series, games etc */}
-				<div className="flex flex-wrap gap-4 lg:gap-x-8 pt-16 px-2 lg:px-0">
+				<div className="flex flex-wrap gap-4 lg:gap-x-8 pt-16 px-2 lg:px-0 lg:w-2/3">
 					{medias
 						.map((rating, i) => {
 							// Link path to movie/serie/game
@@ -21,7 +21,7 @@ const UserRatingsMedias = ({ medias }) => {
 											? "game"
 											: "";
 							return (
-								<div key={i} className="w-[105px] md:w-[147px] flex flex-col gap-y-2 items-center">
+								<div key={i} className="w-[110px] md:w-[147px] flex flex-col gap-y-2 items-center">
 									<div
 										className="group relative border border-gray-300"
 									>

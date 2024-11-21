@@ -33,6 +33,17 @@ const gameSchema = mongoose.Schema({
 		peopleAwaiting: {
 			type: Number,
 		},
+		popularity: {
+			type: Number,
+		},
+		totalComments: {
+			type: Number,
+			default: 0,
+		},
+		totalParentComments: {
+			type: Number,
+			default: 0,
+		},
 	},
 	genre: {
 		type: [String],

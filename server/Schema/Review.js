@@ -11,11 +11,11 @@ const reviewSchema = mongoose.Schema(
 			rating: {
 				type: Number,
 			},
-			total_comments: {
+			totalComments: {
 				type: Number,
 				default: 0,
 			},
-			total_parent_comments: {
+			totalParentComments: {
 				type: Number,
 				default: 0,
 			},

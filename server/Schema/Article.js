@@ -38,11 +38,11 @@ const articleSchema = mongoose.Schema(
 			ref: "users",
 		},
 		activity: {
-			total_comments: {
+			totalComments: {
 				type: Number,
 				default: 0,
 			},
-			total_parent_comments: {
+			totalParentComments: {
 				type: Number,
 				default: 0,
 			},
