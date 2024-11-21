@@ -2472,6 +2472,20 @@ app.post("/get-movies-upcoming", (req, res) => {
 		});
 });
 
+app.post("/get-review", async (req, res) => {
+	const { reviewId } = req.body;
+
+	// Error checking
+	if (!reviewId)
+		return res .status(400) .json({ error: "Wrong review id. Please provide a correct id." });
+
+	try {
+		const review = await Review.findOne({ review_id: reviewId }).populate("author").populate("referredMedia");
+		res.status(200).json({ review });
+	} catch (err) {
+		return res.status(500).json({ err: "Error getting the review" });
+	}
+});
 app.post("/get-reviews-latest", (req, res) => {
 	const { count } = req.body;
 

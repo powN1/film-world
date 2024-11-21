@@ -22,6 +22,8 @@ import ArticlePage from "./pages/ArticlePage";
 import UserPage from "./pages/UserPage";
 import SettingsPage from "./pages/SettingsPage";
 import LoginPage from "./components/LoginPage";
+import ReviewPage from "./pages/ReviewPage";
+import UserDetailsPage from "./pages/UserDetailsPage";
 
 export const UserContext = createContext({});
 export const MediaQueriesContext = createContext({});
@@ -525,10 +527,12 @@ function App() {
 							<Route path="games" element={<GamesPage />} />
 							<Route path="/game/:gameId" element={<GamePage />} />
 							<Route path="/article/:articleId" element={<ArticlePage />} />
+							<Route path="/review/:reviewId" element={<ReviewPage />} />
 							<Route path="ranking" element={<RankingPage />} />
 							<Route path="my" element={<MyFilmwebPage />} />
 							<Route path="/person/:personId" element={<PersonPage />} />
 							<Route path="/user/:userId" element={<UserPage />} />
+							<Route path="/user/:userId/details" element={<UserDetailsPage />} />
 							<Route path="write" element={<WritePage />} />
 							<Route path="write-article" element={<WriteArticlePage />} />
 							<Route path="write-review" element={<WriteReviewPage />} />

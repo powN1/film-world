@@ -61,7 +61,7 @@ const SettingsPage = () => {
 						<h2 className="text-2xl font-sansNarrow uppercase font-bold lg:tracking-widest">
 							Personal details
 						</h2>
-						<div className="flex flex-col gap-y-3 text-xl lg:text-base ml-12">
+						<div className="flex flex-col gap-y-3 text-xl lg:text-base ml-8">
 							<div className="flex flex-col">
 								<p className="font-bold capitalize">Name</p>
 								<p className="ml-3 capitalize">

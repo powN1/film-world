@@ -92,8 +92,6 @@ for (let year = new Date().getFullYear(); year >= 1839; year--) {
 
 const RankingFilter = () => {
   const { currentCategory, setCurrentCategory, currentSubCategory, setCurrentSubCategory } = useContext(RankingContext)
-	// const [currentCategory, setCurrentCategory] = useState("movies");
-	// const [currentSubCategory, setCurrentSubCategory] = useState("top 500");
 
 	const [filterModalVisible, setFilterModalVisible] = useState(false);
 

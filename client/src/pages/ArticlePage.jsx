@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import axios from "axios";
-import BlockContent from "../components/ArticleContent.jsx";
-import { getDay } from "../common/date";
 import Download from "../components/Download.jsx";
 import Footer from "../components/Footer";
 import ArticleInfo from "../components/ArticleInfo.jsx";

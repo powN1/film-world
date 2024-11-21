@@ -69,7 +69,7 @@ const UserInfoPreview = ({ user }) => {
 						{ratings && (
 							<>
 								<Link
-									to=""
+									to="details"
 									className="capitalize hover:bg-gray-400/40 py-1 px-4 cursor-pointer flex flex-col items-center lg:flex-row gap-x-1"
 								>
 									ratings <span className="font-bold">
