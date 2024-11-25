@@ -63,6 +63,10 @@ const movieSchema = mongoose.Schema({
 			default: 0,
 		},
 	},
+	comments: {
+		type: [Schema.Types.ObjectId],
+		ref: "comments",
+	},
 	genre: {
 		type: [String],
 		required: true,

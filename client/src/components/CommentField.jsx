@@ -1,14 +1,31 @@
 import { useContext, useState } from "react";
 import { UserContext } from "../App";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { IoMdSend } from "react-icons/io";
 import { Toaster, toast } from "react-hot-toast";
 import { ArticleContext } from "../pages/ArticlePage";
+import { ReviewContext } from "../pages/ReviewPage.jsx";
 import axios from "axios";
 
 const CommentField = ({ type, action, index = null, replyingTo = undefined, setReplying, }) => {
 	const { userAuth: { firstName, surname, username, profile_img, access_token }, } = useContext(UserContext);
 	const [comment, setComment] = useState("");
+
+  const { reviewId, articleId } = useParams();
+	let context;
+
+	if (articleId) {
+		context = useContext(ArticleContext);
+	} else if (reviewId) {
+		context = useContext(ReviewContext);
+	}
+
+	// If no context is found, handle the error gracefully
+	if (!context) {
+		throw new Error(
+			"Comments component must be wrapped in a context provider (ArticleContext or ReviewContext).",
+		);
+	}
 
   const {
     media,
@@ -22,7 +39,7 @@ const CommentField = ({ type, action, index = null, replyingTo = undefined, setR
       activity: { totalComments, totalParentComments },
     },
     setTotalParentCommentsLoaded,
-  } = useContext(ArticleContext);
+  } = context;
 
 	const handleCommentSubmition = (e) => {
 		if (e.keyCode === 13 || e.type === "click") {

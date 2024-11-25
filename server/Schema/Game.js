@@ -62,6 +62,10 @@ const gameSchema = mongoose.Schema({
 			},
 		],
 	},
+	comments: {
+		type: [Schema.Types.ObjectId],
+		ref: "comments",
+	},
 	platforms: {
 		type: [String],
 	},

@@ -10,7 +10,7 @@ const commentSchema = mongoose.Schema(
 		mediaAuthor: {
 			type: Schema.Types.ObjectId,
 			required: true,
-			refPath: "mediaType",
+			refPath: "users",
 		},
 		comment: {
 			type: String,

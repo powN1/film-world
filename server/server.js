@@ -1759,7 +1759,7 @@ const verifyJWT = (req, res, next) => {
 
 const renameActivityFields = async () => {
 	try {
-		const result = await Article.updateMany(
+		const result = await Review.updateMany(
 			{},
 			{
 				$rename: {
@@ -2300,7 +2300,7 @@ app.post("/get-media-comments", (req, res) => {
 			return res.status(200).json(comment);
 		})
 		.catch((err) => res.status(500).json({ error: err.message }));
-})
+});
 
 app.post("/get-movie", async (req, res) => {
 	const { titleId } = req.body;
@@ -2512,6 +2512,35 @@ app.post("/get-movies-upcoming", (req, res) => {
 		.catch((err) => {
 			return res.status(500).json({ error: err.message });
 		});
+});
+
+app.post("/get-replies", async (req, res) => {
+	const { _id, skip } = req.body;
+
+	const maxLimit = 5;
+
+	try {
+		const doc = await Comment.findOne({ _id })
+			.populate({
+				path: "children",
+				options: {
+					limit: maxLimit,
+					skip: skip,
+					sort: { commentedAt: -1 },
+				},
+				populate: {
+					path: "commentedBy",
+					select:
+						"personal_info.profile_img personal_info.firstName personal_info.surname personal_info.username",
+				},
+				select: "-movieId -serieId -gameId -articleId -reviewId -updatedAt",
+			})
+			.select("children");
+
+		return res.status(200).json({ replies: doc.children });
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
 });
 
 app.post("/get-review", async (req, res) => {
@@ -3714,23 +3743,37 @@ app.post("/add-actor", async (req, res) => {
 app.post("/add-comment", verifyJWT, async (req, res) => {
 	const userId = req.user;
 
-	const { type, mediaId, comment, mediaAuthor, replyingTo } =
-		req.body;
+	const { type, mediaId, mediaAuthor, comment, replyingTo } = req.body;
 
-
-	if (!comment.length) { res.status(403).json({ error: "Write something to leave a comment" }); }
+	if (!comment.length) {
+		res.status(403).json({ error: "Write something to leave a comment" });
+	}
 
 	if (!type) {
-		return res.status(403).json({ error: "Please specify what is the rating for (movie, serie or game)", });
+		return res.status(403).json({
+			error:
+				"Please specify what is the comment for (movie, serie, game, article or review)",
+		});
 	} else {
-		if (type !== "movie" && type !== "serie" && type !== "game" && type !== "article" && type !== "review") {
-			return res .status(403) .json({ error: `Invalid type. Choose "movie", "serie", "game", "article" or "review"` });
+		if (
+			type !== "movie" &&
+			type !== "serie" &&
+			type !== "game" &&
+			type !== "article" &&
+			type !== "review"
+		) {
+			return res.status(403).json({
+				error: `Invalid type. Choose "movie", "serie", "game", "article" or "review"`,
+			});
 		}
 	}
+
+	const mediaType = type + "s";
 
 	const commentObj = {
 		mediaId: mediaId,
 		mediaAuthor,
+		mediaType,
 		comment,
 		commentedBy: userId,
 	};
@@ -3752,8 +3795,8 @@ app.post("/add-comment", verifyJWT, async (req, res) => {
 	};
 
 	const MediaModel = mediaModels[type];
-	const media = await MediaModel.findOneAndUpdate(
-		{ mediaId },
+	await MediaModel.findOneAndUpdate(
+		{ _id: mediaId },
 		{
 			$push: { comments: commentRes._id },
 			$inc: {
@@ -3764,10 +3807,19 @@ app.post("/add-comment", verifyJWT, async (req, res) => {
 	);
 
 	if (replyingTo) {
-		const commentRes2 = await Comment.findOneAndUpdate( { _id: replyingTo }, { $push: { children: commentRes._id } },);
+		await Comment.findOneAndUpdate(
+			{ _id: replyingTo },
+			{ $push: { children: commentRes._id } },
+		);
 	}
 
-	return res .status(200) .json({ commentFromRes, commentedAt, _id: commentRes._id, userId, children });
+	return res.status(200).json({
+		comment: commentFromRes,
+		commentedAt,
+		_id: commentRes._id,
+		userId,
+		children,
+	});
 });
 
 app.post("/add-character", async (req, res) => {
@@ -4043,6 +4095,65 @@ app.post("/add-anime", async (req, res) => {
 		.catch((err) => {
 			return res.status(500).json({ error: err.message });
 		});
+});
+
+const deleteComments = async (_id) => {
+	try {
+		const comment = await Comment.findOneAndDelete({ _id });
+
+		if (comment.parent) {
+			await Comment.findOneAndUpdate(
+				{ _id: comment.parent },
+				{ $pull: { children: _id } },
+			);
+		}
+		const mediaModels = {
+			movies: Movie,
+			series: Serie,
+			games: Game,
+			articles: Article,
+			reviews: Review,
+		};
+
+		const MediaModel = mediaModels[comment.mediaType];
+
+		await MediaModel.findOneAndUpdate(
+			{ _id: comment.mediaId },
+			{
+				$pull: { comments: _id },
+				$inc: {
+					"activity.totalComments": -1,
+					"activity.totalParentComments": comment.parent ? 0 : -1,
+				},
+			},
+		);
+
+		if (comment.children.length) {
+			console.log(
+				`Comment id: ${comment._id}, children arr: ${comment.children}, is reply?: ${comment.isReply}`,
+			);
+			comment.children.map((replies) => {
+				deleteComments(replies);
+			});
+		}
+	} catch (err) {
+		console.log(err);
+	}
+};
+
+app.post("/delete-comment", verifyJWT, async (req, res) => {
+	const userId = req.user;
+
+	const { _id } = req.body;
+
+	const comment = await Comment.findOne({ _id });
+
+	if (userId == comment.commentedBy || userId == comment.mediaAuthor) {
+		deleteComments(_id);
+		return res.status(200).json({ status: "Comment deleted" });
+	} else {
+		return res.status(403).json({ error: "You cannot delete this comment" });
+	}
 });
 
 app.post("/remove-rating", verifyJWT, async (req, res) => {
