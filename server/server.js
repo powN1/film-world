@@ -2544,24 +2544,43 @@ app.post("/get-replies", async (req, res) => {
 });
 
 app.post("/get-review", async (req, res) => {
-	const { reviewId } = req.body;
+	const { reviewId, referredMediaId } = req.body;
 
 	// Error checking
-	if (!reviewId)
-		return res
-			.status(400)
-			.json({ error: "Wrong review id. Please provide a correct id." });
+	if (!reviewId && !referredMediaId)
+		return res.status(400).json({ error: "Wrong review or referred media id. Please provide a correct id." });
 
 	try {
-		const review = await Review.findOne({ review_id: reviewId })
+    const findQuery = reviewId ? { review_id: reviewId } : { referredMedia: referredMediaId }
+		const review = await Review.findOne(findQuery)
 			.populate("author")
 			.populate("referredMedia");
+
 		res.status(200).json({ review });
 	} catch (err) {
 		return res.status(500).json({ err: "Error getting the review" });
 	}
 });
 
+app.post("/get-reviews-media", async (req, res) => {
+	const { count, reviewId, referredMediaId } = req.body;
+
+	// Error checking
+	if (!reviewId && !referredMediaId)
+		return res.status(400).json({ error: "Wrong review or referred media id. Please provide a correct id." });
+
+	try {
+    const findQuery = reviewId ? { review_id: reviewId } : { referredMedia: referredMediaId }
+		const reviews = await Review.find(findQuery)
+      .limit(count)
+			.populate("author")
+			.populate("referredMedia");
+
+		res.status(200).json({ reviews });
+	} catch (err) {
+		return res.status(500).json({ err: "Error getting the review" });
+	}
+});
 app.post("/get-reviews-latest", (req, res) => {
 	const { count } = req.body;
 

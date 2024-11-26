@@ -4,7 +4,14 @@ import RankingPoster from "../common/RankingPoster";
 import { DataContext } from "../App";
 
 const Ranking = ({ type, showCategories, anticipated = false }) => {
-	const { anticipatedMovies, topRatedMovies, latestSeries, topRatedSeries, anticipatedGames, topRatedGames } = useContext(DataContext);
+	const {
+		anticipatedMovies,
+		topRatedMovies,
+		latestSeries,
+		topRatedSeries,
+		anticipatedGames,
+		topRatedGames,
+	} = useContext(DataContext);
 
 	const [currentCategory, setCurrentCategory] = useState("");
 
@@ -25,9 +32,12 @@ const Ranking = ({ type, showCategories, anticipated = false }) => {
 	};
 
 	useEffect(() => {
-		if (currentCategory.toLowerCase() === categories[0].title.toLowerCase()) setCurrentSlidesArray(anticipatedMovies);
-		if (currentCategory.toLowerCase() === categories[1].title.toLowerCase()) setCurrentSlidesArray(topRatedMovies);
-		if (currentCategory.toLowerCase() === categories[2].title.toLowerCase()) setCurrentSlidesArray(topRatedSeries);
+		if (currentCategory.toLowerCase() === categories[0].title.toLowerCase())
+			setCurrentSlidesArray(anticipatedMovies);
+		if (currentCategory.toLowerCase() === categories[1].title.toLowerCase())
+			setCurrentSlidesArray(topRatedMovies);
+		if (currentCategory.toLowerCase() === categories[2].title.toLowerCase())
+			setCurrentSlidesArray(topRatedSeries);
 	}, [currentCategory]);
 
 	useEffect(() => {
@@ -39,9 +49,9 @@ const Ranking = ({ type, showCategories, anticipated = false }) => {
 		if (type === "games") {
 			if (anticipated) setCurrentSlidesArray(anticipatedGames);
 			else setCurrentSlidesArray(topRatedGames);
-    };
+		}
 
-    if(showCategories) setCurrentCategory("most anticipated")
+		if (showCategories) setCurrentCategory("most anticipated");
 	}, []);
 
 	return (
@@ -79,14 +89,29 @@ const Ranking = ({ type, showCategories, anticipated = false }) => {
 				)}
 				<div className="w-full self-center flex gap-x-6 max-lg:gap-4 max-lg:px-4 justify-center max-lg:flex-wrap">
 					{currentSlidesArray.slice(0, 6).map((movie, i) => {
+						let linkType;
+						if ( currentCategory.toLowerCase() === categories[0].title.toLowerCase()) linkType = "movie";
+						if ( currentCategory.toLowerCase() === categories[1].title.toLowerCase()) linkType = "serie";
+						if ( currentCategory.toLowerCase() === categories[2].title.toLowerCase()) linkType = "game";
 						return (
 							<RankingPoster
 								key={i}
+								type={linkType}
 								title={movie.title}
 								img={movie.cover}
-                link={movie.titleId}
-								rating={ currentCategory === "most anticipated" || anticipated ? null : movie.activity.rating ? movie.activity.rating : null }
-								peopleAwaiting={ movie.activity.peopleAwaiting ? movie.activity.peopleAwaiting : null }
+								link={movie.titleId}
+								rating={
+									currentCategory === "most anticipated" || anticipated
+										? null
+										: movie.activity.rating
+											? movie.activity.rating
+											: null
+								}
+								peopleAwaiting={
+									movie.activity.peopleAwaiting
+										? movie.activity.peopleAwaiting
+										: null
+								}
 							/>
 						);
 					})}

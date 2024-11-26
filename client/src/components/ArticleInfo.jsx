@@ -43,7 +43,7 @@ const ArticleInfo = ({ article, latestArticles }) => {
 					</div>
 				</div>
 
-				<img src={article.banner} alt="blog image" className="aspect-video" />
+				<img src={article.banner} alt="blog image" className="w-full aspect-video" />
 
 				<div className="flex">
 					<div className="lg:w-2/3">

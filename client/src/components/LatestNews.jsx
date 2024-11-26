@@ -15,6 +15,7 @@ const LastestNews = () => {
 	const [latestNews, setLatestNews] = useState([]);
 
 	const fetchLatestNews = async (category) => {
+    console.log('current category changed, fetching articles')
 		const queryObj = { type: "latest", count: 15 };
 		if (category) queryObj.category = category;
 
@@ -27,8 +28,8 @@ const LastestNews = () => {
 	};
 
 	useEffect(() => {
-		fetchLatestNews();
-	}, []);
+		fetchLatestNews(currentCategory);
+	}, [currentCategory]);
 
 	const { latestArticles, latestMovieArticles, latestSeriesArticles, latestGamesArticles, randomArticles } = useContext(DataContext);
 	const handleShowUnderline = (e) => {
@@ -69,7 +70,7 @@ const LastestNews = () => {
 							})}
 						</ul>
 						<div className="grid md:grid-rows-[190px_190px_190px_190px_190px_190px] grid-cols-3 max-md:grid-rows-16rows70px max-md:grid-cols-1 gap-3">
-							{latestMovieArticles.slice(0, 15).map((article, i) => {
+							{latestNews.slice(0, 15).map((article, i) => {
 								let gridarea = {};
 								if (i === 3) {
 									gridarea["row-start"] = "row-start-2";
@@ -82,7 +83,7 @@ const LastestNews = () => {
 										key={i}
                     link={article.articleId}
 										description={article.description}
-										comments={article.activity.total_comments}
+										comments={article.activity.totalComments}
 										img={article.banner}
 										type={i === 3 ? "large" : "medium"}
 										gridarea={i === 3 ? gridarea : null}

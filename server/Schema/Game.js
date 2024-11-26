@@ -36,14 +36,6 @@ const gameSchema = mongoose.Schema({
 		popularity: {
 			type: Number,
 		},
-		totalComments: {
-			type: Number,
-			default: 0,
-		},
-		totalParentComments: {
-			type: Number,
-			default: 0,
-		},
 	},
 	genre: {
 		type: [String],
@@ -61,10 +53,6 @@ const gameSchema = mongoose.Schema({
 				},
 			},
 		],
-	},
-	comments: {
-		type: [Schema.Types.ObjectId],
-		ref: "comments",
 	},
 	platforms: {
 		type: [String],

@@ -54,18 +54,6 @@ const movieSchema = mongoose.Schema({
 		popularity: {
 			type: Number,
 		},
-		totalComments: {
-			type: Number,
-			default: 0,
-		},
-		totalParentComments: {
-			type: Number,
-			default: 0,
-		},
-	},
-	comments: {
-		type: [Schema.Types.ObjectId],
-		ref: "comments",
 	},
 	genre: {
 		type: [String],

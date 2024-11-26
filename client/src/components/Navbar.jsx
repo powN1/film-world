@@ -39,7 +39,8 @@ const Navbar = () => {
 	const [navbarSize, setNavbarSize] = useState("big");
 	const [searchModalVisible, setSearchModalVisible] = useState(false);
 	const [modalInputValue, setModalInputValue] = useState("");
-	const [foundMovies, setFoundMovies] = useState([]);
+	const [allMedias, setAllMedias] = useState([]);
+	const [foundMedias, setFoundMedias] = useState([]);
 	const [showMobileMenu, setShowMobileMenu] = useState(false);
 	const [showMobileNavbar, setShowMobileNavbar] = useState(true);
 	const [lastScrollY, setLastScrollY] = useState(0);
@@ -52,6 +53,23 @@ const Navbar = () => {
 	const prevLoginModalVisibleRef = useRef();
 
 	const modalInputRef = useRef(null);
+
+	const fetchMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series");
+	const fetchGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games");
+
+	const handleMediaFetch = async () => {
+		const movies = await fetchMovies();
+		const series = await fetchSeries();
+		const games = await fetchGames();
+		const allMedias = [
+			...movies.data.movies,
+			...series.data.series,
+			...games.data.games,
+		];
+		const sortedAllMedias = allMedias.sort((a, b) => a.title.localeCompare(b.title),);
+		setAllMedias(sortedAllMedias);
+	};
 
 	const handleMobileMenuDropdown = (e) => {
 		const list = e.currentTarget.children[1];
@@ -101,7 +119,7 @@ const Navbar = () => {
 		}
 	};
 
-	const handleSearchModal = () => {
+	const handleSearchModal = async () => {
 		if (searchModalVisible) {
 			document.body.style.overflow = "hidden";
 			document.body.style.position = "fixed";
@@ -112,7 +130,7 @@ const Navbar = () => {
 			document.body.style.position = "";
 			document.body.style.width = "";
 			setModalInputValue("");
-			setFoundMovies([]);
+			setFoundMedias([]);
 		}
 	};
 
@@ -212,8 +230,8 @@ const Navbar = () => {
 		prevLoginModalVisibleRef.current = loginModalVisible;
 
 		if (modalInputValue) {
-			setFoundMovies(
-				movies.filter((movie) =>
+			setFoundMedias(
+				allMedias.filter((movie) =>
 					movie.title.toLowerCase().includes(modalInputValue),
 				),
 			);
@@ -289,6 +307,7 @@ const Navbar = () => {
 									"h-full max-lg:w-0 " +
 									(navbarSize === "small" ? "w-0" : "w-full lg:input-box")
 								}
+								onClick={handleMediaFetch}
 								placeholder="Look for movies, series, animations..."
 							/>
 							<FaMagnifyingGlass
@@ -340,7 +359,12 @@ const Navbar = () => {
 									onBlur={handleUserPanelBlur}
 									tabIndex={0}
 								>
-									<IoChevronDown />
+									<IoChevronDown
+										className={
+											"duration-300 origin-center " +
+											(showProfilePanel ? "rotate-180" : "")
+										}
+									/>
 								</div>
 								{showProfilePanel ? (
 									<div className="absolute top-0 right-0 translate-y-[50%] translate-x-[35%] lg:translate-x-[0] -mt-3 bg-gray-100 text-gray-600 w-36 lg:w-80 flex flex-col [box-shadow:_1px_1px_6px_rgb(0_0_0_/_100%)]">
@@ -436,13 +460,16 @@ const Navbar = () => {
 												<Link
 													to={item.path}
 													className={
-														"relative block " +
+														"relative flex items-center gap-x-1 " +
 														(navbarSize === "small"
 															? "text-xs py-5 px-2"
 															: "py-3 px-5")
 													}
 												>
-													{item.title.toUpperCase()}
+													{item.title}
+													{item.submenu && (
+														<IoChevronDown className="mt-1 origin-center group-hover:rotate-180 duration-300" />
+													)}
 												</Link>
 												{item.submenu ? (
 													<ul className="absolute left-0 list-none group-hover:block hidden z-10">
@@ -451,7 +478,7 @@ const Navbar = () => {
 																key={submenuIndex}
 																className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
 															>
-																<Link className="block py-2 px-7 uppercase font-medium hover:text-yellow-500">
+																<Link className="block py-2 px-7 font-bold hover:text-yellow-500">
 																	{submenu.title}
 																</Link>
 															</li>
@@ -472,13 +499,16 @@ const Navbar = () => {
 											<Link
 												to={item.path}
 												className={
-													"relative block " +
+													"group relative flex items-center gap-x-1 " +
 													(navbarSize === "small"
 														? "text-xs py-5 px-2"
 														: "py-3 px-5")
 												}
 											>
-												{item.title.toUpperCase()}
+												{item.title}
+												{item.submenu && (
+													<IoChevronDown className="group-hover:rotate-180 origin-center duration-300 mt-1" />
+												)}
 											</Link>
 											{item.submenu ? (
 												<ul className="absolute left-0 list-none group-hover:block hidden z-10">
@@ -487,7 +517,7 @@ const Navbar = () => {
 															key={submenuIndex}
 															className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
 														>
-															<Link className="block py-2 px-7 uppercase font-medium hover:text-yellow-500">
+															<Link className="block py-2 px-7 font-bold hover:text-yellow-500">
 																{submenu.title}
 															</Link>
 														</li>
@@ -538,7 +568,7 @@ const Navbar = () => {
 								<div className="flex flex-col gap-y-10">
 									<div className="grid grid-rows-1 grid-cols-6 gap-x-5">
 										{/* SLIDES */}
-										{foundMovies.slice(0, 6).map((movie, i) => (
+										{foundMedias.slice(0, 6).map((movie, i) => (
 											<SearchPoster
 												key={i}
 												title={movie.title}
@@ -548,7 +578,7 @@ const Navbar = () => {
 											/>
 										))}
 									</div>
-									{foundMovies.length !== 0 ? (
+									{foundMedias.length !== 0 ? (
 										<Link
 											to="/"
 											className="self-center py-2 px-14 border border-gray-200 font-bold hover:bg-black hover:text-white duration-300"

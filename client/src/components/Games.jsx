@@ -8,7 +8,7 @@ import { DataContext } from "../App";
 const Games = () => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
-	const { latestGamesArticles: articles} = useContext(DataContext);
+	const { latestGamesArticles: articles } = useContext(DataContext);
 	// Slider settings
 	const settings = {
 		dots: true,
@@ -25,25 +25,26 @@ const Games = () => {
 				<h2 className="uppercase text-4xl font-bold text-center tracking-tighter font-sansNarrow">
 					Games
 				</h2>
-				<Link to="" className="relative h-[45vh] group overflow-hidden">
+				<Link to={`/article/${articles[0].articleId}`} className="relative h-[45vh] group overflow-hidden">
 					<img
 						src={articles[0].banner}
 						alt=""
 						className="h-full w-full object-cover group-hover:scale-110 duration-700"
 					/>
 					<h2 className="absolute left-0 bottom-[12%] text-white text-5xl max-lg:text-3xl font-extrabold uppercase w-full text-center px-6 group-hover:text-yellow-400 duration-700 tracking-wide">
-            {articles[0].title}
+						{articles[0].title}
 					</h2>
 				</Link>
 				<div className="w-[95%] self-center mt-[-13%] md:mt-[-6%] lg:mt-[-5%]">
 					<Slider {...settings}>
-						{articles.slice(1).map((movie, i) => {
+						{articles.slice(1).map((article, i) => {
 							return (
 								<GameSlide
 									key={i + 1}
-									title={movie.title}
-									img={movie.banner}
-									comments={movie.activity.total_comments}
+                  link={article.articleId}
+									title={article.title}
+									img={article.banner}
+									comments={article.activity.total_comments}
 								/>
 							);
 						})}

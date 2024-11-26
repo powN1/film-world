@@ -74,6 +74,7 @@ const RankingResults = () => {
 				</h2>
 				<div className="flex flex-col w-full md:w-[85%] lg:w-2/3 items-center">
 					{mediaToShow.map((media, i) => {
+            const ratingFixed = media.activity.rating.toFixed(2);
 						// console.log(currentCategory);
 						if (
 							localCurrentCategory === "movies" ||
@@ -99,7 +100,7 @@ const RankingResults = () => {
 									titleId={media.titleId}
 									year={year}
 									genre={media.genre}
-									rating={media.activity.rating}
+									rating={ratingFixed}
 									ratedByCount={media.activity.ratedByCount}
 								/>
 							);
@@ -107,6 +108,8 @@ const RankingResults = () => {
 							localCurrentCategory === "movie roles" ||
 							localCurrentCategory === "serie roles"
 						) {
+              console.log('media rating for role is', media.activity.rating)
+              console.log(media.activity.rating.toFixed(2))
 							const year = media.movie
 								? getFullYear(media.movie.releaseDate)
 								: getFullYear(media.serie.firstAirDate);
@@ -120,7 +123,7 @@ const RankingResults = () => {
 									year={year}
 									actor={media.actor}
 									role={media.characterName}
-									rating={media.activity.rating}
+									rating={ratingFixed}
 									ratedByCount={media.activity.ratedByCount}
 								/>
 							);
@@ -132,7 +135,7 @@ const RankingResults = () => {
 									img={media.banner}
 									name={media.personal_info.name}
 									roles={media.roles}
-									rating={media.activity.rating}
+									rating={ratingFixed}
 									ratedByCount={media.activity.ratedByCount}
 								/>
 							);

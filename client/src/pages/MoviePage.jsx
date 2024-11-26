@@ -11,17 +11,18 @@ import FilmRolesRanking from "../common/FilmRolesRanking";
 import FilmDetailsExpanded from "../common/FilmDetailsExpanded";
 import Footer from "../components/Footer";
 import Download from "../components/Download";
+import FilmReviews from "../common/FilmReviews";
 
 const MoviePage = () => {
 	const { movieId } = useParams();
 
 	const fetchMovie = async (movieId) => {
 		try {
-			const response = await axios.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/get-movie",
-				{ titleId: movieId },
-			);
-			return response.data.movie;
+			const movieRes = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movie", { titleId: movieId });
+      const movie_id = movieRes.data.movie._id;
+			const reviews = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-media", { count: 1, referredMediaId: movie_id });
+      movieRes.data.movie.reviews = reviews.data.reviews;
+			return movieRes.data.movie;
 		} catch (err) {
 			console.error(err);
 		}
@@ -54,6 +55,7 @@ const MoviePage = () => {
 		<>
 			<MainPreviewSingle type="movie" media={movie} />
 			<FilmDetails type="movie" media={movie} />
+      <FilmReviews media={movie} />
       <FilmPhotos media={movie} />
       <FilmVideos media={movie} />
       <FilmCast media={movie} />

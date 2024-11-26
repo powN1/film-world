@@ -1,13 +1,12 @@
 import { Link } from "react-router-dom";
 
-const GameSlide = ({ title, img, comments }) => {
-
+const GameSlide = ({ title, link, img, comments }) => {
 	return (
-		<Link className="mx-3 mb-1 flex flex-col gap-y-2 duration-300 group hover:[box-shadow:_0px_0px_6px_rgb(0_0_0_/_25%)]">
-			<div
-				to="/"
-				className="relative h-[180px] overflow-hidden border border-gray-300"
-			>
+		<Link
+			to={`/article/${link}`}
+			className="mx-3 mb-1 flex flex-col gap-y-2 duration-300 group hover:[box-shadow:_0px_0px_6px_rgb(0_0_0_/_25%)]"
+		>
+			<div className="relative h-[180px] overflow-hidden border border-gray-300">
 				<img
 					src={img}
 					alt={title}

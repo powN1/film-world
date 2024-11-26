@@ -54,22 +54,10 @@ const serieSchema = mongoose.Schema({
 		popularity: {
 			type: Number,
 		},
-		totalComments: {
-			type: Number,
-			default: 0,
-		},
-		totalParentComments: {
-			type: Number,
-			default: 0,
-		},
 	},
 	genre: {
 		type: [String],
 		required: true,
-	},
-	comments: {
-		type: [Schema.Types.ObjectId],
-		ref: "comments",
 	},
 	seasons: {
 		type: [

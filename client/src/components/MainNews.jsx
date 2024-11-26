@@ -34,7 +34,7 @@ const MainNews = () => {
 							key={i}
               link={article.articleId}
 							description={article.description}
-							comments={article.activity.total_comments}
+							comments={article.activity.totalComments}
 							img={article.banner}
 							type={i === 0 ? "gigantic" : i === 1 || i === 2 ? "big" : "small"}
 							gridarea={i <= 2 ? gridarea : null}

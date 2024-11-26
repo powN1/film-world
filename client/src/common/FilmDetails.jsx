@@ -146,7 +146,7 @@ const FilmDetails = ({ type, media }) => {
 							<img
 								src={media.cover}
 								alt="media poster"
-								className="h-full w-full"
+								className="h-full w-full object-cover"
 							/>
 						</div>
 

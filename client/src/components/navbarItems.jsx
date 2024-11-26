@@ -3,7 +3,7 @@ export const navbarItems = [
 		title: "Movies",
 		path: "/movies",
 		submenu: [
-			{ title: "Movies main page", path: "/" },
+			{ title: "Movies main page", path: "/movies" },
 			{ title: "Movies database", path: "/" },
 			{ title: "Characters database", path: "/" },
 			{ title: "Fandoms database", path: "/" },
@@ -54,10 +54,10 @@ export const navbarItems = [
 	// 		{ title: "Best programs", path: "/" },
 	// 	],
 	// },
-	{
-		title: "My filmweb",
-		path: "/my",
-	},
+	// {
+	// 	title: "My filmweb",
+	// 	path: "/my",
+	// },
   {
     title: "Write",
     path: "/write",

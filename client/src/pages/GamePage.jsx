@@ -11,17 +11,18 @@ import FilmRolesRanking from "../common/FilmRolesRanking";
 import FilmDetailsExpanded from "../common/FilmDetailsExpanded";
 import Footer from "../components/Footer";
 import Download from "../components/Download";
+import FilmReviews from "../common/FilmReviews";
 
 const GamePage = () => {
 	const { gameId } = useParams();
 
 	const fetchGame = async (gameId) => {
 		try {
-			const response = await axios.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/get-game",
-				{ titleId: gameId },
-			);
-			return response.data.game;
+			const gameRes = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-game", { titleId: gameId },);
+      const game_id = gameRes.data.game._id;
+			const reviews = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-media", { count: 1, referredMediaId: game_id });
+      gameRes.data.game.reviews = reviews.data.reviews;
+			return gameRes.data.game;
 		} catch (err) {
 			console.error(err);
 		}
@@ -51,6 +52,7 @@ const GamePage = () => {
 		<>
 			<MainPreviewSingle type="game" media={game} />
 			<FilmDetails type="game" media={game} />
+      <FilmReviews media={game} />
       <FilmPhotos media={game} />
       <FilmVideos media={game} />
       {/* <FilmCast media={game} /> */}

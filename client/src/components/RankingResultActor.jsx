@@ -33,7 +33,7 @@ const RankingResultActor = (props) => {
 				<div className="flex items-center gap-x-2 lg:pr-4 pb-4">
 					<div className="flex items-center gap-x-1">
 						<FaStar className="text-yellow-400 text-2xl md:text-xl" />
-						<span className="text-xl">{rating.toFixed(2)}</span>
+						<span className="text-xl">{rating}</span>
 					</div>
 					<div className="flex flex-col md:flex-row gap-x-1 gap-y-[2px] text-gray-400 text-xs leading-3">
 						<p>{ratedByCount}</p>
