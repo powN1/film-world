@@ -2548,10 +2548,14 @@ app.post("/get-review", async (req, res) => {
 
 	// Error checking
 	if (!reviewId && !referredMediaId)
-		return res.status(400).json({ error: "Wrong review or referred media id. Please provide a correct id." });
+		return res.status(400).json({
+			error: "Wrong review or referred media id. Please provide a correct id.",
+		});
 
 	try {
-    const findQuery = reviewId ? { review_id: reviewId } : { referredMedia: referredMediaId }
+		const findQuery = reviewId
+			? { review_id: reviewId }
+			: { referredMedia: referredMediaId };
 		const review = await Review.findOne(findQuery)
 			.populate("author")
 			.populate("referredMedia");
@@ -2567,12 +2571,16 @@ app.post("/get-reviews-media", async (req, res) => {
 
 	// Error checking
 	if (!reviewId && !referredMediaId)
-		return res.status(400).json({ error: "Wrong review or referred media id. Please provide a correct id." });
+		return res.status(400).json({
+			error: "Wrong review or referred media id. Please provide a correct id.",
+		});
 
 	try {
-    const findQuery = reviewId ? { review_id: reviewId } : { referredMedia: referredMediaId }
+		const findQuery = reviewId
+			? { review_id: reviewId }
+			: { referredMedia: referredMediaId };
 		const reviews = await Review.find(findQuery)
-      .limit(count)
+			.limit(count)
 			.populate("author")
 			.populate("referredMedia");
 
@@ -3359,6 +3367,8 @@ app.post("/get-user", async (req, res) => {
 		const user = await User.findOne({ "personal_info.username": userId })
 			.populate("articles")
 			.populate("ratings")
+			.populate("favoriteMedias")
+			.populate("wantToSeeMedias")
 			.populate({
 				path: "reviews",
 				populate: {
@@ -3393,7 +3403,60 @@ app.post("/get-user", async (req, res) => {
 			}),
 		);
 
-		const userObj = { ...user.toObject(), ratings: populatedRatings };
+		const populatedFavorite = await Promise.all(
+			user.favoriteMedias.map(async (media) => {
+				let populatedItem;
+
+				// Dynamically query the appropriate model based on `itemType`
+				switch (media.itemType) {
+					case "movies":
+						populatedItem = await Movie.findById(media.item_id);
+						break;
+					case "series":
+						populatedItem = await Serie.findById(media.item_id);
+						break;
+					case "games":
+						populatedItem = await Game.findById(media.item_id);
+						break;
+					default:
+						return media; // Return unmodified if itemType is invalid
+				}
+
+				// Return a new object with the populated item
+				return {
+					...media.toObject(), // Convert to plain object if necessary
+					item: populatedItem, // Add the populated item as a new field
+				};
+			}),
+		);
+
+		const populatedWantToSee = await Promise.all(
+			user.wantToSeeMedias.map(async (media) => {
+				let populatedItem;
+
+				// Dynamically query the appropriate model based on `itemType`
+				switch (media.itemType) {
+					case "movies":
+						populatedItem = await Movie.findById(media.item_id);
+						break;
+					case "series":
+						populatedItem = await Serie.findById(media.item_id);
+						break;
+					case "games":
+						populatedItem = await Game.findById(media.item_id);
+						break;
+					default:
+						return media; // Return unmodified if itemType is invalid
+				}
+
+				// Return a new object with the populated item
+				return {
+					...media.toObject(), // Convert to plain object if necessary
+					item: populatedItem, // Add the populated item as a new field
+				};
+			}),
+		);
+		const userObj = { ...user.toObject(), ratings: populatedRatings, favoriteMedias: populatedFavorite, wantToSeeMedias: populatedWantToSee };
 		res.status(200).json({ user: userObj });
 	} catch (err) {
 		return res.status(500).json({ err: "Error getting the user data" });
@@ -3441,6 +3504,69 @@ app.post("/check-rating", verifyJWT, async (req, res) => {
 	}
 });
 
+app.post("/check-favorite", verifyJWT, async (req, res) => {
+	const userId = req.user;
+	const { mediaId } = req.body;
+
+	if (!mediaId) {
+		return res
+			.status(400)
+			.json({ error: "Please provide both mediaId and type" });
+	}
+
+	try {
+		// Query to check if the user has rated this specific media item
+		const user = await User.findOne({ _id: userId, favoriteMedias: { $elemMatch: { item_id: mediaId }, },
+		});
+
+		if (user) {
+			// User has rated this movie, series, or game
+			const like = user.favoriteMedias.find( (media) => media.item_id.toString() === mediaId,);
+      const liked = like ? true : false;
+			res.status(200).json({ isLiked: liked });
+		} else {
+			// User has not rated this item
+			res.status(200).json({ isLiked: false });
+		}
+	} catch (error) {
+		console.error(error);
+		res
+			.status(500)
+			.json({ error: "An error occurred while checking the rating" });
+	}
+});
+
+app.post("/check-want-to-see", verifyJWT, async (req, res) => {
+	const userId = req.user;
+	const { mediaId } = req.body;
+
+	if (!mediaId) {
+		return res
+			.status(400)
+			.json({ error: "Please provide both mediaId and type" });
+	}
+
+	try {
+		// Query to check if the user has rated this specific media item
+		const user = await User.findOne({ _id: userId, wantToSeeMedias: { $elemMatch: { item_id: mediaId }, },
+		});
+
+		if (user) {
+			// User has rated this movie, series, or game
+			const wantToSee = user.wantToSeeMedias.find( (media) => media.item_id.toString() === mediaId,);
+      const wantToSeeBool = wantToSee ? true : false;
+			res.status(200).json({ wantToSee: wantToSeeBool });
+		} else {
+			// User has not rated this item
+			res.status(200).json({ wantToSee: false });
+		}
+	} catch (error) {
+		console.error(error);
+		res
+			.status(500)
+			.json({ error: "An error occurred while checking the rating" });
+	}
+});
 app.post("/create-article", verifyJWT, (req, res) => {
 	const authorId = req.user;
 
@@ -3873,6 +3999,78 @@ app.post("/add-character", async (req, res) => {
 		});
 });
 
+app.post("/add-favorite", verifyJWT, async (req, res) => {
+	const userId = req.user;
+
+	let { mediaId, type } = req.body;
+
+	if (!mediaId) {
+		return res
+			.status(403)
+			.json({ error: "Please choose movie, serie or game to rate" });
+	}
+	if (!type) {
+		return res.status(403).json({
+			error: "Please specify what is the like for (movie, serie or game)",
+		});
+	} else {
+		if (type !== "movie" && type !== "serie" && type !== "game") {
+			return res
+				.status(403)
+				.json({ error: `Invalid type. Choose "movie", "serie" or "game"` });
+		}
+	}
+
+	try {
+		const user = await User.findById(userId);
+		if (!user) return res.status(404).json({ error: "User not found" });
+
+		const mediaModels = {
+			movie: Movie,
+			serie: Serie,
+			game: Game,
+		};
+
+		const MediaModel = mediaModels[type];
+		const media = await MediaModel.findById(mediaId);
+
+		if (!media)
+			return res.status(404).json({ error: `No ${type} found with this ID` });
+
+		const existingLikeIndex = user.favoriteMedias.findIndex( (media) => media.item_id.toString() === mediaId);
+
+		if (existingLikeIndex !== -1) {
+			// If the user has already liked
+			user.favoriteMedias = user.favoriteMedias.filter( (media) => media.item_id.toString() !== mediaId,);
+			await user.save();
+
+			res.status(200).json({ isLiked: false });
+		} else {
+			const likeEntry = {
+				item_id: media._id,
+				itemType:
+					type === "movie"
+						? "movies"
+						: type === "serie"
+							? "series"
+							: type === "game"
+								? "games"
+								: null,
+				timestamp: new Date(),
+			};
+
+			user.favoriteMedias.push(likeEntry);
+			await user.save();
+
+			res.status(200).json({ isLiked: true });
+		}
+	} catch (err) {
+		res
+			.status(500)
+			.json({ error: "An error occurred while processing the like" });
+	}
+});
+
 app.post("/add-rating", verifyJWT, async (req, res) => {
 	const userId = req.user;
 
@@ -3976,6 +4174,77 @@ app.post("/add-rating", verifyJWT, async (req, res) => {
 	}
 });
 
+app.post("/add-want-to-see", verifyJWT, async (req, res) => {
+	const userId = req.user;
+
+	let { mediaId, type } = req.body;
+
+	if (!mediaId) {
+		return res
+			.status(403)
+			.json({ error: "Please choose movie, serie or game to rate" });
+	}
+	if (!type) {
+		return res.status(403).json({
+			error: "Please specify what is the like for (movie, serie or game)",
+		});
+	} else {
+		if (type !== "movie" && type !== "serie" && type !== "game") {
+			return res
+				.status(403)
+				.json({ error: `Invalid type. Choose "movie", "serie" or "game"` });
+		}
+	}
+
+	try {
+		const user = await User.findById(userId);
+		if (!user) return res.status(404).json({ error: "User not found" });
+
+		const mediaModels = {
+			movie: Movie,
+			serie: Serie,
+			game: Game,
+		};
+
+		const MediaModel = mediaModels[type];
+		const media = await MediaModel.findById(mediaId);
+
+		if (!media)
+			return res.status(404).json({ error: `No ${type} found with this ID` });
+
+		const existingWantToSeeIndex = user.wantToSeeMedias.findIndex((media) => media.item_id.toString() === mediaId);
+
+		if (existingWantToSeeIndex !== -1) {
+			// If the user has already liked
+			user.wantToSeeMedias = user.wantToSeeMedias.filter( (media) => media.item_id.toString() !== mediaId,);
+			await user.save();
+
+			res.status(200).json({ wantToSee: false });
+		} else {
+			const wantToSeeEntry = {
+				item_id: media._id,
+				itemType:
+					type === "movie"
+						? "movies"
+						: type === "serie"
+							? "series"
+							: type === "game"
+								? "games"
+								: null,
+				timestamp: new Date(),
+			};
+
+			user.wantToSeeMedias.push(wantToSeeEntry);
+			await user.save();
+
+			res.status(200).json({ wantToSee: true });
+		}
+	} catch (err) {
+		res
+			.status(500)
+			.json({ error: "An error occurred while processing the like" });
+	}
+});
 app.post("/add-role", async (req, res) => {
 	let {
 		filmTitle,

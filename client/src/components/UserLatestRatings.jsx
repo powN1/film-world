@@ -21,9 +21,8 @@ const UserLatestRatings = ({ ratings }) => {
 											? "game"
 											: "";
 							return (
-								<div className="w-[105px] md:w-[144px] flex flex-col gap-y-2 items-center">
+								<div key={i} className="w-[105px] md:w-[144px] flex flex-col gap-y-2 items-center">
 									<div
-										key={i}
 										className="group relative border border-gray-300"
 									>
 										<div className="z-10 absolute lg:text-xl text-yellow-400 w-[30px] h-[30px] md:w-[36px] md:h-[36px] flex items-center justify-center bg-gray-900 rounded-br-lg">

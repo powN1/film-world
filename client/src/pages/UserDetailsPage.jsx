@@ -34,6 +34,8 @@ const UserDetailsPage = () => {
 	useEffect(() => {
 		const loadUser = async () => {
 			const userData = await fetchUser(userId);
+
+    console.log(userData)
 			if (userData) {
 				setUser(userData);
 				const show = userData.ratings.filter(
@@ -48,11 +50,24 @@ const UserDetailsPage = () => {
 	}, [userId]);
 
 	useEffect(() => {
-		if (user.ratings) { 
-      const show = user.ratings.filter((media) => media.itemType === currentMediaSelected.toLowerCase());
-			setMediasToShow(show);
-		}
-	}, [currentMediaSelected]);
+    if(currentCategory.toLowerCase() === "ratings") {
+      if (user.ratings) { 
+        const show = user.ratings.filter((media) => media.itemType === currentMediaSelected.toLowerCase());
+        setMediasToShow(show);
+      }
+    } else if(currentCategory.toLowerCase() === "wants to see") {
+      if (user.wantToSeeMedias) { 
+        const show = user.wantToSeeMedias.filter((media) => media.itemType === currentMediaSelected.toLowerCase());
+        setMediasToShow(show);
+      }
+    } else if(currentCategory.toLowerCase() === "favorite") {
+      if (user.wantToSeeMedias) { 
+        const show = user.favoriteMedias.filter((media) => media.itemType === currentMediaSelected.toLowerCase());
+        setMediasToShow(show);
+      }
+    }
+	}, [currentCategory, currentMediaSelected]);
+
 
 	return loading ? (
 		<Loader />

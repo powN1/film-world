@@ -7,6 +7,8 @@ import axios from "axios";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { getFullDay, getFullYear } from "./date";
 import { IoMdClose } from "react-icons/io";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { FaHeartCircleCheck, FaHeartCircleMinus } from "react-icons/fa6";
 import Loader from "../components/Loader";
 
 const grades = [
@@ -25,7 +27,7 @@ const grades = [
 const FilmDetails = ({ type, media }) => {
 	let {
 		userAuth,
-		userAuth: { access_token, profile_img, firstName, surname },
+		userAuth: { username, access_token, profile_img, firstName, surname },
 	} = useContext(UserContext);
 
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
@@ -43,6 +45,8 @@ const FilmDetails = ({ type, media }) => {
 
 	const [userRating, setUserRating] = useState(null);
 	const [userRatingData, setUserRatingData] = useState(null);
+	const [likedMedia, setLikedMedia] = useState(false);
+	const [wantToSee, setWantToSee] = useState(false);
 	const [userRatingLoading, setUserRatingLoading] = useState(true);
 	const [ratingTextValue, setRatingTextValue] = useState("");
 	const ratingTextValueMaxLength = 160;
@@ -64,7 +68,9 @@ const FilmDetails = ({ type, media }) => {
 	}
 
 	const rateMovie = async (mediaId, userRating, userReview = null) => {
-		console.log(`media: ${mediaId}, type:${type}, userRating:${userRating}, userReview:${userReview}`);
+		console.log(
+			`media: ${mediaId}, type:${type}, userRating:${userRating}, userReview:${userReview}`,
+		);
 		try {
 			const response = await axios.post(
 				import.meta.env.VITE_SERVER_DOMAIN + "/add-rating",
@@ -80,11 +86,11 @@ const FilmDetails = ({ type, media }) => {
 		}
 	};
 
-	const checkUserMovieRating = async (movieId) => {
+	const checkUserMediaRating = async (mediaId) => {
 		try {
 			const response = await axios.post(
 				import.meta.env.VITE_SERVER_DOMAIN + "/check-rating",
-				{ mediaId: movieId },
+				{ mediaId },
 				{
 					headers: { Authorization: `${access_token}` },
 				},
@@ -95,6 +101,35 @@ const FilmDetails = ({ type, media }) => {
 		}
 	};
 
+	const checkUserMediaLike = async (mediaId) => {
+		try {
+			const response = await axios.post(
+				import.meta.env.VITE_SERVER_DOMAIN + "/check-favorite",
+				{ mediaId },
+				{
+					headers: { Authorization: `${access_token}` },
+				},
+			);
+			return response.data;
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
+	const checkUserMediaWantToSee = async (mediaId) => {
+		try {
+			const response = await axios.post(
+				import.meta.env.VITE_SERVER_DOMAIN + "/check-want-to-see",
+				{ mediaId },
+				{
+					headers: { Authorization: `${access_token}` },
+				},
+			);
+			return response.data;
+		} catch (err) {
+			console.error(err);
+		}
+	};
 	const handleReviewRemoval = async () => {
 		try {
 			const response = await axios.post(
@@ -118,21 +153,70 @@ const FilmDetails = ({ type, media }) => {
 		setRatingTextValue(inputVal);
 	};
 
+	const handleMediaLike = async (mediaId) => {
+		try {
+			const response = await axios.post(
+				import.meta.env.VITE_SERVER_DOMAIN + "/add-favorite",
+				{ mediaId, type },
+				{
+					headers: { Authorization: `${access_token}` },
+				},
+			);
+			setLikedMedia(response.data.isLiked);
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
+	const handleMediaWantToSee = async (mediaId) => {
+		try {
+			const response = await axios.post(
+				import.meta.env.VITE_SERVER_DOMAIN + "/add-want-to-see",
+				{ mediaId, type },
+				{
+					headers: { Authorization: `${access_token}` },
+				},
+			);
+			setWantToSee(response.data.wantToSee);
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
 	useEffect(() => {
-		const movieId = media._id;
+		const mediaId = media._id;
 		const loadUserRating = async () => {
-			const movieRatingData = await checkUserMovieRating(movieId);
-			if (movieRatingData) {
-				if (movieRatingData.hasRated) {
-					setUserRating(movieRatingData.rating.rating);
-					setUserRatingData(movieRatingData.rating);
-					setRatingTextValue(movieRatingData.rating.reviewText);
+			const mediaRatingData = await checkUserMediaRating(mediaId);
+			if (mediaRatingData) {
+				if (mediaRatingData.hasRated) {
+					setUserRating(mediaRatingData.rating.rating);
+					setUserRatingData(mediaRatingData.rating);
+					setRatingTextValue(mediaRatingData.rating.reviewText);
 				}
 			}
-			setUserRatingLoading(false); // Set loading to false after fetching
 		};
 
+		const loadUserFavorite = async () => {
+			const mediaFavoriteData = await checkUserMediaLike(mediaId);
+			if (mediaFavoriteData) {
+				if (mediaFavoriteData.isLiked) {
+					setLikedMedia(mediaFavoriteData.isLiked);
+				}
+			}
+		};
+
+		const loadUserWantToSee = async () => {
+			const medaiWantToSeeData = await checkUserMediaWantToSee(mediaId);
+			if (medaiWantToSeeData) {
+				if (medaiWantToSeeData.wantToSee) {
+					setWantToSee(medaiWantToSeeData.wantToSee);
+				}
+			}
+		};
 		loadUserRating();
+		loadUserFavorite();
+		loadUserWantToSee();
+		setUserRatingLoading(false); // Set loading to false after fetching
 	}, [media._id]);
 
 	return (
@@ -277,100 +361,133 @@ const FilmDetails = ({ type, media }) => {
 								</div>
 							)}
 						</div>
-
 					</div>
-          <div className={(!mobileView && !tabletView) ? "absolute right-0 top-0 translate-x-[110%] translate-y-[-70%] bg-white px-3 border" : "border-y"}>
-          {!userRatingLoading ? (
-            <div className={"flex flex-col border-gray-400/30 py-4 gap-y-4"}>
-              {access_token ? (
-                <div className="flex items-center gap-x-2">
-                  <Link
-                    to="/"
-                    className="rounded-full border border-gray-400 p-[1px] cursor-pointer"
-                  >
-                    <img
-                      src={profile_img}
-                      alt="user image"
-                      className="h-[50px] w-[50px] object-cover rounded-full"
-                    />
-                  </Link>
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-x-2">
-                      {userRating ? (
-                        <p className="text-xl md:text-base">
-                          {grades[userRating - 1]}
-                        </p>
-                      ) : (
-                          <p className="text-gray-400">
-                            I've seen it. My rating is:
-                          </p>
-                        )}
-                      {userRatingData && (
-                        <div
-                          className="mt-1 cursor-pointer p-1"
-                          onClick={handleReviewRemoval}
-                        >
-                          <IoMdClose />
-                        </div>
-                      )}
-                    </div>
-                    <p className="text-xs">
-                      {userRatingData
-                        ? getFullDay(userRatingData.timestamp)
-                        : null}
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                  <div className="flex items-center gap-x-2">Log in to be able to rate</div>
-                )}
+					<div
+						className={
+							!mobileView && !tabletView
+								? "absolute right-0 top-0 translate-x-[110%] translate-y-[-70%] bg-white px-3 border"
+								: "border-y"
+						}
+					>
+						{!userRatingLoading ? (
+							<div className={"flex flex-col border-gray-400/30 py-4 gap-y-4"}>
+								{access_token ? (
+									<div className="flex items-center gap-x-2">
+										<Link
+											to={`/user/${username}`}
+											className="rounded-full border border-gray-400 p-[1px] cursor-pointer"
+										>
+											<img
+												src={profile_img}
+												alt="user image"
+												className="h-[50px] w-[50px] object-cover rounded-full"
+											/>
+										</Link>
+										<div className="flex flex-col">
+											<div className="flex items-center gap-x-2">
+												{userRating ? (
+													<p className="text-xl md:text-base">
+														{grades[userRating - 1]}
+													</p>
+												) : (
+													<p className="text-gray-400">
+														I've seen it. My rating is:
+													</p>
+												)}
+												{userRatingData && (
+													<div
+														className="mt-1 cursor-pointer p-1"
+														onClick={handleReviewRemoval}
+													>
+														<IoMdClose />
+													</div>
+												)}
+											</div>
+											<p className="text-xs">
+												{userRatingData
+													? getFullDay(userRatingData.timestamp)
+													: null}
+											</p>
+										</div>
+										<button
+											className="ml-auto"
+											onClick={() => handleMediaLike(media._id)}
+										>
+											{likedMedia ? (
+												<FaHeartCircleCheck className="text-2xl hover:text-gray-400/70 text-red-600 hover:scale-110 cursor-pointer" />
+											) : (
+												<FaHeartCircleMinus className="text-2xl hover:text-red-600 text-gray-400/70 hover:scale-110 cursor-pointer" />
+											)}
+										</button>
+									</div>
+								) : (
+									<div className="flex items-center gap-x-2">
+										Log in to be able to rate
+									</div>
+								)}
 
-              <div className="flex items-center gap-x-1">
-                {[...Array(10)].map((_, i) =>
-                  i < userRating ? (
-                    <FaStar
-                      key={i}
-                      className="text-3xl text-yellow-400 cursor-pointer"
-                      onClick={() => access_token &&
-                        rateMovie(media._id, i + 1, ratingTextValue)
-                      }
-                    />
-                  ) : (
-                      <FaRegStar
-                        key={i}
-                        className="text-3xl text-yellow-400 cursor-pointer"
-                        onClick={() => access_token &&
-                          rateMovie(media._id, i + 1, ratingTextValue)
-                        }
-                      />
-                    ),
-                )}
-              </div>
+								<button
+									className={
+										"flex justify-center items-center gap-x-2 border py-2 group duration-300 " +
+										(wantToSee ? "bg-white hover:bg-green-500/90" : "bg-green-500/90 hover:bg-white")
+									}
+									onClick={() => handleMediaWantToSee(media._id)}
+								>
+									{wantToSee ? (
+										<FaRegEyeSlash className={"text-2xl duration-300 mt-[1px] " + (wantToSee ? "text-black group-hover:text-white" : "text-white group-hover:text-green-500/90")}  />
+									) : (
+										<FaRegEye className={"text-2xl duration-300 mt-[1px] " + (wantToSee ? "text-black group-hover:text-white" : "text-white group-hover:text-green-500/90")}/>
+									)}
+									<p className={"duration-300 " + (wantToSee ? "text-black group-hover:text-white" : "text-white group-hover:text-black")}>Want to see</p>
+								</button>
+								<div className="flex items-center gap-x-1">
+									{[...Array(10)].map((_, i) =>
+										i < userRating ? (
+											<FaStar
+												key={i}
+												className="text-3xl text-yellow-400 cursor-pointer"
+												onClick={() =>
+													access_token &&
+													rateMovie(media._id, i + 1, ratingTextValue)
+												}
+											/>
+										) : (
+											<FaRegStar
+												key={i}
+												className="text-3xl text-yellow-400 cursor-pointer"
+												onClick={() =>
+													access_token &&
+													rateMovie(media._id, i + 1, ratingTextValue)
+												}
+											/>
+										),
+									)}
+								</div>
 
-              <div>
-                <textarea
-                  type="text"
-                  max-length={ratingTextValueMaxLength}
-                  value={ratingTextValue}
-                  onChange={handleRatingTextInputValue}
-                  disabled={!userRating}
-                  onBlur={() =>
-                    rateMovie(media._id, userRating, ratingTextValue)
-                  }
-                  placeholder="Share your opinion"
-                  className="relative w-full input-box2 border border-gray-400/30 bg-gray-400/10 focus:bg-transparent"
-                />
+								<div>
+									<textarea
+										type="text"
+										max-length={ratingTextValueMaxLength}
+										value={ratingTextValue}
+										onChange={handleRatingTextInputValue}
+										disabled={!userRating}
+										onBlur={() =>
+											rateMovie(media._id, userRating, ratingTextValue)
+										}
+										placeholder="Share your opinion"
+										className="relative w-full input-box2 border border-gray-400/30 bg-gray-400/10 focus:bg-transparent"
+									/>
 
-                <p className="mt-1 text-dark-grey text-sm text-right">
-                  {ratingTextValueMaxLength - ratingTextValue.length}{" "}
-                  characters left
-                </p>
-              </div>
-            </div>
-          ) : (
-              <Loader />
-            ) }
-</div>
+									<p className="mt-1 text-dark-grey text-sm text-right">
+										{ratingTextValueMaxLength - ratingTextValue.length}{" "}
+										characters left
+									</p>
+								</div>
+							</div>
+						) : (
+							<Loader />
+						)}
+					</div>
 				</div>
 			</div>
 		</div>

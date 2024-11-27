@@ -129,6 +129,48 @@ const userSchema = mongoose.Schema(
 			],
 			default: [],
 		},
+		favoriteMedias: {
+			type: [
+				{
+					item_id: {
+						type: Schema.Types.ObjectId,
+						required: true,
+						refPath: "favoriteMedias.itemType", // Dynamically references the correct collection
+					},
+					itemType: {
+						type: String,
+						required: true,
+						enum: ["movies", "series", "games"], // Ensures the type is one of the three
+					},
+					timestamp: {
+						type: Date,
+						default: Date.now,
+					},
+				},
+			],
+			default: [],
+		},
+		wantToSeeMedias: {
+			type: [
+				{
+					item_id: {
+						type: Schema.Types.ObjectId,
+						required: true,
+						refPath: "wantsToSeeMedias.itemType", // Dynamically references the correct collection
+					},
+					itemType: {
+						type: String,
+						required: true,
+						enum: ["movies", "series", "games"], // Ensures the type is one of the three
+					},
+					timestamp: {
+						type: Date,
+						default: Date.now,
+					},
+				},
+			],
+			default: [],
+		},
 	},
 	{
 		timestamps: {

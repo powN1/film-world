@@ -26,6 +26,7 @@ const UserRatingsInfo = ({ user }) => {
 
 		if (category !== currentCategory) {
 			setCurrentCategory(category);
+			setCurrentMediaSelected(medias[0].title.toLowerCase());
 		}
 	};
 
@@ -84,6 +85,9 @@ const UserRatingsInfo = ({ user }) => {
 						{/* Media categories */}
 						<div className="w-full flex items-center justify-evenly z-10 md:justify-start px-5 md:gap-x-6 absolute left-0 bottom-0 translate-y-[50%] h-[60px] lg:rounded-sm bg-white [box-shadow:_2px_2px_6px_rgb(0_0_0_/_15%)] text-black">
 							{medias.map((media, i) => {
+                if(currentCategory.toLowerCase() === "wants to see" && media.title.toLowerCase() === "roles") {
+                  return
+                }
 								return (
 									<li key={i} className="list-none">
 										<Link

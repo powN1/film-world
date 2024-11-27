@@ -1,54 +1,74 @@
 import { useContext } from "react";
 import { MediaQueriesContext } from "../App";
 import { Link } from "react-router-dom";
+import { UserRatingsContext } from "../pages/UserDetailsPage";
+import { FaRegEye } from "react-icons/fa";
+import { IoIosCheckmark } from "react-icons/io";
 
 const UserRatingsMedias = ({ medias }) => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
+	const { currentCategory } = useContext(UserRatingsContext);
 	return (
 		<div className="w-full bg-white">
 			<div className="lg:w-[55%] w-full mx-auto relative text-white">
 				{/* Movies, series, games etc */}
 				<div className="flex flex-wrap gap-4 lg:gap-x-8 pt-16 px-2 lg:px-0 lg:w-2/3">
-					{medias
-						.map((rating, i) => {
-							// Link path to movie/serie/game
-							const basePath =
-								rating.itemType === "movies"
-									? "movie"
-									: rating.itemType === "series"
-										? "serie"
-										: rating.itemType === "games"
-											? "game"
-											: "";
-							return (
-								<div key={i} className="w-[110px] md:w-[147px] flex flex-col gap-y-2 items-center">
+					{medias.map((media, i) => {
+						// Link path to movie/serie/game
+						const basePath =
+							media.itemType === "movies"
+								? "movie"
+								: media.itemType === "series"
+									? "serie"
+									: media.itemType === "games"
+										? "game"
+										: "";
+						return (
+							<div
+								key={i}
+								className="w-[110px] md:w-[147px] flex flex-col gap-y-2 items-center"
+							>
+								<div className="group relative border border-gray-300">
 									<div
-										className="group relative border border-gray-300"
+										className={
+											"z-10 absolute lg:text-xl text-yellow-400 w-[30px] h-[30px] md:w-[36px] md:h-[36px] flex items-center justify-center rounded-br-lg " +
+											(currentCategory.toLowerCase() === "ratings" ||
+											currentCategory.toLowerCase() === "favorite"
+												? "bg-gray-900"
+												: "bg-green-500/90")
+										}
 									>
-										<div className="z-10 absolute lg:text-xl text-yellow-400 w-[30px] h-[30px] md:w-[36px] md:h-[36px] flex items-center justify-center bg-gray-900 rounded-br-lg">
-											{rating.rating}
-										</div>
-										<Link
-											to={`/${basePath}/${rating.item.titleId}`}
-											className="block w-[108px] h-[155px] md:w-[144px] md:h-[205px] overflow-hidden"
-										>
-											<img
-												src={rating.item.cover}
-												alt="cover"
-												className="h-full w-full object-cover group-hover:scale-110 duration-700"
+										{media.rating ? (
+											media.rating
+										) : currentCategory.toLowerCase() === "wants to see" ? (
+											<FaRegEye
+												className={"text-2xl duration-300 mt-[1px] text-white"}
 											/>
-										</Link>
+										) : (
+											<IoIosCheckmark className="text-3xl mt-[1px]" />
+										)}
 									</div>
-
 									<Link
-										to={`/${basePath}/${rating.item.titleId}`}
-										className="px-2 text-center line-clamp-2 md:line-clamp-3 text-black"
+										to={`/${basePath}/${media.item.titleId}`}
+										className="block w-[108px] h-[155px] md:w-[144px] md:h-[205px] overflow-hidden"
 									>
-										{rating.item.title}
+										<img
+											src={media.item.cover}
+											alt="cover"
+											className="h-full w-full object-cover group-hover:scale-110 duration-700"
+										/>
 									</Link>
 								</div>
-							);
-						})}
+
+								<Link
+									to={`/${basePath}/${media.item.titleId}`}
+									className="px-2 text-center line-clamp-2 md:line-clamp-3 text-black"
+								>
+									{media.item.title}
+								</Link>
+							</div>
+						);
+					})}
 				</div>
 			</div>
 		</div>
