@@ -22,7 +22,7 @@ const SeriePage = () => {
       const serie_id = serieRes.data.serie._id;
 			const reviews = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-media", { count: 1, referredMediaId: serie_id });
       serieRes.data.serie.reviews = reviews.data.reviews;
-			return response.data.serie;
+			return serieRes.data.serie;
 		} catch (err) {
 			console.error(err);
 		}

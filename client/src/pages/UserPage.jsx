@@ -7,7 +7,6 @@ import Download from "../components/Download";
 import Footer from "../components/Footer";
 import UserLatestRatings from "../components/UserLatestRatings";
 import UserHighestRatings from "../components/UserHighestRatings";
-import { CiLink } from "react-icons/ci";
 import UserLatestReviews from "../components/UserLatestReviews";
 
 const UserPage = () => {
@@ -44,7 +43,7 @@ const UserPage = () => {
 		<Loader />
 	) : (
 		<>
-			<UserInfoPreview user={user} />
+			<UserInfoPreview user={user} setUser={setUser}/>
 			<UserLatestReviews author={user.personal_info} reviews={user.reviews} />
 			<UserLatestRatings ratings={user.ratings} />
 			<UserHighestRatings type="movies" ratings={user.ratings} />

@@ -1639,6 +1639,42 @@ async function updateRatings() {
 
 // updateRatings();
 
+async function addTypeToMedias() {
+	try {
+		const movies = await Movie.find({});
+		const series = await Serie.find({});
+		const games = await Game.find({});
+
+		// Loop through each document
+		for (const movie of movies) {
+			if (movie.itemType) return;
+			movie.itemType = "movies";
+			// Save the updated document
+			await movie.save();
+			console.log("movie item type saved!");
+		}
+		for (const serie of series) {
+			if (serie.itemType) return;
+			serie.itemType = "series";
+			// Save the updated document
+			await serie.save();
+			console.log("serie item type saved!");
+		}
+		for (const game of games) {
+			if (game.itemType) return;
+			game.itemType = "games";
+
+			// Save the updated document
+			await game.save();
+			console.log("game item type saved!");
+		}
+	} catch (err) {
+		console.log(err);
+	}
+}
+
+// addTypeToMedias();
+
 function hasMoreThanTwoDecimals(number) {
 	const numStr = number.toString();
 	const parts = numStr.split(".");
@@ -2589,6 +2625,7 @@ app.post("/get-reviews-media", async (req, res) => {
 		return res.status(500).json({ err: "Error getting the review" });
 	}
 });
+
 app.post("/get-reviews-latest", (req, res) => {
 	const { count } = req.body;
 
@@ -3456,7 +3493,12 @@ app.post("/get-user", async (req, res) => {
 				};
 			}),
 		);
-		const userObj = { ...user.toObject(), ratings: populatedRatings, favoriteMedias: populatedFavorite, wantToSeeMedias: populatedWantToSee };
+		const userObj = {
+			...user.toObject(),
+			ratings: populatedRatings,
+			favoriteMedias: populatedFavorite,
+			wantToSeeMedias: populatedWantToSee,
+		};
 		res.status(200).json({ user: userObj });
 	} catch (err) {
 		return res.status(500).json({ err: "Error getting the user data" });
@@ -3516,13 +3558,17 @@ app.post("/check-favorite", verifyJWT, async (req, res) => {
 
 	try {
 		// Query to check if the user has rated this specific media item
-		const user = await User.findOne({ _id: userId, favoriteMedias: { $elemMatch: { item_id: mediaId }, },
+		const user = await User.findOne({
+			_id: userId,
+			favoriteMedias: { $elemMatch: { item_id: mediaId } },
 		});
 
 		if (user) {
 			// User has rated this movie, series, or game
-			const like = user.favoriteMedias.find( (media) => media.item_id.toString() === mediaId,);
-      const liked = like ? true : false;
+			const like = user.favoriteMedias.find(
+				(media) => media.item_id.toString() === mediaId,
+			);
+			const liked = like ? true : false;
 			res.status(200).json({ isLiked: liked });
 		} else {
 			// User has not rated this item
@@ -3548,13 +3594,17 @@ app.post("/check-want-to-see", verifyJWT, async (req, res) => {
 
 	try {
 		// Query to check if the user has rated this specific media item
-		const user = await User.findOne({ _id: userId, wantToSeeMedias: { $elemMatch: { item_id: mediaId }, },
+		const user = await User.findOne({
+			_id: userId,
+			wantToSeeMedias: { $elemMatch: { item_id: mediaId } },
 		});
 
 		if (user) {
 			// User has rated this movie, series, or game
-			const wantToSee = user.wantToSeeMedias.find( (media) => media.item_id.toString() === mediaId,);
-      const wantToSeeBool = wantToSee ? true : false;
+			const wantToSee = user.wantToSeeMedias.find(
+				(media) => media.item_id.toString() === mediaId,
+			);
+			const wantToSeeBool = wantToSee ? true : false;
 			res.status(200).json({ wantToSee: wantToSeeBool });
 		} else {
 			// User has not rated this item
@@ -3567,6 +3617,7 @@ app.post("/check-want-to-see", verifyJWT, async (req, res) => {
 			.json({ error: "An error occurred while checking the rating" });
 	}
 });
+
 app.post("/create-article", verifyJWT, (req, res) => {
 	const authorId = req.user;
 
@@ -4037,11 +4088,15 @@ app.post("/add-favorite", verifyJWT, async (req, res) => {
 		if (!media)
 			return res.status(404).json({ error: `No ${type} found with this ID` });
 
-		const existingLikeIndex = user.favoriteMedias.findIndex( (media) => media.item_id.toString() === mediaId);
+		const existingLikeIndex = user.favoriteMedias.findIndex(
+			(media) => media.item_id.toString() === mediaId,
+		);
 
 		if (existingLikeIndex !== -1) {
 			// If the user has already liked
-			user.favoriteMedias = user.favoriteMedias.filter( (media) => media.item_id.toString() !== mediaId,);
+			user.favoriteMedias = user.favoriteMedias.filter(
+				(media) => media.item_id.toString() !== mediaId,
+			);
 			await user.save();
 
 			res.status(200).json({ isLiked: false });
@@ -4068,6 +4123,31 @@ app.post("/add-favorite", verifyJWT, async (req, res) => {
 		res
 			.status(500)
 			.json({ error: "An error occurred while processing the like" });
+	}
+});
+
+app.post("/add-user-background", verifyJWT, async (req, res) => {
+	const userId = req.user;
+
+	let { photoUrl } = req.body;
+  console.log(userId, photoUrl)
+
+	if (!photoUrl) {
+		return res
+			.status(403)
+			.json({ error: "Please provie photo url to change user background" });
+	}
+
+	try {
+		const user = await User.findById(userId);
+		if (!user) return res.status(404).json({ error: "User not found" });
+
+		user.personal_info.backgroundImg = photoUrl;
+		await user.save();
+
+		res.status(200).json({ userBackgroundSet: true, userBackgroundUrl: photoUrl });
+	} catch (err) {
+		res .status(500) .json({ error: "An error occurred while processing user's background image" });
 	}
 });
 
@@ -4212,11 +4292,15 @@ app.post("/add-want-to-see", verifyJWT, async (req, res) => {
 		if (!media)
 			return res.status(404).json({ error: `No ${type} found with this ID` });
 
-		const existingWantToSeeIndex = user.wantToSeeMedias.findIndex((media) => media.item_id.toString() === mediaId);
+		const existingWantToSeeIndex = user.wantToSeeMedias.findIndex(
+			(media) => media.item_id.toString() === mediaId,
+		);
 
 		if (existingWantToSeeIndex !== -1) {
 			// If the user has already liked
-			user.wantToSeeMedias = user.wantToSeeMedias.filter( (media) => media.item_id.toString() !== mediaId,);
+			user.wantToSeeMedias = user.wantToSeeMedias.filter(
+				(media) => media.item_id.toString() !== mediaId,
+			);
 			await user.save();
 
 			res.status(200).json({ wantToSee: false });
@@ -4245,6 +4329,7 @@ app.post("/add-want-to-see", verifyJWT, async (req, res) => {
 			.json({ error: "An error occurred while processing the like" });
 	}
 });
+
 app.post("/add-role", async (req, res) => {
 	let {
 		filmTitle,

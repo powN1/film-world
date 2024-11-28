@@ -55,6 +55,9 @@ const serieSchema = mongoose.Schema({
 			type: Number,
 		},
 	},
+  itemType: {
+    type: String
+  },
 	genre: {
 		type: [String],
 		required: true,

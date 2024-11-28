@@ -252,7 +252,7 @@ const FilmDetails = ({ type, media }) => {
 					{/* Media details */}
 					<div className="grow flex flex-col gap-y-6 md:px-4 py-1">
 						{/* Description */}
-						<p className="hidden md:block line-clamp-3 leading-7">
+						<p className="hidden md:line-clamp-3 leading-7">
 							{media.description}
 						</p>
 

@@ -54,9 +54,12 @@ const Navbar = () => {
 
 	const modalInputRef = useRef(null);
 
-	const fetchMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-	const fetchSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series");
-	const fetchGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games");
+	const fetchMovies = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchSeries = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series");
+	const fetchGames = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games");
 
 	const handleMediaFetch = async () => {
 		const movies = await fetchMovies();
@@ -67,7 +70,9 @@ const Navbar = () => {
 			...series.data.series,
 			...games.data.games,
 		];
-		const sortedAllMedias = allMedias.sort((a, b) => a.title.localeCompare(b.title),);
+		const sortedAllMedias = allMedias.sort((a, b) =>
+			a.title.localeCompare(b.title),
+		);
 		setAllMedias(sortedAllMedias);
 	};
 
@@ -230,11 +235,7 @@ const Navbar = () => {
 		prevLoginModalVisibleRef.current = loginModalVisible;
 
 		if (modalInputValue) {
-			setFoundMedias(
-				allMedias.filter((movie) =>
-					movie.title.toLowerCase().includes(modalInputValue),
-				),
-			);
+			setFoundMedias( allMedias.filter((movie) => movie.title.toLowerCase().includes(modalInputValue),),);
 		}
 
 		return () => {
@@ -568,15 +569,26 @@ const Navbar = () => {
 								<div className="flex flex-col gap-y-10">
 									<div className="grid grid-rows-1 grid-cols-6 gap-x-5">
 										{/* SLIDES */}
-										{foundMedias.slice(0, 6).map((movie, i) => (
-											<SearchPoster
-												key={i}
-												title={movie.title}
-												img={movie.cover}
-												year={movie.year}
-												type="searchResult"
-											/>
-										))}
+										{foundMedias.slice(0, 6).map((media, i) => {
+											const mediaType =
+												media.itemType === "movies"
+													? "movie"
+													: media.itemType === "series"
+														? "serie"
+														: "game";
+											return (
+												<SearchPoster
+													key={i}
+													media={mediaType}
+													link={media.titleId}
+													title={media.title}
+													img={media.cover}
+													year={media.year}
+													type="searchResult"
+													setSearchModalVisible={setSearchModalVisible}
+												/>
+											);
+										})}
 									</div>
 									{foundMedias.length !== 0 ? (
 										<Link
@@ -612,6 +624,7 @@ const Navbar = () => {
 													link={movie.titleId}
 													img={movie.cover}
 													type="poster"
+													setSearchModalVisible={setSearchModalVisible}
 												/>
 											))}
 										</div>

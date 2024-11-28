@@ -30,7 +30,10 @@ const SearchPoster = ({
 
 			case "searchResult":
 				return (
-					<Link className="w-full flex flex-col gap-y-1 relative group">
+					<Link 
+						to={`/${media}/${link}`}
+						onClick={() => setSearchModalVisible(false)}
+            className="w-full flex flex-col gap-y-1 relative group">
 						<div className="h-[220px] border border-gray-400 overflow-hidden">
 							<img
 								src={img}
