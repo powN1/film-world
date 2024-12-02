@@ -2190,6 +2190,52 @@ app.post("/get-games", (req, res) => {
 		});
 });
 
+app.post("/get-games-by-filters", (req, res) => {
+	const { count, genre, country, year } = req.body;
+
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong game count. Please type a number" });
+		countQuery = count;
+	}
+
+	const findQuery = [
+		{
+			$addFields: {
+				genre: { $map: { input: "$genre", as: "g", in: { $toLower: "$$g" } } }, // Convert all genre elements to lowercase
+			},
+		},
+		{
+			$match: {
+				...(genre && { genre: { $in: [genre.toLowerCase()] } }), // Match lowercase genre
+				...(year && {
+					$expr: {
+						$eq: [{ $year: "$releaseDate" }, Number(year)], // Extract year and compare
+					},
+				}),
+			},
+		},
+	];
+
+	const sortQuery = {};
+	sortQuery["activity.rating"] = -1;
+
+	Game.aggregate(findQuery)
+		.limit(countQuery)
+    sort(sortQuery)
+		.then((games) => {
+			return res.status(200).json({ games });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
 app.post("/get-games-random", (req, res) => {
 	const { count } = req.body;
 
@@ -2398,6 +2444,72 @@ app.post("/get-movies", (req, res) => {
 			return res.status(500).json({ error: err.message });
 		});
 });
+
+app.post("/get-movies-by-filters", (req, res) => {
+	const { count, genre, country, year } = req.body;
+
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong movie count. Please type a number" });
+		countQuery = count;
+	}
+
+	const findQuery = [
+		{
+			$addFields: {
+				genre: { $map: { input: "$genre", as: "g", in: { $toLower: "$$g" } } }, // Convert all genre elements to lowercase
+				originCountry: {
+					$map: { input: "$originCountry", as: "o", in: { $toLower: "$$o" } },
+				}, // Convert all countries elements to lowercase
+			},
+		},
+		{
+			$match: {
+				...(genre && { genre: { $in: [genre.toLowerCase()] } }), // Match lowercase genre
+				...(country && { originCountry: { $in: [country.toLowerCase()] } }), // Match lowercase country
+				...(year && {
+					$expr: {
+						$eq: [{ $year: "$releaseDate" }, Number(year)], // Extract year and compare
+					},
+				}),
+			},
+		},
+	];
+	const sortQuery = {};
+	sortQuery["activity.rating"] = -1;
+
+	Movie.aggregate(findQuery)
+		.limit(countQuery)
+    .sort(sortQuery)
+		.then((movies) => {
+			return res.status(200).json({ movies });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+const getGenres = async () => {
+	const genres = [];
+	try {
+		const movies = await Movie.find();
+
+		for (const movie of movies) {
+			movie.genre.map((genre) => {
+				if (!genres.includes(genre)) genres.push(genre);
+			});
+		}
+		console.log(genres);
+	} catch (err) {
+		console.log(err);
+	}
+};
+// getGenres();
 
 app.post("/get-movies-latest", (req, res) => {
 	const { count } = req.body;
@@ -3178,6 +3290,55 @@ app.post("/get-series", (req, res) => {
 	Serie.find()
 		.sort()
 		.limit(countQuery)
+		.then((series) => {
+			return res.status(200).json({ series });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
+app.post("/get-series-by-filters", (req, res) => {
+	const { count, genre, country, year } = req.body;
+
+	let countQuery = 0;
+
+	// Error checking
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong serie count. Please type a number" });
+		countQuery = count;
+	}
+
+	const findQuery = [
+		{
+			$addFields: {
+				genre: { $map: { input: "$genre", as: "g", in: { $toLower: "$$g" } } }, // Convert all genre elements to lowercase
+				originCountry: {
+					$map: { input: "$originCountry", as: "o", in: { $toLower: "$$o" } },
+				}, // Convert all countries elements to lowercase
+			},
+		},
+		{
+			$match: {
+				...(genre && { genre: { $in: [genre.toLowerCase()] } }), // Match lowercase genre
+				...(country && { originCountry: { $in: [country.toLowerCase()] } }), // Match lowercase country
+				...(year && {
+					$expr: {
+						$eq: [{ $year: "$firstAirDate" }, Number(year)], // Extract year and compare
+					},
+				}),
+			},
+		},
+	];
+	const sortQuery = {};
+	sortQuery["activity.rating"] = -1;
+
+	Serie.aggregate(findQuery)
+		.limit(countQuery)
+    sort(sortQuery)
 		.then((series) => {
 			return res.status(200).json({ series });
 		})
@@ -4130,7 +4291,7 @@ app.post("/add-user-background", verifyJWT, async (req, res) => {
 	const userId = req.user;
 
 	let { photoUrl } = req.body;
-  console.log(userId, photoUrl)
+	console.log(userId, photoUrl);
 
 	if (!photoUrl) {
 		return res
@@ -4145,9 +4306,13 @@ app.post("/add-user-background", verifyJWT, async (req, res) => {
 		user.personal_info.backgroundImg = photoUrl;
 		await user.save();
 
-		res.status(200).json({ userBackgroundSet: true, userBackgroundUrl: photoUrl });
+		res
+			.status(200)
+			.json({ userBackgroundSet: true, userBackgroundUrl: photoUrl });
 	} catch (err) {
-		res .status(500) .json({ error: "An error occurred while processing user's background image" });
+		res.status(500).json({
+			error: "An error occurred while processing user's background image",
+		});
 	}
 });
 
@@ -4585,6 +4750,23 @@ app.post("/remove-rating", verifyJWT, async (req, res) => {
 	}
 });
 
+app.post("/remove-user-background", verifyJWT, async (req, res) => {
+	const userId = req.user;
+
+	try {
+		const user = await User.findById(userId);
+		if (!user) return res.status(404).json({ error: "User not found" });
+
+		user.personal_info.backgroundImg = undefined;
+		await user.save();
+
+		res.status(200).json({ userBackgroundSet: true, userBackgroundUrl: false });
+	} catch (err) {
+		res.status(500).json({
+			error: "An error occurred while processing user's background image",
+		});
+	}
+});
 // Login related routes
 app.post("/signup", (req, res) => {
 	const { firstName, surname, username, email, password } = req.body;

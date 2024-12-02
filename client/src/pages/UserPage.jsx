@@ -12,7 +12,7 @@ import UserLatestReviews from "../components/UserLatestReviews";
 const UserPage = () => {
 	const { userId } = useParams();
 
-	const [user, setUser] = useState({personal_info: {}});
+	const [user, setUser] = useState({ personal_info: {} });
 	const [loading, setLoading] = useState(true);
 
 	const fetchUser = async (userId) => {
@@ -43,7 +43,7 @@ const UserPage = () => {
 		<Loader />
 	) : (
 		<>
-			<UserInfoPreview user={user} setUser={setUser}/>
+			<UserInfoPreview user={user} setUser={setUser} />
 			<UserLatestReviews author={user.personal_info} reviews={user.reviews} />
 			<UserLatestRatings ratings={user.ratings} />
 			<UserHighestRatings type="movies" ratings={user.ratings} />

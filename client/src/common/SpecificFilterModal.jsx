@@ -1,7 +1,7 @@
 import { IoMdClose } from "react-icons/io";
 import { IoChevronBack } from "react-icons/io5";
 import { FaMagnifyingGlass } from "react-icons/fa6";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const SpecificFilterModal = (props) => {
 	const {
@@ -13,6 +13,7 @@ const SpecificFilterModal = (props) => {
 		modalVisible,
 		setModalVisible,
 		disableAllModals,
+    secondModalRef
 	} = props;
 
 	const [inputValue, setInputValue] = useState("");
@@ -23,6 +24,7 @@ const SpecificFilterModal = (props) => {
 				"w-screen md:w-[70%] lg:w-[30%] h-screen flex flex-col gap-y-3 fixed top-0 right-0 bg-white z-30 overflow-y-scroll duration-100 " +
 				(modalVisible ? "translate-x-0" : "translate-x-[100%]")
 			}
+			ref={secondModalRef}
 		>
 			<div className="relative flex justify-center items-center text-black py-3 border-b border-gray-400/50">
 				<h2 className="text-2xl font-sansNarrow uppercase">{title}</h2>

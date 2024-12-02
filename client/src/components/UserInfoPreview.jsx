@@ -13,7 +13,7 @@ const UserInfoPreview = ({ user, setUser }) => {
 		userAuth: { access_token },
 	} = useContext(UserContext);
 
-	const [backgroundImageModalOn, setBackgroundImageModalOn] = useState(true);
+	const [backgroundImageModalOn, setBackgroundImageModalOn] = useState(false);
 	const [modalInputValue, setModalInputValue] = useState("");
 	const [foundMedias, setFoundMedias] = useState([]);
 	const [selectedMedia, setSelectedMedia] = useState(null);
@@ -69,7 +69,7 @@ const UserInfoPreview = ({ user, setUser }) => {
 		}
 	};
 
-	const handleUserBackgroundChange = async (photoUrl) => {
+	const handleUserBackgroundAddition = async (photoUrl) => {
 		try {
 			const response = await axios.post(
 				import.meta.env.VITE_SERVER_DOMAIN + "/add-user-background",
@@ -84,26 +84,56 @@ const UserInfoPreview = ({ user, setUser }) => {
 			console.error(err);
 		}
 	};
+
+	const handleUserBackgroundRemoval = async () => {
+		try {
+			const response = await axios.post(
+				import.meta.env.VITE_SERVER_DOMAIN + "/remove-user-background",
+				{},
+				{
+					headers: { Authorization: `${access_token}` },
+				},
+			);
+			const userFront = {
+				...user,
+				personal_info: {
+					...user.personal_info,
+					backgroundImg: response.data.userBackgroundUrl,
+				},
+			};
+			setUser(userFront);
+			handleBackgroundModal();
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
+	const handlePhotoSelection = (photo) => {
+		setSelectedPhoto(photo);
+		setSelectedMedia(null);
+	};
+
 	useEffect(() => {
 		handleSearchModal();
 		if (modalInputValue) {
-			const filteredMedia = allMedias.filter((media) =>
-				media.title.toLowerCase().includes(modalInputValue),
-			);
 			setFoundMedias(
 				allMedias.filter((media) =>
 					media.title.toLowerCase().includes(modalInputValue),
 				),
 			);
-			console.log(allMedias);
 		}
 	}, [backgroundImageModalOn, modalInputValue]);
 
 	useEffect(() => {
 		const setUserBackground = async () => {
-			const userPhotoData = await handleUserBackgroundChange(selectedPhoto);
+			const userPhotoData = await handleUserBackgroundAddition(selectedPhoto);
 			if (userPhotoData) {
-				const userFront = { ...user, personal_info: { ...user.personal_info, backgroundImg: userPhotoData, },
+				const userFront = {
+					...user,
+					personal_info: {
+						...user.personal_info,
+						backgroundImg: userPhotoData,
+					},
 				};
 				setUser(userFront);
 				handleBackgroundModal();
@@ -118,9 +148,9 @@ const UserInfoPreview = ({ user, setUser }) => {
 			{backgroundImageModalOn && (
 				<>
 					<div className="inset-0 bg-black z-20 fixed bg-opacity-50 backdrop-blur-sm"></div>
-					<div className="flex flex-col gap-y-2 absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] w-[35%] min-h-[55%] p-5 bg-white z-20">
+					<div className="flex flex-col gap-y-2 absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] w-full lg:w-[35%] min-h-[55%] p-5 bg-white z-20">
 						<div className="flex items-center justify-between text-xl uppercase font-sansNarrow tracking-wider">
-							<h3>Set image</h3>
+							<h3 className="text-2xl lg:text-xl">Set image</h3>
 							<div
 								className="cursor-pointer p-1"
 								onClick={handleBackgroundModal}
@@ -132,7 +162,12 @@ const UserInfoPreview = ({ user, setUser }) => {
 							Find a film from which you want to change the background to
 						</p>
 						{backgroundImg && (
-							<button className="font-bold self-start py-1 px-2 rounded-sm bg-red-400/70">Remove background image</button>
+							<button
+								className="font-bold self-start py-1 px-2 rounded-sm bg-red-400/70"
+								onClick={handleUserBackgroundRemoval}
+							>
+								Remove background image
+							</button>
 						)}
 						<div className="flex flex-col gap-y-4">
 							{selectedMedia ? (
@@ -144,12 +179,12 @@ const UserInfoPreview = ({ user, setUser }) => {
 										<IoChevronBack className="mt-[1px]" />
 										<h3 className="font-bold">{selectedMedia.title}</h3>
 									</div>
-									<div className="grid grid-cols-6 gap-3">
+									<div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
 										{selectedMedia.photos.map((photo, i) => (
 											<div
 												key={i}
-												className="h-[140px] cursor-pointer"
-												onClick={() => setSelectedPhoto(photo)}
+												className="h-[150px] lg:h-[140px] cursor-pointer"
+												onClick={() => handlePhotoSelection(photo)}
 											>
 												<img
 													src={photo}
@@ -177,23 +212,25 @@ const UserInfoPreview = ({ user, setUser }) => {
 											}
 										/>
 									</div>
-									<div className="grid grid-cols-6 gap-3">
+									<div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
 										{modalInputValue &&
-											foundMedias.slice(0, 12).map((media, i) => {
-												return (
-													<div
-														key={i}
-														className="h-[140px] cursor-pointer"
-														onClick={() => setSelectedMedia(media)}
-													>
-														<img
-															src={media.cover}
-															alt="media cover"
-															className="w-full h-full object-cover"
-														/>
-													</div>
-												);
-											})}
+											foundMedias
+												.slice(0, mobileView ? 6 : 12)
+												.map((media, i) => {
+													return (
+														<div
+															key={i}
+															className="h-[150px] lg:h-[140px] cursor-pointer"
+															onClick={() => setSelectedMedia(media)}
+														>
+															<img
+																src={media.cover}
+																alt="media cover"
+																className="w-full h-full object-cover"
+															/>
+														</div>
+													);
+												})}
 									</div>
 								</>
 							)}
@@ -210,11 +247,11 @@ const UserInfoPreview = ({ user, setUser }) => {
 					className="h-full w-full block bg-cover bg-center bg-no-repeat transition-opactiy duration-500 "
 				></div>
 				<button
-					className="flex items-center gap-x-2 absolute top-0 right-0 hover:text-yellow-400 duration-200 cursor-pointer"
+					className="flex items-center gap-x-2 absolute top-5 lg:top-0 right-1/2 translate-x-1/2 lg:right-0 lg:trsnalte-x-0 hover:text-yellow-400 duration-200 cursor-pointer"
 					onClick={handleBackgroundModal}
 				>
 					<AiOutlinePicture className="text-xl mt-[1px]" />
-					Change background image
+					<p className="whitespace-nowrap">Change background image</p>
 				</button>
 				<div className="w-full absolute left-1/2 lg:left-0 bottom-[50%] translate-y-[50%] translate-x-[-50%] lg:translate-x-[0] px-3 md:px-12 lg:px-0 flex flex-col items-center lg:flex-row gap-x-6 gap-y-1 lg:gap-y-2 transition-opacity duration-500">
 					<div className="h-[160px] w-[160px] lg:h-[120px] lg:w-[120px] rounded-full border border-gray-400 p-1">
