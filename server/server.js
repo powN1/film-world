@@ -2227,7 +2227,7 @@ app.post("/get-games-by-filters", (req, res) => {
 
 	Game.aggregate(findQuery)
 		.limit(countQuery)
-    sort(sortQuery)
+    .sort(sortQuery)
 		.then((games) => {
 			return res.status(200).json({ games });
 		})
@@ -3338,7 +3338,7 @@ app.post("/get-series-by-filters", (req, res) => {
 
 	Serie.aggregate(findQuery)
 		.limit(countQuery)
-    sort(sortQuery)
+    .sort(sortQuery)
 		.then((series) => {
 			return res.status(200).json({ series });
 		})

@@ -49,6 +49,7 @@ const RankingFilter = () => {
 		currentYear,
 		setCurrentYear,
 		handleMediaFilterSearch,
+		handleMediaShow,
 	} = useContext(RankingContext);
 
 	const [filterModalVisible, setFilterModalVisible] = useState(false);
@@ -56,28 +57,6 @@ const RankingFilter = () => {
 	const [genreModalVisible, setGenreModalVisible] = useState(false);
 	const [countryModalVisible, setCountryModalVisible] = useState(false);
 	const [yearModalVisible, setYearModalVisible] = useState(false);
-
-	const modalRef = useRef(null); // Reference for the div
-	const secondModalRef = useRef(null); // Reference for the div
-
-	useEffect(() => {
-		// Event listener to detect clicks outside the div
-		const handleClickOutside = (event) => {
-			if ((modalRef.current && !modalRef.current.contains(event.target)) && (secondModalRef.current && !secondModalRef.current.contains(event.target))) {
-        console.log('clicked outside modal')
-				// If the click is outside the div, update the state
-				disableAllModals();
-			}
-		};
-
-		// Add the event listener on mount
-		document.addEventListener("mousedown", handleClickOutside);
-
-		// Cleanup the event listener on unmount
-		return () => {
-			document.removeEventListener("mousedown", handleClickOutside);
-		};
-	}, []);
 
 	const { mobileView } = useContext(MediaQueriesContext);
 
@@ -138,7 +117,6 @@ const RankingFilter = () => {
 
 	const handleFilters = (e) => {
 		const category = e.target.innerText.toLowerCase();
-		console.log(category);
 
 		if (
 			filters[0].elements
@@ -179,7 +157,7 @@ const RankingFilter = () => {
 			currentCategory.toLowerCase() === "series"
 		) {
 			filters[0].elements = filtersMovieSerieType;
-			filters[1].elements = filtersCountries;
+			filters[1].elements = filtersCountries.map(country => country.english_name);
 		} else if (currentCategory.toLowerCase() === "games") {
 			filters[0].elements = filtersGameType;
 			filters[1].elements = [];
@@ -281,7 +259,6 @@ const RankingFilter = () => {
 					"w-screen md:w-[70%] lg:w-[30%] h-screen flex flex-col fixed top-0 right-0 bg-white z-30 duration-100 east-in-out " +
 					(filterModalVisible ? "translate-x-0" : "translate-x-[100%]")
 				}
-        ref={modalRef}
 			>
 				<div className="relative flex justify-center items-center text-black py-3 border-b border-gray-400/50">
 					<h2 className="text-2xl font-sansNarrow uppercase">Filters</h2>
@@ -292,9 +269,17 @@ const RankingFilter = () => {
 				</div>
 				{filters.map((filter, i) => {
 					if (filter.title === "country" && currentCategory === "games") return;
+					const activeState = filterFunctionMap[filter.title];
+					const activeStateBooleanNumber = Number(Boolean(activeState)); // Convert to 0 or 1
 					return (
 						<div className="flex flex-col gap-y-2 px-4 md:px-10 py-2" key={i}>
-							<p className="capitalize">{filter.title}</p>
+							<p className="capitalize">
+								{filter.title}{" "}
+								<span className="text-yellow-400 font-bold">
+									{activeStateBooleanNumber === 1 &&
+										`(${activeStateBooleanNumber})`}
+								</span>
+							</p>
 							<div className="flex overflow-x-scroll md:overflow-x-visible md:flex-wrap gap-2">
 								{filter.elements.slice(0, filtersToShow).map((element, i) => (
 									<button
@@ -332,6 +317,7 @@ const RankingFilter = () => {
 						onClick={() => {
 							clearAllFilters();
 							disableAllModals();
+							handleMediaShow();
 						}}
 					>
 						Clear all
@@ -344,11 +330,7 @@ const RankingFilter = () => {
 								: "text-gray-400 ")
 						}
 						onClick={() => {
-							handleMediaFilterSearch(
-								currentGenre,
-								currentCountry,
-								currentYear,
-							);
+							handleMediaFilterSearch( currentGenre, currentCountry, currentYear);
 							disableAllModals();
 						}}
 					>
@@ -369,7 +351,6 @@ const RankingFilter = () => {
 					modalVisible={modalFunctionMap[filter.title]}
 					setModalVisible={setModalFunctionMap[filter.title]}
 					disableAllModals={disableAllModals}
-          secondModalRef={secondModalRef }
 				/>
 			))}
 		</div>

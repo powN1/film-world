@@ -5,6 +5,7 @@ import RankingFilter from "../components/RankingFilter";
 import RankingResults from "../components/RankingResults";
 import axios from "axios";
 import { DataContext, UserContext } from "../App";
+import { filtersCountries } from "../common/filters";
 
 export const RankingContext = createContext({});
 
@@ -34,18 +35,18 @@ const RankingPage = () => {
 
 	const [mediaToShow, setMediaToShow] = useState([]);
 
-	const handleMediaFilterSearch = async (
-		genre = null,
-		country = null,
-		year = null,
-	) => {
+	const handleMediaFilterSearch = async ( genre = null, country = null, year = null,) => {
+
+    if(country) {
+      // Get the iso (PL, GB, US etc) value for a specific country since countries in the db
+      // are using the iso values
+      country = filtersCountries.find(filterCountry => filterCountry.english_name.toLowerCase() === country.toLowerCase()).iso
+    }
+
 		let urlPath;
-		if (currentCategory.toLowerCase() === "movies")
-			urlPath = "/get-movies-by-filters";
-		else if (currentCategory.toLowerCase() === "series")
-			urlPath = "/get-series-by-filters";
-		else if (currentCategory.toLowerCase() === "games")
-			urlPath = "/get-games-by-filters";
+		if (currentCategory.toLowerCase() === "movies") urlPath = "/get-movies-by-filters";
+		else if (currentCategory.toLowerCase() === "series") urlPath = "/get-series-by-filters";
+		else if (currentCategory.toLowerCase() === "games") urlPath = "/get-games-by-filters";
 
 		try {
 			const response = await axios.post(
@@ -53,21 +54,17 @@ const RankingPage = () => {
 				{ count: 100, genre, country, year },
 				{ headers: { Authorization: `${access_token}` } },
 			);
-			console.log(response.data);
 			if (response.data) {
 				if (response.data.movies) setMediaToShow(response.data.movies);
-        else if (response.data.series) setMediaToShow(response.data.series);
-        else if (response.data.games) setMediaToShow(response.data.games);
+				else if (response.data.series) setMediaToShow(response.data.series);
+				else if (response.data.games) setMediaToShow(response.data.games);
 			}
 		} catch (err) {
 			console.error(err);
 		}
 	};
 
-	useEffect(() => {
-		setCurrentGenre(null);
-		setCurrentCountry(null);
-		setCurrentYear(null);
+	const handleMediaShow = () => {
 		// Show specific media given specific category that user chose
 		if (currentCategory.toLowerCase() === "movies") {
 			setLocalCurrentCategory("movies");
@@ -104,6 +101,13 @@ const RankingPage = () => {
 			setLocalCurrentCategory("actors");
 			setMediaToShow(actorsTopRated);
 		}
+	};
+
+	useEffect(() => {
+		setCurrentGenre(null);
+		setCurrentCountry(null);
+		setCurrentYear(null);
+		handleMediaShow();
 	}, [currentCategory, currentSubCategory]);
 
 	return (
@@ -123,6 +127,7 @@ const RankingPage = () => {
 					mediaToShow,
 					localCurrentCategory,
 					handleMediaFilterSearch,
+					handleMediaShow,
 				}}
 			>
 				<RankingFilter />

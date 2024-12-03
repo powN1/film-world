@@ -13,7 +13,6 @@ const SpecificFilterModal = (props) => {
 		modalVisible,
 		setModalVisible,
 		disableAllModals,
-    secondModalRef
 	} = props;
 
 	const [inputValue, setInputValue] = useState("");
@@ -24,7 +23,6 @@ const SpecificFilterModal = (props) => {
 				"w-screen md:w-[70%] lg:w-[30%] h-screen flex flex-col gap-y-3 fixed top-0 right-0 bg-white z-30 overflow-y-scroll duration-100 " +
 				(modalVisible ? "translate-x-0" : "translate-x-[100%]")
 			}
-			ref={secondModalRef}
 		>
 			<div className="relative flex justify-center items-center text-black py-3 border-b border-gray-400/50">
 				<h2 className="text-2xl font-sansNarrow uppercase">{title}</h2>
@@ -89,6 +87,7 @@ const SpecificFilterModal = (props) => {
 							? "bg-yellow-400 font-bold text-black"
 							: "text-gray-400 ")
 					}
+          onClick={() => setModalVisible(prevVal => !prevVal)}
 				>
 					Save
 				</button>

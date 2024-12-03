@@ -7,13 +7,25 @@ import RankingResultActor from "./RankingResultActor";
 import RankingResultRole from "./RankingResultRole";
 
 const RankingResults = () => {
-	const { localCurrentCategory, mediaToShow } = useContext(RankingContext);
+	const {
+		localCurrentCategory,
+		mediaToShow,
+		currentGenre,
+		currentCountry,
+		currentYear,
+	} = useContext(RankingContext);
 
 	return (
 		<section className="bg-white gap-y-3">
 			<div className="mx-auto w-full lg:w-[55%] md:flex flex-col items-center lg:block">
 				<h2 className="text-2xl uppercase font-sansNarrow px-4 py-6 self-start">
-					Best - world
+					Best {localCurrentCategory} {(currentGenre || currentCountry || currentYear) && " - "}<span>
+            {currentGenre && currentGenre}
+            {" "}
+            {currentCountry && ("from " + currentCountry)}
+            {" "}
+            {currentYear && ("in " + currentYear)}
+          </span> 
 				</h2>
 				<div className="flex flex-col w-full md:w-[85%] lg:w-2/3 items-center">
 					{mediaToShow.map((media, i) => {
