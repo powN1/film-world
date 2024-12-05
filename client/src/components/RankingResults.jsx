@@ -30,7 +30,6 @@ const RankingResults = () => {
 				<div className="flex flex-col w-full md:w-[85%] lg:w-2/3 items-center">
 					{mediaToShow.map((media, i) => {
 						const ratingFixed = media.activity.rating.toFixed(2);
-						// console.log(currentCategory);
 						if (
 							localCurrentCategory === "movies" ||
 							localCurrentCategory === "series" ||
@@ -59,15 +58,10 @@ const RankingResults = () => {
 									ratedByCount={media.activity.ratedByCount}
 								/>
 							);
-						} else if (
-							localCurrentCategory === "movie roles" ||
-							localCurrentCategory === "serie roles"
-						) {
-							console.log("media rating for role is", media.activity.rating);
-							console.log(media.activity.rating.toFixed(2));
-							const year = media.movie
-								? getFullYear(media.movie.releaseDate)
-								: getFullYear(media.serie.firstAirDate);
+						} else if ( localCurrentCategory === "movie roles" || localCurrentCategory === "serie roles") {
+              console.log(localCurrentCategory)
+              console.log(media)
+							const year = media.movie ? getFullYear(media.movie.releaseDate) : getFullYear(media.serie.firstAirDate);
 							const title = media.movie ? media.movie.title : media.serie.title;
 							return (
 								<RankingResultRole

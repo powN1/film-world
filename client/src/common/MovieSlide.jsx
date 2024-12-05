@@ -15,7 +15,7 @@ const MovieSlide = ({ title, img, link = null, ranking = null, description = nul
 								className="h-full w-full object-cover group-hover:scale-110 duration-700"
 							/>
 						</div>
-						<p className="relative block text-center px-3">
+						<p className="relative text-center px-3 line-clamp-3">
 							{title}
 							<span className="absolute top-0 left-[5%] max-lg:left-0 translate-x-[-50%] translate-y-[-65%] font-bold text-6xl max-lg:text-4xl">
 								{ranking}

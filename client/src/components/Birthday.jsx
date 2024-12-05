@@ -12,7 +12,6 @@ const Birthday = () => {
 
 	const [birthDayActors, setBirthdayActors] = useState([]);
 
-	const slidesToShow = mobileView ? 2 : tabletView ? 4 : 6;
 
 	const filterThisMonthBirthdayActors = () => {
 		const thisMonth = actors.filter((actor) => {
@@ -31,11 +30,31 @@ const Birthday = () => {
 	// NOTE: Small screens 2 slides, medium 4, large 6
 	const settings = {
 		dots: true,
-		arrows: mobileView || tabletView ? false : true,
+		arrows: true,
 		infinite: true,
 		speed: 500,
-		slidesToShow: slidesToShow,
-		slidesToScroll: slidesToShow,
+		slidesToShow: 6,
+		slidesToScroll: 6,
+		responsive: [
+			{
+				// mobile view
+				breakpoint: 768,
+				settings: {
+					slidesToShow: 2,
+					slidesToScroll: 2,
+					arrows: false,
+				},
+			},
+			{
+				// tablet view
+				breakpoint: 1024,
+				settings: {
+					slidesToShow: 4,
+					slidesToScroll: 4,
+					arrows: false,
+				},
+			},
+		],
 	};
 
 	return (

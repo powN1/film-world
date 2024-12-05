@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 
-const FilmCastSlide = ({ actor, characterName }) => {
+const FilmCastSlide = ({ actor, link, characterName }) => {
 	return (
 		<Link
-			to=""
+			to={`/person/${link}`}
 			className="relative flex flex-col md:mx-3 items-center cursor-pointer group"
 		>
 			<div className="overflow-hidden border border-gray-400 h-[150px] w-[100px] md:h-[220px] md:w-[145px]">

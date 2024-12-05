@@ -15,8 +15,19 @@ const Games = () => {
 		arrows: mobileView || tabletView ? false : true,
 		infinite: true,
 		speed: 500,
-		slidesToShow: mobileView ? 1 : 3,
-		slidesToScroll: mobileView ? 1 : 3,
+		slidesToShow: 3,
+		slidesToScroll: 3,
+		responsive: [
+			{
+				// mobile view
+				breakpoint: 768,
+				settings: {
+					slidesToShow: 1,
+					slidesToScroll: 1,
+					arrows: true,
+				},
+			},
+		],
 	};
 
 	return (

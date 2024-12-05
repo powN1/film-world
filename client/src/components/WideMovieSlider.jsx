@@ -15,11 +15,31 @@ const WideSlider = () => {
 	// Slider settings
 	const settings = {
 		dots: true,
-		arrows: mobileView || tabletView ? false : true,
+		arrows: true,
 		infinite: true,
 		speed: 500,
-		slidesToShow: mobileView ? 2 : tabletView ? 3 : 8,
-		slidesToScroll: mobileView ? 2 : tabletView ? 3 : 8,
+		slidesToShow: 8,
+		slidesToScroll: 8,
+		responsive: [
+			{
+				// mobile view
+				breakpoint: 768,
+				settings: {
+					slidesToShow: 2,
+					slidesToScroll: 2,
+					arrows: true,
+				},
+			},
+			{
+				// tablet view
+				breakpoint: 1024,
+				settings: {
+					slidesToShow: 3,
+					slidesToScroll: 3,
+					arrows: true,
+				},
+			},
+		],
 	};
 	const categories = [
 		{ title: "Movies of the day" },
@@ -77,7 +97,7 @@ const WideSlider = () => {
 			</ul>
 			<div className="w-[95%] self-center">
 				<Slider {...settings}>
-					{currentSlidesArray.map((movie, i) => {
+					{currentSlidesArray.slice(0, 18).map((movie, i) => {
 						return (
 							<MovieSlide
 								key={i}

@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { CiUser } from "react-icons/ci";
@@ -18,6 +18,7 @@ import { removeFromSession, storeInSession } from "../common/session";
 import { authWithGoogle } from "../common/firebase";
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
+import { getFullYear } from "../common/date";
 
 const Navbar = () => {
 	let { movies, series } = useContext(DataContext);
@@ -54,25 +55,28 @@ const Navbar = () => {
 
 	const modalInputRef = useRef(null);
 
-	const fetchMovies = async () =>
-		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-	const fetchSeries = async () =>
-		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series");
-	const fetchGames = async () =>
-		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games");
+	const fetchMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series");
+	const fetchGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games");
+	const fetchActors = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
+
 
 	const handleMediaFetch = async () => {
 		const movies = await fetchMovies();
 		const series = await fetchSeries();
 		const games = await fetchGames();
+		const actors = await fetchActors();
 		const allMedias = [
 			...movies.data.movies,
 			...series.data.series,
 			...games.data.games,
+			...actors.data.actors,
 		];
-		const sortedAllMedias = allMedias.sort((a, b) =>
-			a.title.localeCompare(b.title),
-		);
+		const sortedAllMedias = allMedias.sort((a, b) => {
+			const aText = a.title ? a.title : a.personal_info.name;
+			const bText = b.title ? b.title : b.personal_info.name;
+			return aText.localeCompare(bText);
+		});
 		setAllMedias(sortedAllMedias);
 	};
 
@@ -235,7 +239,14 @@ const Navbar = () => {
 		prevLoginModalVisibleRef.current = loginModalVisible;
 
 		if (modalInputValue) {
-			setFoundMedias( allMedias.filter((movie) => movie.title.toLowerCase().includes(modalInputValue),),);
+			const found = setFoundMedias(
+				allMedias.filter((media) => {
+					const found = media.title
+						? media.title.toLowerCase().includes(modalInputValue)
+						: media.personal_info.name.toLowerCase().includes(modalInputValue);
+					return found;
+				}),
+			);
 		}
 
 		return () => {
@@ -479,7 +490,10 @@ const Navbar = () => {
 																key={submenuIndex}
 																className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
 															>
-																<Link className="block py-2 px-7 font-bold hover:text-yellow-500">
+																<Link
+																	to={submenu.path}
+																	className="block py-2 px-7 font-bold hover:text-yellow-500"
+																>
 																	{submenu.title}
 																</Link>
 															</li>
@@ -513,16 +527,26 @@ const Navbar = () => {
 											</Link>
 											{item.submenu ? (
 												<ul className="absolute left-0 list-none group-hover:block hidden z-10">
-													{item.submenu.map((submenu, submenuIndex) => (
+													{item.submenu.map((submenu, submenuIndex) => {
+                            const category = submenu.category && submenu.category
+                            const subCategory = submenu.subCategory && submenu.subCategory
+                            
+                            const dataToPass = { category, subCategory }
+
+                            return (
 														<li
 															key={submenuIndex}
 															className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
 														>
-															<Link className="block py-2 px-7 font-bold hover:text-yellow-500">
+															<Link
+																to={submenu.path}
+                                state={dataToPass}
+																className="block py-2 px-7 font-bold hover:text-yellow-500"
+															>
 																{submenu.title}
 															</Link>
 														</li>
-													))}
+													)})}
 												</ul>
 											) : null}
 										</li>
@@ -575,15 +599,29 @@ const Navbar = () => {
 													? "movie"
 													: media.itemType === "series"
 														? "serie"
-														: "game";
+														: media.itemType === "games"
+															? "game"
+															: "person";
+											const mediaLink = media.title
+												? media.titleId
+												: media.personal_info.nameId;
+											const mediaTitle = media.title
+												? media.title
+												: media.personal_info.name;
+											const mediaImg = media.title ? media.cover : media.banner;
+											const mediaYear = media.releaseDate
+												? getFullYear(media.releaseDate)
+												: media.firstAirDate
+													? getFullYear(media.firstAirDate)
+													: null;
 											return (
 												<SearchPoster
 													key={i}
 													media={mediaType}
-													link={media.titleId}
-													title={media.title}
-													img={media.cover}
-													year={media.year}
+													link={mediaLink}
+													title={mediaTitle}
+													img={mediaImg}
+													year={mediaYear}
 													type="searchResult"
 													setSearchModalVisible={setSearchModalVisible}
 												/>
@@ -676,7 +714,7 @@ const Navbar = () => {
 								{access_token ? (
 									<div className="flex items-center gap-x-2">
 										<Link
-											to="/"
+											to={`/user/${username}`}
 											className="rounded-full border border-gray-400 p-[1px] cursor-pointer"
 										>
 											<img
@@ -686,7 +724,7 @@ const Navbar = () => {
 											/>
 										</Link>
 										<Link
-											to="/"
+											to={`/user/${username}`}
 											className="capitalize cursor-pointer text-white text-xl"
 										>
 											{firstName} {surname}
@@ -753,7 +791,13 @@ const Navbar = () => {
 														key={submenuIndex}
 														className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
 													>
-														<Link className="block py-3 px-7 font-medium hover:text-yellow-500">
+														<Link
+															to={submenu.path}
+															className="block py-3 px-7 font-medium hover:text-yellow-500"
+															onClick={() =>
+																setShowMobileMenu((prevVal) => !prevVal)
+															}
+														>
 															{submenu.title}
 														</Link>
 													</li>
@@ -768,7 +812,8 @@ const Navbar = () => {
 						{access_token ? (
 							<div className="flex flex-col text-gray-600 border-t border-gray-400/25 pt-1">
 								<Link
-									to="/"
+									to="/settings"
+									onClick={() => setShowMobileMenu((prevVal) => !prevVal)}
 									className="flex items-center gap-x-2 p-3 hover:bg-gray-200 duration-300"
 								>
 									<HiOutlineCog6Tooth className="text-2xl" />

@@ -44,7 +44,7 @@ const PersonPage = () => {
 		<>
 			<PersonDetails person={actor} />
       <PersonKnownFor person={actor} />
-      <FilmRolesRanking media={actor} />
+      <FilmRolesRanking media={actor} actorSpecific={true} />
       <PersonFilmography person={actor} />
 			<Download />
       <Footer />

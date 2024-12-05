@@ -14,9 +14,29 @@ const Reviews = () => {
 		arrows: mobileView || tabletView ? false : true,
 		infinite: true,
 		speed: 500,
-		slidesToShow: mobileView ? 1 : tabletView ? 2 : 3,
-		slidesToScroll: mobileView ? 1 : tabletView ? 2 : 3,
+		slidesToShow: 3,
+		slidesToScroll: 3,
 		initialSlide: 0,
+		responsive: [
+			{
+				// mobile view
+				breakpoint: 768,
+				settings: {
+					slidesToShow: 1,
+					slidesToScroll: 1,
+					arrows: true,
+				},
+			},
+			{
+				// tablet view
+				breakpoint: 1024,
+				settings: {
+					slidesToShow: 2,
+					slidesToScroll: 2,
+					arrows: true,
+				},
+			},
+		],
 	};
 	return (
 		<div className="bg-white">

@@ -13,81 +13,95 @@ const MainPreviewWithSlides = ({ type }) => {
 	const { topRatedMovies, topRatedSeries } = useContext(DataContext);
 
 	// Slider states
-	const [oldSlide, setOldSlide] = useState(0);
+	// const [oldSlide, setOldSlide] = useState(0);
 	const [activeSlide, setActiveSlide] = useState(0);
-	const [activeSlide2, setActiveSlide2] = useState(0);
 
 	const [films, setFilms] = useState(topRatedMovies);
 
 	const [currentSrc, setCurrentSrc] = useState(null);
 
 	const [fade, setFade] = useState(false);
+	const sliderRef = useRef(null); // Ref to access slider instance
 
-	const changeSlideAnimation = () => {
-		setCurrentSrc(films[activeSlide].banner);
-
-		// Trigger fade-out animation
-		setFade(false);
-
-		// Wait for fade-out animation to complete before changing the image source
-		const timer = setTimeout(() => {
-			setCurrentSrc(films[activeSlide].banner);
-			setFade(true);
-		}, 9500); // Match this duration with the fade-out duration
-
-		return () => clearTimeout(timer);
-	};
+	// const changeSlideAnimation = () => {
+	// 	// Wait for fade-out animation to complete before changing the image source
+	// 	const timer = setTimeout(() => {
+	// 		setCurrentSrc(films[activeSlide].banner);
+	// 		setFade(true);
+	// 	}, 3500); // Match this duration with the fade-out duration
+	//    setFade(false);
+	//
+	// 	return () => clearTimeout(timer);
+	// };
 
 	useEffect(() => {
-		if (films.length > 0) changeSlideAnimation();
-	}, [activeSlide, films]);
+		if (films.length > 0) {
+			setCurrentSrc(films[activeSlide].banner);
+		}
+	}, [films]);
 
 	useEffect(() => {
 		if (type === "movies") setFilms(topRatedMovies);
 		if (type === "series") setFilms(topRatedSeries);
 	}, []);
 
-	const beforeChange = (prev, next) => {
-		setOldSlide(prev);
-		setActiveSlide(next);
+	const beforeChange = (_, next) => {
+		setFade(true);
+		setTimeout(() => {
+			setActiveSlide(next);
+			setCurrentSrc(films[next].banner);
+			setFade(false);
+		}, 500);
+		console.log(next);
+	};
+
+	const changeSlide = (filmIndex) => {
+		setFade(true);
+		setTimeout(() => {
+			setActiveSlide(filmIndex);
+			setCurrentSrc(films[filmIndex].banner);
+			setFade(false);
+		}, 500);
+
+		// Reset autoplay timer
+		if (sliderRef.current) {
+			console.log("reseting slider autoplay timer");
+			sliderRef.current.slickGoTo(filmIndex);
+			sliderRef.current.slickPause(); // Pause autoplay
+			sliderRef.current.slickPlay(); // Restart autoplay
+		}
 	};
 
 	const settings = {
 		dots: false,
-		arrows: mobileView || tabletView ? false : true,
+		arrows: true,
 		infinite: true,
-		speed: 2000,
-		slidesToShow: mobileView ? 1 : tabletView ? 3 : 6,
-		slidesToScroll: mobileView ? 1 : tabletView ? 3 : 6,
+		speed: 750,
+		slidesToShow: 6,
+		slidesToScroll: 1,
 		initialSlide: 0,
 		autoplay: true,
-		autoplaySpeed: 10000,
+		autoplaySpeed: 4000,
 		pauseOnHover: true,
 		beforeChange: beforeChange,
-
-		// responsive: [
-		// 	{
-		// 		breakpoint: 1120,
-		// 		settings: {
-		// 			slidesToShow: 3,
-		// 			slidesToScroll: 1,
-		// 		},
-		// 	},
-		// 	{
-		// 		breakpoint: 800,
-		// 		settings: {
-		// 			slidesToShow: 2,
-		// 			slidesToScroll: 2,
-		// 		},
-		// 	},
-		// 	{
-		// 		breakpoint: 600,
-		// 		settings: {
-		// 			slidesToShow: 1,
-		// 			slidesToScroll: 1,
-		// 		},
-		// 	},
-		// ],
+		responsive: [
+			{
+				// mobile view
+				breakpoint: 768,
+				settings: {
+					slidesToShow: 1,
+					arrows: true,
+				},
+			},
+			{
+				// tablet view
+				breakpoint: 1024,
+				settings: {
+					slidesToShow: 3,
+					arrows: true,
+				},
+			},
+		],
 	};
 
 	return (
@@ -127,8 +141,8 @@ const MainPreviewWithSlides = ({ type }) => {
 							}
 						>
 							<Link
-								to={`/movie/${films[activeSlide].titleId}`}
-								className="text-4xl font-bold uppercase font-sansNarrow"
+								to={`/${type === "movies" ? "movie" : type === "series" ? "serie" : "game"}/${films[activeSlide].titleId}`}
+								className="text-4xl font-bold uppercase self-start font-sansNarrow"
 							>
 								{films[activeSlide].title}
 							</Link>
@@ -143,7 +157,9 @@ const MainPreviewWithSlides = ({ type }) => {
 							</div>
 							<div className="flex gap-x-2 items-center">
 								<FaStar className="text-3xl text-yellow-400" />
-								<p className="text-3xl">{films[activeSlide].activity.rating}</p>
+								<p className="text-3xl">
+									{films[activeSlide].activity.rating.toFixed(2)}
+								</p>
 								<p className="flex flex-col">
 									<span className="text-gray-400 text-sm">
 										{films[activeSlide].activity.ratedByCount}
@@ -163,11 +179,11 @@ const MainPreviewWithSlides = ({ type }) => {
 							to={`${films[activeSlide].videos[0]}`}
 							target="_blank" // Opens video in a new tab
 							rel="noopener noreferrer"
-							className="cusror-pointer group"
+							className="absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] p-3 cusror-pointer group"
 						>
 							<FaRegCirclePlay
 								className={
-									"absolute top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-7xl transition-all duration-500 ease-in-out group-hover:text-yellow-400 " +
+									"text-7xl transition-all duration-500 ease-in-out group-hover:text-yellow-400 " +
 									(fade ? "opacity-0 translate-x-[-25%]" : "opacity-100")
 								}
 							/>
@@ -176,14 +192,16 @@ const MainPreviewWithSlides = ({ type }) => {
 
 					<div className="w-full bg-white pb-10">
 						<div className="lg:w-[55%] mx-auto -mt-16">
-							<Slider {...settings}>
-								{films.map((movie, i) => {
+							<Slider ref={sliderRef} {...settings}>
+								{films.map((film, i) => {
 									return (
 										<PreviewSlide
 											key={i}
-											movie={movie}
+											index={i}
+											film={film}
 											activeSlide={activeSlide}
-											movieIndex={i}
+											filmIndex={i}
+											changeSlide={changeSlide}
 										/>
 									);
 								})}

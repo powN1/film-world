@@ -32,9 +32,13 @@ export const navbarItems = [
 		title: "Ranking",
 		path: "/ranking",
 		submenu: [
-			{ title: "New movies ranking", path: "/" },
-			{ title: "Top 500 ranking", path: "/" },
-			{ title: "Top 500 series", path: "/" },
+			{ title: "New movies ranking", path: "/ranking", category: "movies", subCategory: "new", },
+			{ title: "Top movies ranking", path: "/ranking", category: "movies", subCategory: "top 500" },
+			{ title: "Top series ranking", path: "/ranking", category: "series", subCategory: "top 500" },
+			{ title: "Top actors ranking", path: "/ranking", category: "actors", subCategory: "actors", },
+			{ title: "Top movie roles ranking", path: "/ranking", category: "movie roles", subCategory: "male" },
+			{ title: "Top serie roles ranking", path: "/ranking", category: "serie roles", subCategory: "male" },
+			{ title: "Top games ranking", path: "/ranking", category: "games", subCategory: "top 100" },
 		],
 	},
 	// {
@@ -58,9 +62,9 @@ export const navbarItems = [
 	// 	title: "My filmweb",
 	// 	path: "/my",
 	// },
-  {
-    title: "Write",
-    path: "/write",
-    adminOnly: true
-  }
+	{
+		title: "Write",
+		path: "/write",
+		adminOnly: true,
+	},
 ];

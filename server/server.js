@@ -2790,7 +2790,7 @@ app.post("/get-reviews-latest-movies", (req, res) => {
 	Review.find(findQuery)
 		.sort(sortQuery)
 		.limit(countQuery)
-		.populate("author", "personal_info.fullname, personal_info.profile_img")
+		.populate("author", "personal_info.firstName personal_info.surname personal_info.profile_img")
 		.populate("referredMedia", "title releaseDate firstAirDate")
 		.then((reviews) => {
 			return res.status(200).json({ reviews });
@@ -2822,7 +2822,7 @@ app.post("/get-reviews-latest-series", (req, res) => {
 	Review.find(findQuery)
 		.sort(sortQuery)
 		.limit(countQuery)
-		.populate("author", "personal_info.fullname, personal_info.profile_img")
+		.populate("author", "personal_info.firstName personal_info.surname personal_info.profile_img")
 		.populate("referredMedia", "title releaseDate firstAirDate")
 		.then((reviews) => {
 			return res.status(200).json({ reviews });
@@ -2854,7 +2854,7 @@ app.post("/get-reviews-latest-games", (req, res) => {
 	Review.find(findQuery)
 		.sort(sortQuery)
 		.limit(countQuery)
-		.populate("author", "personal_info.fullname, personal_info.profile_img")
+		.populate("author", "personal_info.firstName personal_info.surname personal_info.profile_img")
 		.populate("referredMedia", "title releaseDate firstAirDate")
 		.then((reviews) => {
 			return res.status(200).json({ reviews });

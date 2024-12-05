@@ -23,13 +23,24 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
 	// Slider settings
 	const settings = {
 		dots: true,
-		arrows: mobileView || tabletView ? false : true,
+		arrows: true,
 		infinite: true,
-		slidesToShow: mobileView ? 2 : 3,
-		slidesToScroll: mobileView ? 2 : 3,
+		slidesToShow: 3,
+		slidesToScroll: 3,
 		autoplay: true,
 		autoplaySpeed: 15000,
 		pauseOnHover: true,
+		responsive: [
+			{
+				// mobile view
+				breakpoint: 768,
+				settings: {
+					slidesToShow: 2,
+					slidesToScroll: 2,
+					arrows: true,
+				},
+			},
+		],
 	};
 	const categories = [
 		{ title: "Movies" },
@@ -83,7 +94,7 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
 			) : null}
 			<div className="w-[95%] self-center">
 				<Slider {...settings}>
-					{currentSlidesArray.map((movie, i) => {
+					{currentSlidesArray.slice(0, 9).map((movie, i) => {
             const year = getFullYear(movie.releaseDate) || getFullYear(movie.firstAirDate);
 						return (
 							<MovieSlide

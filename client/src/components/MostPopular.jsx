@@ -14,15 +14,34 @@ const MostPopular = ({ type, category }) => {
 	// Slider settings
 	// NOTE: Slides for roles: Small screens 2 slides, medium 5, large 5
 	// NOTE: Slides for chars: Small screens 2 slides, medium 5, large 6
-	const slidesToShow = mobileView ? 2 : tabletView ? 5 : type === "roles" ? 5 : 6;
 
 	const settings = {
 		dots: true,
-		arrows: mobileView || tabletView ? false : true,
+		arrows: true,
 		infinite: true,
 		speed: 500,
-		slidesToShow: slidesToShow,
-		slidesToScroll: slidesToShow,
+		slidesToShow: type === "roles" ? 5 : 6,
+		slidesToScroll: type === "roles" ? 5 : 6,
+		responsive: [
+			{
+				// mobile view
+				breakpoint: 768,
+				settings: {
+					slidesToShow: 2,
+					slidesToScroll: 2,
+					arrows: true,
+				},
+			},
+			{
+				// tablet view
+				breakpoint: 1024,
+				settings: {
+					slidesToShow: 5,
+					slidesToScroll: 5,
+					arrows: true,
+				},
+			},
+		],
 	};
 
 	useEffect(() => {

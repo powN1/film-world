@@ -7,17 +7,13 @@ const PersonKnownFor = ({ person }) => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
 	// Slider settings
-	// NOTE: Slides for roles: Small screens 2 slides, medium 5, large 5
-	// NOTE: Slides for chars: Small screens 2 slides, medium 5, large 6
-	const slidesToShow = Math.min(4, person.roles.length);
-
 	const settings = {
 		dots: true,
 		arrows: mobileView || tabletView ? false : true,
 		infinite: true,
 		speed: 500,
-		slidesToShow: slidesToShow,
-		slidesToScroll: slidesToShow,
+		slidesToShow: Math.min(4, person.roles.length),
+		slidesToScroll: Math.min(4, person.roles.length),
 	};
 
 	return (

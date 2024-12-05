@@ -6,13 +6,13 @@ import RankingResults from "../components/RankingResults";
 import axios from "axios";
 import { DataContext, UserContext } from "../App";
 import { filtersCountries } from "../common/filters";
+import { useLocation } from "react-router-dom";
 
 export const RankingContext = createContext({});
 
 const RankingPage = () => {
-	const {
-		userAuth: { access_token },
-	} = useContext(UserContext);
+	const { userAuth: { access_token }, } = useContext(UserContext);
+
 	const {
 		latestMovies,
 		topRatedMovies,
@@ -25,6 +25,9 @@ const RankingPage = () => {
 		serieTopRatedFemaleRoles,
 		actorsTopRated,
 	} = useContext(DataContext);
+
+	const location = useLocation();
+
 	const [currentCategory, setCurrentCategory] = useState("movies");
 	const [currentSubCategory, setCurrentSubCategory] = useState("top 500");
 	const [localCurrentCategory, setLocalCurrentCategory] = useState([]);
@@ -35,18 +38,27 @@ const RankingPage = () => {
 
 	const [mediaToShow, setMediaToShow] = useState([]);
 
-	const handleMediaFilterSearch = async ( genre = null, country = null, year = null,) => {
-
-    if(country) {
-      // Get the iso (PL, GB, US etc) value for a specific country since countries in the db
-      // are using the iso values
-      country = filtersCountries.find(filterCountry => filterCountry.english_name.toLowerCase() === country.toLowerCase()).iso
-    }
+	const handleMediaFilterSearch = async (
+		genre = null,
+		country = null,
+		year = null,
+	) => {
+		if (country) {
+			// Get the iso (PL, GB, US etc) value for a specific country since countries in the db
+			// are using the iso values
+			country = filtersCountries.find(
+				(filterCountry) =>
+					filterCountry.english_name.toLowerCase() === country.toLowerCase(),
+			).iso;
+		}
 
 		let urlPath;
-		if (currentCategory.toLowerCase() === "movies") urlPath = "/get-movies-by-filters";
-		else if (currentCategory.toLowerCase() === "series") urlPath = "/get-series-by-filters";
-		else if (currentCategory.toLowerCase() === "games") urlPath = "/get-games-by-filters";
+		if (currentCategory.toLowerCase() === "movies")
+			urlPath = "/get-movies-by-filters";
+		else if (currentCategory.toLowerCase() === "series")
+			urlPath = "/get-series-by-filters";
+		else if (currentCategory.toLowerCase() === "games")
+			urlPath = "/get-games-by-filters";
 
 		try {
 			const response = await axios.post(
@@ -71,7 +83,9 @@ const RankingPage = () => {
 			if (currentSubCategory === "top 500") {
 				setMediaToShow(topRatedMovies);
 			} else if (currentSubCategory === "new") {
-				setMediaToShow(latestMovies);
+				setMediaToShow(
+					latestMovies.sort((a, b) => b.activity.rating - a.activity.rating),
+				);
 			}
 		} else if (currentCategory.toLowerCase() === "series") {
 			setLocalCurrentCategory("series");
@@ -108,7 +122,22 @@ const RankingPage = () => {
 		setCurrentCountry(null);
 		setCurrentYear(null);
 		handleMediaShow();
-	}, [currentCategory, currentSubCategory]);
+	}, [currentCategory, currentSubCategory, location]);
+
+	useEffect(() => {
+		// Retrieve the state passed from the previous page
+		if (location.state) {
+			const cat = location.state.category;
+			const subCat = location.state.subCategory;
+
+			if (cat) {
+				if (currentCategory !== cat) setCurrentCategory(cat);
+			}
+			if (subCat) {
+				if (currentSubCategory !== subCat) setCurrentSubCategory(subCat);
+			}
+		}
+	}, [location]);
 
 	return (
 		<>

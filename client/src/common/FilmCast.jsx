@@ -7,19 +7,25 @@ const FilmCast = ({ media }) => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
 	// Slider settings
-	// NOTE: Slides for roles: Small screens 2 slides, medium 5, large 5
-	// NOTE: Slides for chars: Small screens 2 slides, medium 5, large 6
-	const slidesToShow = tabletView
-		? Math.min(4, media.roles.length)
-		: Math.min(6, media.roles.length);
-
+	// NOTE: Slides for roles: medium minimum 4, large minimum 6
 	const settings = {
 		dots: true,
 		arrows: mobileView || tabletView ? false : true,
 		infinite: true,
 		speed: 500,
-		slidesToShow: slidesToShow,
-		slidesToScroll: slidesToShow,
+		slidesToShow: Math.min(6, media.roles.length),
+		slidesToScroll: Math.min(6, media.roles.length),
+		responsive: [
+			{
+				// tablet view
+				breakpoint: 1024,
+				settings: {
+					slidesToShow: Math.min(4, media.roles.length),
+					slidesToScroll: Math.min(4, media.roles.length),
+					arrows: true,
+				},
+			},
+		],
 	};
 
 	return (
@@ -54,6 +60,7 @@ const FilmCast = ({ media }) => {
 									<FilmCastSlide
 										key={i}
 										actor={role.actor}
+                    link={role.actor.personal_info.nameId}
 										characterName={role.characterName}
 									/>
 								);
