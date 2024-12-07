@@ -13,15 +13,16 @@ const UserLatestReviews = ({ author, reviews }) => {
 					<h2 className="text-xl lg:text-3xl font-bold">Latest reviews</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8">
 						{reviews.slice(0, mobileView ? 1 : tabletView ? 2 : 3).map((review, i) => {
-							const year =
-								getFullYear(review.referredMedia.releaseDate) ||
-								getFullYear(review.referredMedia.firstAirDate);
+							const year = getFullYear(review.referredMedia.releaseDate) || getFullYear(review.referredMedia.firstAirDate);
+
+              const mediaLink = review.referredMedia.itemType === "movies" ? `/movie/${review.referredMedia.titleId}` : review.referredMedia.itemType === "series" ? `/serie/${review.referredMedia.titleId}` : review.referredMedia.itemType === "games" ? `/game/${review.referredMedia.titleId}` : null
 
 							return (
 								<Review
 									key={i}
 									img={review.banner}
                   link={review.review_id}
+                  mediaLink={mediaLink}
 									name={review.referredMedia.title}
 									title={review.title}
 									year={year}

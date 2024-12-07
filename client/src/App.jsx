@@ -25,6 +25,7 @@ import LoginPage from "./components/LoginPage";
 import ReviewPage from "./pages/ReviewPage";
 import UserDetailsPage from "./pages/UserDetailsPage";
 import ReviewsPage from "./pages/ReviewsPage";
+import UserTextsPage from "./pages/UserTextsPage";
 
 export const UserContext = createContext({});
 export const MediaQueriesContext = createContext({});
@@ -535,6 +536,7 @@ function App() {
 							<Route path="/person/:personId" element={<PersonPage />} />
 							<Route path="/user/:userId" element={<UserPage />} />
 							<Route path="/user/:userId/details" element={<UserDetailsPage />} />
+							<Route path="/user/:userId/texts" element={<UserTextsPage />} />
 							<Route path="write" element={<WritePage />} />
 							<Route path="write-article" element={<WriteArticlePage />} />
 							<Route path="write-review" element={<WriteReviewPage />} />

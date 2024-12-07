@@ -2758,8 +2758,8 @@ app.post("/get-reviews-latest", (req, res) => {
 	Review.find()
 		.sort(sortQuery)
 		.limit(countQuery)
-		.populate("author", "personal_info.fullname, personal_info.profile_img")
-		.populate("referredMedia", "title releaseDate firstAirDate")
+		.populate("author", "personal_info.firstName personal_info.surname personal_info.profile_img")
+		.populate("referredMedia", "title releaseDate firstAirDate itemType titleId")
 		.then((reviews) => {
 			return res.status(200).json({ reviews });
 		})
@@ -2791,7 +2791,7 @@ app.post("/get-reviews-latest-movies", (req, res) => {
 		.sort(sortQuery)
 		.limit(countQuery)
 		.populate("author", "personal_info.firstName personal_info.surname personal_info.profile_img")
-		.populate("referredMedia", "title releaseDate firstAirDate")
+		.populate("referredMedia", "title releaseDate firstAirDate itemType titleId")
 		.then((reviews) => {
 			return res.status(200).json({ reviews });
 		})
@@ -2823,7 +2823,7 @@ app.post("/get-reviews-latest-series", (req, res) => {
 		.sort(sortQuery)
 		.limit(countQuery)
 		.populate("author", "personal_info.firstName personal_info.surname personal_info.profile_img")
-		.populate("referredMedia", "title releaseDate firstAirDate")
+		.populate("referredMedia", "title releaseDate firstAirDate itemType titleId")
 		.then((reviews) => {
 			return res.status(200).json({ reviews });
 		})
@@ -2855,7 +2855,7 @@ app.post("/get-reviews-latest-games", (req, res) => {
 		.sort(sortQuery)
 		.limit(countQuery)
 		.populate("author", "personal_info.firstName personal_info.surname personal_info.profile_img")
-		.populate("referredMedia", "title releaseDate firstAirDate")
+		.populate("referredMedia", "title releaseDate firstAirDate itemType titleId")
 		.then((reviews) => {
 			return res.status(200).json({ reviews });
 		})
@@ -3817,16 +3817,11 @@ app.post("/create-article", verifyJWT, (req, res) => {
 
 	tags = tags.map((tag) => tag.toLowerCase());
 
-	let article_id =
-		id ||
-		title
-			.replace(/[^a-zA-Z0-9]/g, " ")
-			.replace(/\s+/g, "-")
-			.trim() + nanoid();
+	let articleId = id || title.replace(/[^a-zA-Z0-9]/g, " ") .replace(/\s+/g, "-") .trim() + nanoid();
 
 	if (id) {
 		Article.findOneAndUpdate(
-			{ article_id },
+			{ articleId },
 			{
 				title,
 				description,
@@ -3837,7 +3832,7 @@ app.post("/create-article", verifyJWT, (req, res) => {
 			},
 		)
 			.then(() => {
-				return res.status(200).json({ id: article_id });
+				return res.status(200).json({ id: articleId });
 			})
 			.catch((err) => {
 				return res.status(500).json({ error: err.message });
@@ -3850,7 +3845,7 @@ app.post("/create-article", verifyJWT, (req, res) => {
 			content,
 			tags,
 			author: authorId,
-			article_id,
+			articleId,
 			draft: Boolean(draft),
 		});
 
@@ -3867,7 +3862,7 @@ app.post("/create-article", verifyJWT, (req, res) => {
 					},
 				)
 					.then((_user) => {
-						return res.status(200).json({ id: article.article_id });
+						return res.status(200).json({ id: article.articleId });
 					})
 					.catch((_err) => {
 						return res
@@ -3988,12 +3983,12 @@ app.post("/create-review", verifyJWT, async (req, res) => {
 		.replace(/[^a-zA-Z0-9]/g, " ")
 		.replace(/\s+/g, "-")
 		.trim();
-	title = title
+	const titleForReview = title
 		.replace(/[^a-zA-Z0-9]/g, " ")
 		.replace(/\s+/g, "-")
 		.trim();
 
-	let review_id = id || mediaTitle + "-" + title + nanoid();
+	let review_id = id || mediaTitle + "-" + titleForReview + nanoid();
 
 	if (id) {
 		Review.findOneAndUpdate(
@@ -4057,7 +4052,6 @@ app.post("/create-review", verifyJWT, async (req, res) => {
 								{ $push: { reviews: review._id } },
 							).then();
 						} else if (collectionName === "games") {
-							console.log("pushing the review into the games's reviews array");
 							Game.findOneAndUpdate(
 								{ _id: referredMediaID },
 								{ $push: { reviews: review._id } },

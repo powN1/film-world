@@ -1,11 +1,25 @@
 import { Link } from "react-router-dom";
 import { getDay } from "../common/date";
-const SingleNews = ({ title, link, description, comments, date, img, type, gridarea = null, category, }) => {
+
+const SingleNews = ({
+	title,
+	link,
+	description,
+	comments,
+	date,
+	img,
+	type,
+	gridarea = null,
+	category,
+}) => {
 	const renderArticle = () => {
 		switch (type) {
 			case "tiny":
 				return (
-					<Link to={`/article/${link}`} className="flex justify-between group overflow-hidden cursor-pointer">
+					<Link
+						to={`/article/${link}`}
+						className="flex justify-between group overflow-hidden cursor-pointer"
+					>
 						<p className="w-[70%] text-sm group-hover:text-yellow-400 duration-300 overflow-hidden line-clamp-3">
 							{description}
 						</p>
@@ -20,7 +34,10 @@ const SingleNews = ({ title, link, description, comments, date, img, type, grida
 				);
 			case "small":
 				return (
-					<Link to={`/article/${link}`} className="flex group overflow-hidden cursor-pointer max-md:col-span-2 max-md:row-span-1">
+					<Link
+						to={`/article/${link}`}
+						className="flex group overflow-hidden cursor-pointer max-md:col-span-2 max-md:row-span-1"
+					>
 						<div className="w-[40%] overflow-hidden border border-gray-800">
 							<img
 								src={img}
@@ -38,7 +55,10 @@ const SingleNews = ({ title, link, description, comments, date, img, type, grida
 				);
 			case "medium":
 				return (
-					<Link to={`/article/${link}`} className="flex md:flex-col gap-y-1 max-md:gap-x-2 group overflow-hidden cursor-pointer">
+					<Link
+						to={`/article/${link}`}
+						className="flex md:flex-col gap-y-1 max-md:gap-x-2 group overflow-hidden cursor-pointer"
+					>
 						<div className="h-[65%] max-md:h-full max-md:w-[40%] overflow-hidden border border-gray-300">
 							<img
 								src={img}
@@ -56,7 +76,8 @@ const SingleNews = ({ title, link, description, comments, date, img, type, grida
 				);
 			case "big":
 				return (
-					<Link to={`/article/${link}`} 
+					<Link
+						to={`/article/${link}`}
 						className={`relative group cursor-pointer max-md:flex max-md:flex-col max-md:col-span-1 max-md:row-span-2 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}`}
 					>
 						<div className="h-full max-md:h-1/2 overflow-hidden border border-gray-800">
@@ -76,7 +97,8 @@ const SingleNews = ({ title, link, description, comments, date, img, type, grida
 				);
 			case "large":
 				return (
-					<Link to={`/article/${link}`} 
+					<Link
+						to={`/article/${link}`}
 						className={`relative group overflow-hidden cursor-pointer max-md:row-span-2 max-md:col-span-1 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}`}
 					>
 						<img
@@ -96,7 +118,8 @@ const SingleNews = ({ title, link, description, comments, date, img, type, grida
 				);
 			case "gigantic":
 				return (
-					<Link to={`/article/${link}`} 
+					<Link
+						to={`/article/${link}`}
 						className={`relative group overflow-hidden cursor-pointer max-md:row-span-3 max-md:col-span-2 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]} border border-gray-800`}
 					>
 						<img
@@ -116,7 +139,10 @@ const SingleNews = ({ title, link, description, comments, date, img, type, grida
 				);
 			case "categorized":
 				return (
-					<Link to={`/article/${link}`}  className="flex md:flex-col gap-y-1 max-md:gap-x-2 group overflow-hidden cursor-pointer hover:[box-shadow:_0px_0px_6px_rgb(0_0_0_/_25%)] duration-300 ease-in-out">
+					<Link
+						to={`/article/${link}`}
+						className="flex md:flex-col gap-y-1 max-md:gap-x-2 group overflow-hidden cursor-pointer hover:[box-shadow:_0px_0px_6px_rgb(0_0_0_/_25%)] duration-300 ease-in-out"
+					>
 						<div className="min-w-[150px] h-[150px] lg:h-auto aspect-square lg:aspect-video overflow-hidden border border-gray-300">
 							<img
 								src={img}
@@ -128,7 +154,7 @@ const SingleNews = ({ title, link, description, comments, date, img, type, grida
 							<p className="text-yellow-400 uppercase text-xs font-bold">
 								{category}
 							</p>
-							<p className="py-1 text-ellipsis overflow-hidden line-clamp-3 md:text-center">
+							<p className="py-1 text-black text-ellipsis overflow-hidden line-clamp-3 md:text-center">
 								{description}
 							</p>
 							<span className="text-gray-400 text-xs mt-auto">

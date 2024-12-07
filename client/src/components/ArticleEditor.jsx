@@ -5,8 +5,10 @@ import { Toaster, toast } from "react-hot-toast";
 import { EditorContext } from "../pages/WriteArticlePage";
 import EditorJS from "@editorjs/editorjs";
 import { tools } from "../common/tools";
+import { useNavigate } from "react-router-dom";
 
 const ArticleEditor = () => {
+  const navigate = useNavigate();
 	const {
 		article,
 		article: { title, banner, content, tags, description },

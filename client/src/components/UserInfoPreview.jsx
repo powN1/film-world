@@ -28,12 +28,9 @@ const UserInfoPreview = ({ user, setUser }) => {
 		ratings,
 	} = user;
 
-	const fetchMovies = async () =>
-		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-	const fetchSeries = async () =>
-		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series");
-	const fetchGames = async () =>
-		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games");
+	const fetchMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series");
+	const fetchGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games");
 
 	const handleMediaFetch = async () => {
 		const movies = await fetchMovies();
@@ -125,6 +122,8 @@ const UserInfoPreview = ({ user, setUser }) => {
 	}, [backgroundImageModalOn, modalInputValue]);
 
 	useEffect(() => {
+		if (!selectedPhoto) return;
+
 		const setUserBackground = async () => {
 			const userPhotoData = await handleUserBackgroundAddition(selectedPhoto);
 			if (userPhotoData) {
@@ -274,7 +273,8 @@ const UserInfoPreview = ({ user, setUser }) => {
 						{articles && (
 							<>
 								<Link
-									to=""
+									to="texts"
+                  state={{ category: "articles" }}
 									className="capitalize hover:bg-gray-400/40 py-1 px-4 cursor-pointer flex flex-col items-center lg:flex-row gap-x-1"
 								>
 									articles <span className="font-bold">
@@ -287,7 +287,8 @@ const UserInfoPreview = ({ user, setUser }) => {
 						{reviews && (
 							<>
 								<Link
-									to=""
+									to="texts"
+                  state={{ category: "reviews" }}
 									className="capitalize hover:bg-gray-400/40 py-1 px-4 cursor-pointer flex flex-col items-center lg:flex-row gap-x-1"
 								>
 									reviews <span className="font-bold">

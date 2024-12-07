@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { DataContext } from "../App";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Review from "../common/Review";
 import { getFullYear } from "../common/date";
 
@@ -10,7 +10,6 @@ const ReviewsPage = () => {
 	const { latestMovieReviews, latestSeriesReviews, latestGamesReviews } =
 		useContext(DataContext);
 
-	const location = useLocation();
 	const [currentCategory, setCurrentCategory] = useState("movies");
 
 	const [reviewsToShow, setReviewsToShow] = useState([]);
@@ -81,14 +80,16 @@ const ReviewsPage = () => {
 				<div className="w-full lg:w-[55%] mx-auto">
 					<div className="grid grid-cols-3 gap-x-8 gap-y-10">
 						{reviewsToShow.map((review, i) => {
-							console.log(review);
-							const year =
-								getFullYear(review.referredMedia.releaseDate) ||
-								getFullYear(review.referredMedia.firstAirDate);
+              console.log(review)
+							const year = getFullYear(review.referredMedia.releaseDate) || getFullYear(review.referredMedia.firstAirDate);
 
+
+              const mediaLink = review.referredMedia.itemType === "movies" ? `/movie/${review.referredMedia.titleId}` : review.referredMedia.itemType === "series" ? `/serie/${review.referredMedia.titleId}` : review.referredMedia.itemType === "games" ? `/game/${review.referredMedia.titleId}` : null
 							return (
 								<Review
 									key={i}
+                  link={review.review_id}
+                  mediaLink={mediaLink}
 									img={review.banner}
 									name={review.referredMedia.title}
 									title={review.title}

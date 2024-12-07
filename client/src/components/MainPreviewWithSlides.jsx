@@ -52,7 +52,6 @@ const MainPreviewWithSlides = ({ type }) => {
 			setCurrentSrc(films[next].banner);
 			setFade(false);
 		}, 500);
-		console.log(next);
 	};
 
 	const changeSlide = (filmIndex) => {

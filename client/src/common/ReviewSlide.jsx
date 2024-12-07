@@ -4,6 +4,7 @@ import { FaStar } from "react-icons/fa";
 
 const ReviewSlide = ({ title, img, category, rating, description, author,
 }) => {
+  console.log(author)
 
 	return (
 		<div className="flex flex-col mx-3 my-3 gap-y-2 [box-shadow:_2px_2px_6px_rgb(0_0_0_/_7%)] h-[360px]">
@@ -32,7 +33,7 @@ const ReviewSlide = ({ title, img, category, rating, description, author,
 							className="h-full w-full object-cover rounded-full"
 						/>
 					</Link>
-					<Link>{}</Link>
+					<Link className="capitalize">{author.firstName} {author.surname}</Link>
 				</div>
 				{/* Review rating */}
 				<div className="flex items-center gap-x-1">

@@ -31,6 +31,7 @@ const UserPage = () => {
 		const loadUser = async () => {
 			const userData = await fetchUser(userId);
 			if (userData) {
+        userData.reviews.reverse();
 				setUser(userData);
 			}
 			setLoading(false); // Set loading to false after fetching

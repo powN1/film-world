@@ -20,7 +20,6 @@ export default function WriteArticlePage() {
 	const [review, setReview] = useState(reviewStructure);
 	const [editorState, setEditorState] = useState("editor");
 	const [textEditor, setTextEditor] = useState({ isReady: false });
-	const [loading, setLoading] = useState(true);
 
 	return (
 		<EditorContext.Provider value={{ review, setReview, editorState, setEditorState, textEditor, setTextEditor }}>

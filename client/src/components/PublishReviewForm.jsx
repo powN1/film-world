@@ -3,7 +3,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { IoMdClose } from "react-icons/io";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { EditorContext } from "../pages/WriteReviewPage";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../App";
 
@@ -11,14 +11,14 @@ const PublishReviewForm = () => {
 	const { review_id } = useParams();
 	const characterLimit = 80;
 
+  const navigate = useNavigate();
+
 	const {
 		review,
 		review: { banner, title, category, description, content, referredMediaID, activity },
 		setReview,
 		setEditorState,
 	} = useContext(EditorContext);
-
-	console.log(`referred media: ${referredMediaID}`);
 	const {
 		userAuth: { access_token },
 	} = useContext(UserContext);
@@ -79,15 +79,16 @@ const PublishReviewForm = () => {
 					headers: { Authorization: `${access_token}` },
 				},
 			)
-			.then(() => {
+			.then(({ data }) => {
 				e.target.classList.remove("disable");
+        const review_id = data.id;
 
 				toast.dismiss(loadingToast);
 				toast.success("Published");
 
 				setTimeout(() => {
-					navigate("/dashboard/reviews");
-				}, 500);
+					navigate(`/review/${review_id}`);
+				}, 1500);
 			})
 			.catch(({ response }) => {
 				e.target.classList.remove("disable");

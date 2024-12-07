@@ -83,15 +83,16 @@ const PublishForm = () => {
 					headers: { Authorization: `${access_token}` },
 				},
 			)
-			.then(() => {
+			.then(({ data }) => {
+        const article_id = data.id;
 				e.target.classList.remove("disable");
 
 				toast.dismiss(loadingToast);
 				toast.success("Published");
 
 				setTimeout(() => {
-					navigate("/dashboard/blogs");
-				}, 500);
+					navigate(`/article/${article_id}`);
+				}, 1500);
 			})
 			.catch(({ response }) => {
 				e.target.classList.remove("disable");

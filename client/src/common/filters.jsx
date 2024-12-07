@@ -21,7 +21,6 @@ export const filtersMovieSerieType = [
 	"Adventure",
 	"Animation",
 	"Adult animation",
-	"Anime",
 	"Biography",
 	"Comedy",
 	"Crime",
