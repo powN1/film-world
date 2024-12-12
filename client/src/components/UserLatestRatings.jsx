@@ -5,21 +5,15 @@ import { useContext } from "react";
 const UserLatestRatings = ({ ratings }) => {
 	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 	return (
-		ratings && (
+		ratings.length !== 0 && (
 			<div className="w-full bg-white">
 				<div className="lg:w-[55%] flex flex-col gap-y-6 w-full py-8 md:py-12 lg:py-16 px-3 md:px-16 lg:px-0 mx-auto relative">
 					<h2 className="text-xl lg:text-3xl font-bold">Latest ratings</h2>
 					<div className="flex gap-x-4 lg:gap-x-8">
 						{ratings.slice(0, mobileView ? 3 : tabletView ? 4 : 6).map((rating, i) => {
 							// Link path to movie/serie/game
-							const basePath =
-								rating.itemType === "movies"
-									? "movie"
-									: rating.itemType === "series"
-										? "serie"
-										: rating.itemType === "games"
-											? "game"
-											: "";
+							const mediaLink = `/${rating.itemType.slice(0, -1)}/${rating.item.titleId}`;
+;
 							return (
 								<div key={i} className="w-[105px] md:w-[144px] flex flex-col gap-y-2 items-center">
 									<div
@@ -29,7 +23,7 @@ const UserLatestRatings = ({ ratings }) => {
 											{rating.rating}
 										</div>
 										<Link
-											to={`/${basePath}/${rating.item.titleId}`}
+											to={mediaLink}
 											className="block w-[108px] h-[155px] md:w-[144px] md:h-[205px] overflow-hidden"
 										>
 											<img
@@ -41,7 +35,7 @@ const UserLatestRatings = ({ ratings }) => {
 									</div>
 
 									<Link
-										to={`/${basePath}/${rating.item.titleId}`}
+										to={mediaLink}
 										className="px-2 text-center line-clamp-2 md:line-clamp-3"
 									>
 										{rating.item.title}

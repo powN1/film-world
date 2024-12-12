@@ -18,7 +18,7 @@ const FilmRolesRanking = ({ media, actorSpecific }) => {
 						</p>
 					</div>
 				)}
-				<div className="flex gap-x-3 md:gap-x-0 pb-4 overflow-x-scroll">
+				<div className="flex gap-x-3 md:gap-x-0 pb-4 overflow-x-auto">
 					{media.roles.map((role, i) => {
 						return (
 							<FilmRolesRankingSlide

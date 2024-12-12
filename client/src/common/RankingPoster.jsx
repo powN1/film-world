@@ -2,9 +2,9 @@ import { FaRegEye } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const RankingPoster = ({ type, title, img, link, rating, peopleAwaiting }) => {
+const RankingPoster = ({ mediaLink, title, img, rating, peopleAwaiting }) => {
 	return (
-		<Link to={`/${type}/${link}`} className="w-full max-lg:w-[30%] flex flex-col gap-y-3 group cursor-pointer">
+		<Link to={mediaLink} className="w-full max-lg:w-[30%] flex flex-col gap-y-3 group cursor-pointer">
 			<div className="[box-shadow:_2px_2px_6px_rgb(0_0_0_/_30%)]">
 				<div className="h-[200px] max-lg:h-[150px] overflow-hidden">
 					<img

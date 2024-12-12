@@ -2758,7 +2758,7 @@ app.post("/get-reviews-latest", (req, res) => {
 	Review.find()
 		.sort(sortQuery)
 		.limit(countQuery)
-		.populate("author", "personal_info.firstName personal_info.surname personal_info.profile_img")
+		.populate("author", "personal_info.firstName personal_info.surname personal_info.username personal_info.profile_img")
 		.populate("referredMedia", "title releaseDate firstAirDate itemType titleId")
 		.then((reviews) => {
 			return res.status(200).json({ reviews });
@@ -2790,7 +2790,7 @@ app.post("/get-reviews-latest-movies", (req, res) => {
 	Review.find(findQuery)
 		.sort(sortQuery)
 		.limit(countQuery)
-		.populate("author", "personal_info.firstName personal_info.surname personal_info.profile_img")
+		.populate("author", "personal_info.firstName personal_info.surname personal_info.username personal_info.profile_img")
 		.populate("referredMedia", "title releaseDate firstAirDate itemType titleId")
 		.then((reviews) => {
 			return res.status(200).json({ reviews });
@@ -2822,7 +2822,7 @@ app.post("/get-reviews-latest-series", (req, res) => {
 	Review.find(findQuery)
 		.sort(sortQuery)
 		.limit(countQuery)
-		.populate("author", "personal_info.firstName personal_info.surname personal_info.profile_img")
+		.populate("author", "personal_info.firstName personal_info.surname personal_info.username personal_info.profile_img")
 		.populate("referredMedia", "title releaseDate firstAirDate itemType titleId")
 		.then((reviews) => {
 			return res.status(200).json({ reviews });
@@ -2854,7 +2854,7 @@ app.post("/get-reviews-latest-games", (req, res) => {
 	Review.find(findQuery)
 		.sort(sortQuery)
 		.limit(countQuery)
-		.populate("author", "personal_info.firstName personal_info.surname personal_info.profile_img")
+		.populate("author", "personal_info.firstName personal_info.surname personal_info.username personal_info.profile_img")
 		.populate("referredMedia", "title releaseDate firstAirDate itemType titleId")
 		.then((reviews) => {
 			return res.status(200).json({ reviews });
@@ -2934,7 +2934,7 @@ app.post("/get-roles-movie-top-rated", (req, res) => {
 	Role.find(findQuery)
 		.limit(count)
 		.sort(sortQuery)
-		.populate("actor", "activity personal_info.name")
+		.populate("actor", "activity personal_info.name personal_info.nameId")
 		.populate("movie", "title releaseDate")
 		.then((roles) => {
 			return res.status(200).json({ roles });
@@ -3080,7 +3080,7 @@ app.post("/get-roles-serie", (req, res) => {
 
 	Role.find(findQuery)
 		.limit(count)
-		.populate("actor", "activity personal_info.name")
+		.populate("actor", "activity personal_info.name personal_info.nameId")
 		.populate("serie", "title firstAirDate")
 		.then((roles) => {
 			return res.status(200).json({ roles });
@@ -3100,7 +3100,7 @@ app.post("/get-roles-serie-top-rated", (req, res) => {
 	Role.find(findQuery)
 		.limit(count)
 		.sort(sortQuery)
-		.populate("actor", "activity personal_info.name")
+		.populate("actor", "activity personal_info.name personal_info.nameId")
 		.populate("serie", "title firstAirDate")
 		.then((roles) => {
 			return res.status(200).json({ roles });

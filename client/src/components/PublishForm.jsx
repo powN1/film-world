@@ -3,13 +3,14 @@ import { Toaster, toast } from "react-hot-toast";
 import { IoMdClose } from "react-icons/io";
 import { EditorContext } from "../pages/WriteArticlePage";
 import Tag from "./Tags";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { UserContext } from "../App";
 
 const PublishForm = () => {
 	const availableTags = ["movies", "series", "games"];
 
+  const navigate = useNavigate();
 	const { articleId } = useParams();
 	const characterLimit = 80;
 	const tagLimit = 3;

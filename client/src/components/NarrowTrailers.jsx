@@ -27,6 +27,7 @@ const NarrowTrailers = ({ type }) => {
 								key={i}
 								title={movie.title}
 								img={movie.banner}
+                mediaLink={movie.videos[0]}
 								ranking={movie.activity.rating ? movie.activity.rating : null}
 								description={movie.description}
 								type="trailer"
@@ -37,12 +38,6 @@ const NarrowTrailers = ({ type }) => {
 						);
 					})}
 				</div>
-				<Link
-					path="/"
-					className="w-[90%] lg:w-1/5 text-center self-center py-3 max-lg:px-10 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
-				>
-					Check all trailers
-				</Link>
 			</div>
 		</div>
 	);

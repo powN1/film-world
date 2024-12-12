@@ -8,7 +8,6 @@ import { getFullYear } from "../common/date";
 
 const WideTrailerSlider = ({ type, showCategories = true }) => {
 	const { upcomingMovies, upcomingSeries, topRatedSeries } = useContext(DataContext);
-	const { mobileView, tabletView } = useContext(MediaQueriesContext);
 
 	const [currentCategory, setCurrentCategory] = useState("movies");
 
@@ -62,7 +61,7 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
   }, [])
 
 	return (
-		<div className="flex flex-col py-10 gap-y-5 bg-transparent text-black bg-white">
+		<div className="flex flex-col py-10 pb-20 gap-y-5 bg-transparent text-black bg-white">
 			<h2 className="uppercase text-4xl font-bold text-center tracking-tighter font-sansNarrow">
 				Trailers
 			</h2>
@@ -101,7 +100,7 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
 								key={i}
 								title={movie.title}
 								img={movie.banner}
-                link={movie.videos.length > 0 ? movie.videos[0] : null}
+                mediaLink={movie.videos.length > 0 ? movie.videos[0] : null}
 								ranking={movie.activity.ranking ? movie.activity.ranking : null}
 								description={movie.description}
 								type="trailer"
@@ -112,12 +111,6 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
 					})}
 				</Slider>
 			</div>
-			<Link
-				path="/"
-				className="w-[90%] lg:w-1/5 text-center self-center py-3 max-lg:px-10 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
-			>
-				Check all trailers
-			</Link>
 		</div>
 	);
 };

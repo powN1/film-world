@@ -15,7 +15,7 @@ const UserLatestReviews = ({ author, reviews }) => {
 						{reviews.slice(0, mobileView ? 1 : tabletView ? 2 : 3).map((review, i) => {
 							const year = getFullYear(review.referredMedia.releaseDate) || getFullYear(review.referredMedia.firstAirDate);
 
-              const mediaLink = review.referredMedia.itemType === "movies" ? `/movie/${review.referredMedia.titleId}` : review.referredMedia.itemType === "series" ? `/serie/${review.referredMedia.titleId}` : review.referredMedia.itemType === "games" ? `/game/${review.referredMedia.titleId}` : null
+              const mediaLink = `/${review.referredMedia.itemType.slice(0, -1)}/${review.referredMedia.titleId}`
 
 							return (
 								<Review
@@ -35,7 +35,7 @@ const UserLatestReviews = ({ author, reviews }) => {
 					</div>
 
 					<Link
-						to="ratings"
+						to="texts"
 						className="w-[90%] lg:w-1/4 text-center self-center py-3 max-lg:px-10 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
 					>
 						See all

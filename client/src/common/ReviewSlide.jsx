@@ -2,15 +2,13 @@ import { Link } from "react-router-dom";
 import { FaRegStar } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 
-const ReviewSlide = ({ title, img, category, rating, description, author,
-}) => {
-  console.log(author)
+const ReviewSlide = ({ title, link, img, category, rating, description, author, }) => {
 
 	return (
 		<div className="flex flex-col mx-3 my-3 gap-y-2 [box-shadow:_2px_2px_6px_rgb(0_0_0_/_7%)] h-[360px]">
 			{/* Movie img */}
 			<Link
-				to="/"
+				to={`review/${link}`}
 				className="relative h-[160px] border border-gray-300 group overflow-hidden rounded-tl-sm rounded-tr-sm"
 			>
 				<img
@@ -26,14 +24,14 @@ const ReviewSlide = ({ title, img, category, rating, description, author,
 			<div className="flex flex-col px-3 pt-1 gap-y-1">
 				{/* Author info */}
 				<div className="flex gap-x-2">
-					<Link className="relative h-[70px] w-[70px] border-2 border-green-600 rounded-full p-[2px]">
+					<Link to={`/user/${author.username}`} className="relative h-[70px] w-[70px] border-2 border-green-600 rounded-full p-[2px]">
 						<img
 							src={author.profile_img}
 							alt="user picutre"
 							className="h-full w-full object-cover rounded-full"
 						/>
 					</Link>
-					<Link className="capitalize">{author.firstName} {author.surname}</Link>
+					<Link to={`/user/${author.username}`} className="capitalize self-center">{author.firstName} {author.surname}</Link>
 				</div>
 				{/* Review rating */}
 				<div className="flex items-center gap-x-1">

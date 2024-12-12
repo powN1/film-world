@@ -67,6 +67,7 @@ const Birthday = () => {
 					{birthDayActors.map((actor, i) => (
 						<ActorBirthdaySlide
 							key={i}
+              actorLink={actor.personal_info.nameId}
 							img={actor.banner}
 							name={actor.personal_info.name}
 							age={actor.personal_info.dateOfBirth}

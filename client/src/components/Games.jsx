@@ -55,14 +55,15 @@ const Games = () => {
                   link={article.articleId}
 									title={article.title}
 									img={article.banner}
-									comments={article.activity.total_comments}
+									comments={article.activity.totalComments}
 								/>
 							);
 						})}
 					</Slider>
 				</div>
 				<Link
-					path="/"
+					to="/articles"
+          state={{ category: "games" }}
 					className="w-[90%] lg:w-1/3 text-center self-center py-3 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
 				>
 					See all news

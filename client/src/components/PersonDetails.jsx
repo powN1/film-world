@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import { MediaQueriesContext } from "../App";
-import { Link } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 import { getFullDay, getFullYear } from "../common/date";
 

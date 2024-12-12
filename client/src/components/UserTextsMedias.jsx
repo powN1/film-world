@@ -21,6 +21,7 @@ const UserTextsMedias = ({ author, medias }) => {
 						const type = media.articleId ? "article" : "review";
 						const year = type === "review" && (media.referredMedia.releaseDate ? getFullYear(media.referredMedia.releaseDate) : getFullYear(media.referredMedia.firstAirDate));
 						const tags = type === "article" && sortTags(media);
+            const mediaLink = type === "review" && `/${media.referredMedia.itemType.slice(0, -1)}/${media.referredMedia.titleId}`;
 
 						return type === "article" ? (
 							<SingleNews
@@ -39,6 +40,7 @@ const UserTextsMedias = ({ author, medias }) => {
 								key={i}
 								img={media.banner}
                 link={media.review_id}
+                mediaLink={mediaLink}
 								name={media.referredMedia.title}
 								title={media.title}
 								year={year}

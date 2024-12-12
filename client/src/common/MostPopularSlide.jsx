@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { CiHeart } from "react-icons/ci";
 
-const MostPopularSlide = ({ title, img, actor, role, ranking, character, gameName }) => {
+const MostPopularSlide = ({ title, img, link, actor, role, ranking, character, gameName }) => {
 	return (
 		<Link
-			to=""
+			to={link}
 			className="relative flex flex-col mx-3 items-center cursor-pointer group"
 		>
 			<div
@@ -22,7 +22,7 @@ const MostPopularSlide = ({ title, img, actor, role, ranking, character, gameNam
 			</div>
 			<div
 				className={
-					"flex flex-col gap-y-2 py-3 items-center text-center duration-300 " +
+					"w-full flex flex-col gap-y-2 py-3 items-center text-center duration-300 px-2 " +
 					(actor ? "group-hover:bg-gray-200/15" : null)
 				}
 			>
@@ -37,7 +37,7 @@ const MostPopularSlide = ({ title, img, actor, role, ranking, character, gameNam
 			</div>
 			{(role && ranking) && (
 				<div className={"absolute top-2 right-0 lg:right-0 translate-x-2 uppercase text-black p-1 font-sansNarrow duration-300 " + (ranking >= 9 ? "bg-yellow-400 hover:bg-yellow-300" : "bg-gray-300 hover:bg-gray-200")}>
-					#{ranking} top
+					{ranking.toFixed(2)} rating
 				</div>
 			)}
 

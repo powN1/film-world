@@ -17,10 +17,14 @@ const NewestReviews = () => {
 					{latestGamesReviews.slice(0,2).map((review, i) => {
 						let { author: { personal_info } } = review;
             const year = getFullYear(review.referredMedia.releaseDate) || (review.referredMedia.firstAirDate);
+            const link = review.review_id;
+            const mediaLink = review.referredMedia.titleId;
 						return (
 							<Review
 								key={i}
 								img={review.banner}
+                link={link}
+                mediaLink={mediaLink}
                 name={review.referredMedia.title}
 								title={review.title}
 								year={year}
@@ -36,10 +40,14 @@ const NewestReviews = () => {
 					{latestGamesReviews .slice(2,5).map((review, i) => {
 						let { author: { personal_info }, } = review;
             const year = getFullYear(review.referredMedia.releaseDate) || getFullYear(review.referredMedia.firstAirDate);
+            const link = review.review_id;
+            const mediaLink = review.referredMedia.titleId;
 						return (
 							<Review
 								key={i}
 								img={review.banner}
+                link={link}
+                mediaLink={mediaLink}
                 name={review.referredMedia.title}
 								title={review.title}
 								year={year}
@@ -52,10 +60,11 @@ const NewestReviews = () => {
 				</div>
 
 				<Link
-					path="/"
+					to="/reviews"
+          state={{ category: "games" }}
 					className="w-[90%] lg:w-1/3 text-center self-center py-3 border border-gray-300 font-bold mt-3 hover:bg-black hover:text-white duration-500"
 				>
-					See all news
+					See all reviews
 				</Link>
 			</div>
 		</div>

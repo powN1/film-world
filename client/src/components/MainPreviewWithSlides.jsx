@@ -80,7 +80,7 @@ const MainPreviewWithSlides = ({ type }) => {
 		slidesToScroll: 1,
 		initialSlide: 0,
 		autoplay: true,
-		autoplaySpeed: 4000,
+		autoplaySpeed: 15000,
 		pauseOnHover: true,
 		beforeChange: beforeChange,
 		responsive: [

@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 
-const PersonKnownForSlide = ({ cover, filmTitle }) => {
+const PersonKnownForSlide = ({ mediaLink, cover, filmTitle }) => {
 	return (
 		<Link
-			to=""
+			to={mediaLink}
 			className="relative flex flex-col md:mx-3 items-center cursor-pointer group"
 		>
 			<div className="overflow-hidden border border-gray-400 h-[200px] w-[140px] md:h-[205px] md:w-[145px]">

@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import { FaRegCirclePlay } from "react-icons/fa6";
 
-const MovieSlide = ({ title, img, link = null, ranking = null, description = null, type, pegi = null, scrollable = false, year }) => {
+const MovieSlide = ({ title, img, mediaLink, ranking = null, description = null, type, pegi = null, scrollable = false, year }) => {
 
 	const renderMovieSlide = () => {
 		switch (type) {
 			case "movie":
 				return (
-					<Link to={`/movie/${link}`} className="flex flex-col gap-y-2 mx-3 relative group">
+					<Link to={mediaLink} className="flex flex-col gap-y-2 mx-3 relative group">
 						<div className="h-[260px] border border-gray-700 overflow-hidden">
 							<img
 								src={img}
@@ -26,8 +26,8 @@ const MovieSlide = ({ title, img, link = null, ranking = null, description = nul
 			case "trailer":
 				return (
 					<Link
-						to={link}
-						target={link ? "_blank" : null}
+						to={mediaLink}
+						target={mediaLink ? "_blank" : null}
 						rel="noopener noreferrer"
 						className={
 							"flex flex-col mx-2 gap-y-2 relative group " +

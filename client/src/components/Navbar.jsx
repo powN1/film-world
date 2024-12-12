@@ -1,4 +1,4 @@
-import { Link, Outlet, } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { CiUser } from "react-icons/ci";
@@ -55,11 +55,14 @@ const Navbar = () => {
 
 	const modalInputRef = useRef(null);
 
-	const fetchMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-	const fetchSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series");
-	const fetchGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games");
-	const fetchActors = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
-
+	const fetchMovies = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+	const fetchSeries = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series");
+	const fetchGames = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games");
+	const fetchActors = async () =>
+		await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
 
 	const handleMediaFetch = async () => {
 		const movies = await fetchMovies();
@@ -528,25 +531,28 @@ const Navbar = () => {
 											{item.submenu ? (
 												<ul className="absolute left-0 list-none group-hover:block hidden z-10">
 													{item.submenu.map((submenu, submenuIndex) => {
-                            const category = submenu.category && submenu.category
-                            const subCategory = submenu.subCategory && submenu.subCategory
-                            
-                            const dataToPass = { category, subCategory }
+														const category =
+															submenu.category && submenu.category;
+														const subCategory =
+															submenu.subCategory && submenu.subCategory;
 
-                            return (
-														<li
-															key={submenuIndex}
-															className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
-														>
-															<Link
-																to={submenu.path}
-                                state={dataToPass}
-																className="block py-2 px-7 font-bold hover:text-yellow-500"
+														const dataToPass = { category, subCategory };
+
+														return (
+															<li
+																key={submenuIndex}
+																className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
 															>
-																{submenu.title}
-															</Link>
-														</li>
-													)})}
+																<Link
+																	to={submenu.path}
+																	state={dataToPass}
+																	className="block py-2 px-7 font-bold hover:text-yellow-500"
+																>
+																	{submenu.title}
+																</Link>
+															</li>
+														);
+													})}
 												</ul>
 											) : null}
 										</li>
@@ -595,13 +601,7 @@ const Navbar = () => {
 										{/* SLIDES */}
 										{foundMedias.slice(0, 6).map((media, i) => {
 											const mediaType =
-												media.itemType === "movies"
-													? "movie"
-													: media.itemType === "series"
-														? "serie"
-														: media.itemType === "games"
-															? "game"
-															: "person";
+												(media.itemType !== "person" && media.itemType) ? `${media.itemType.slice(0, -1)}` : "person";
 											const mediaLink = media.title
 												? media.titleId
 												: media.personal_info.nameId;

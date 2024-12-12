@@ -15,14 +15,8 @@ const UserRatingsMedias = ({ medias }) => {
 				<div className="flex flex-wrap gap-4 lg:gap-x-8 pt-16 px-2 lg:px-0 lg:w-2/3">
 					{medias.map((media, i) => {
 						// Link path to movie/serie/game
-						const basePath =
-							media.itemType === "movies"
-								? "movie"
-								: media.itemType === "series"
-									? "serie"
-									: media.itemType === "games"
-										? "game"
-										: "";
+						const mediaLink = `/${media.item.itemType.slice(0, -1)}/${media.item.titleId}`
+
 						return (
 							<div
 								key={i}
@@ -49,7 +43,7 @@ const UserRatingsMedias = ({ medias }) => {
 										)}
 									</div>
 									<Link
-										to={`/${basePath}/${media.item.titleId}`}
+										to={mediaLink}
 										className="block w-[108px] h-[155px] md:w-[144px] md:h-[205px] overflow-hidden"
 									>
 										<img
@@ -61,7 +55,7 @@ const UserRatingsMedias = ({ medias }) => {
 								</div>
 
 								<Link
-									to={`/${basePath}/${media.item.titleId}`}
+									to={mediaLink}
 									className="px-2 text-center line-clamp-2 md:line-clamp-3 text-black"
 								>
 									{media.item.title}

@@ -52,6 +52,7 @@ const Reviews = () => {
 							return (
 								<ReviewSlide
 									key={i}
+                  link={review.review_id}
 									author={personal_info}
 									category={review.category}
 									description={review.description}

@@ -54,6 +54,7 @@ const News = ({ type }) => {
 							key={i}
 							type="categorized"
 							img={article.banner}
+              link={article.articleId}
 							category={article.tags}
 							title={article.title}
 							description={article.description}
@@ -63,7 +64,8 @@ const News = ({ type }) => {
 					))}
 				</div>
 				<Link
-					path="/"
+					to="/articles"
+          state={{ category: type }}
 					className="w-[90%] lg:w-1/3 text-center self-center py-3 border border-gray-300 font-bold mt-3 hover:bg-black hover:text-white duration-500"
 				>
 					See all news

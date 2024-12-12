@@ -39,14 +39,7 @@ const UserHighestRatings = ({ type, ratings }) => {
 					<div className="flex gap-x-4 lg:gap-x-8">
 						{highestRatedMedia.slice(0, numberOfMediasToShow).map((rating, i) => {
 							// Link path to movie/serie/game
-							const basePath =
-								rating.itemType === "movies"
-									? "movie"
-									: rating.itemType === "series"
-										? "serie"
-										: rating.itemType === "games"
-											? "game"
-											: "";
+							const basePath = rating.itemType.slice(0, -1);
 							return (
 								<div
 									key={i}
