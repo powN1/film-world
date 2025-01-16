@@ -72,7 +72,8 @@ const UserHighestRatings = ({ type, ratings }) => {
 						})}
 					</div>
 					<Link
-						to="ratings"
+						to="details"
+            state={{ category: "ratings", subCategory: type }} 
 						className="w-[90%] flex justify-center items-center gap-x-2 lg:w-1/4 self-center py-3 max-lg:px-10 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
 					>
 						See all rated {type}

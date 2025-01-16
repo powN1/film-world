@@ -102,14 +102,9 @@ const RankingFilter = () => {
 	const handleShowUnderline = (e) => {
 		const category = e.target.innerText.toLowerCase();
 
-		if (
-			category !== currentCategory &&
-			categories.map((category) => category.name).includes(category)
-		) {
+		if (category !== currentCategory && categories.map((category) => category.name).includes(category)) {
 			setCurrentCategory(category);
-			setCurrentSubCategory(
-				categories.filter((cat) => cat.name === category)[0].subCategories[0],
-			);
+			setCurrentSubCategory(categories.filter((cat) => cat.name === category)[0].subCategories[0]);
 		} else if (category !== currentSubCategory) {
 			setCurrentSubCategory(category);
 		}
@@ -152,10 +147,7 @@ const RankingFilter = () => {
 	};
 
 	useEffect(() => {
-		if (
-			currentCategory.toLowerCase() === "movies" ||
-			currentCategory.toLowerCase() === "series"
-		) {
+		if ( currentCategory.toLowerCase() === "movies" || currentCategory.toLowerCase() === "series") {
 			filters[0].elements = filtersMovieSerieType;
 			filters[1].elements = filtersCountries.map(country => country.english_name);
 		} else if (currentCategory.toLowerCase() === "games") {

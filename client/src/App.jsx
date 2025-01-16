@@ -60,6 +60,7 @@ function App() {
   const [randomGames, setRandomGames] = useState([]);
   const [latestGames, setLatestGames] = useState([]);
   const [topRatedGames, setTopRatedGames] = useState([]);
+  const [upcomingGames, setUpcomingGames] = useState([]);
   const [anticipatedGames, setAnticipatedGames] = useState([]);
 
   const [movieRoles, setMovieRoles] = useState([]);
@@ -134,7 +135,8 @@ function App() {
   // const fetchPopularSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-popular", { count: 20 });
   const fetchTopRatedSeries = async () =>
     await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-top-rated", { count: 100 });
-  // const fetchUpcomingSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-upcoming", { count: 10 });
+  const fetchUpcomingSeries = async () =>
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-upcoming", { count: 10 });
   const fetchLatestSeries = async () =>
     await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-latest", { sortByRating: true, count: 10 });
 
@@ -153,6 +155,8 @@ function App() {
     });
   const fetchTopRatedGames = async () =>
     await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-top-rated", { count: 100 });
+  const fetchUpcomingGames = async () =>
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-upcoming", { count: 10 });
   const fetchAnticipatedGames = async () =>
     await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-anticipated", { sortByRating: true, count: 20 });
 
@@ -234,12 +238,13 @@ function App() {
       fetchRandomSeries(),
       // fetchPopularSeries(),
       fetchTopRatedSeries(),
-      // fetchUpcomingSeries(),
+      fetchUpcomingSeries(),
       fetchLatestSeries(),
 
       fetchRandomGames(),
       fetchLatestGames(),
       fetchTopRatedGames(),
+      fetchUpcomingGames(),
       fetchAnticipatedGames(),
 
       fetchMovieRoles(),
@@ -282,12 +287,13 @@ function App() {
           randomSeriesResponse,
           // popularSeriesResponse,
           topRatedSeriesResponse,
-          // upcomingSeriesResponse,
+          upcomingSeriesResponse,
           latestSeriesResponse,
 
           randomGamesResponse,
           latestGamesResponse,
           topRatedGamesResponse,
+          upcomingGamesResponse,
           anticipatedGamesResponse,
 
           movieRolesResponse,
@@ -328,13 +334,16 @@ function App() {
           setRandomSeries(randomSeriesResponse.data.series);
           // setPopularSeries(popularSeriesResponse.data.series);
           setTopRatedSeries(topRatedSeriesResponse.data.series);
-          // setUpcomingSeries(upcomingSeriesResponse.data.series);
+          setUpcomingSeries(upcomingSeriesResponse.data.series);
           setLatestSeries(latestSeriesResponse.data.series);
 
           setRandomGames(randomGamesResponse.data.games);
           setLatestGames(latestGamesResponse.data.games);
           setTopRatedGames(topRatedGamesResponse.data.games);
-          setAnticipatedGames(anticipatedGamesResponse.data.games), setMovieRoles(movieRolesResponse.data.roles);
+          setUpcomingGames(upcomingGamesResponse.data.games);
+          setAnticipatedGames(anticipatedGamesResponse.data.games), 
+
+          setMovieRoles(movieRolesResponse.data.roles);
           setMovieTopRatedRoles(movieTopRatedRolesResponse.data.roles);
           setMovieTopRatedMaleRoles(movieTopRatedMaleRolesResponse.data.roles);
           setMovieTopRatedFemaleRoles(movieTopRatedFemaleRolesResponse.data.roles);
@@ -380,7 +389,7 @@ function App() {
     randomSeries,
     // popularSeries,
     topRatedSeries,
-    // upcomingSeries, setUpcomingSeries,
+    upcomingSeries,
     latestSeries,
 
     animes,
@@ -391,6 +400,7 @@ function App() {
     randomGames,
     latestGames,
     topRatedGames,
+    upcomingGames,
     anticipatedGames,
 
     movieRoles,

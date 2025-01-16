@@ -7,7 +7,7 @@ import { DataContext } from "../App";
 import { getFullYear } from "../common/date";
 
 const WideTrailerSlider = ({ type, showCategories = true }) => {
-	const { upcomingMovies, upcomingSeries, topRatedSeries } = useContext(DataContext);
+	const { upcomingMovies, upcomingSeries, upcomingGames } = useContext(DataContext);
 
 	const [currentCategory, setCurrentCategory] = useState("movies");
 
@@ -15,8 +15,8 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
   
   useEffect(() => {
     if(currentCategory.toLowerCase() === categories[0].title.toLowerCase()) setCurrentSlidesArray(upcomingMovies);
-    if(currentCategory.toLowerCase() === categories[1].title.toLowerCase()) setCurrentSlidesArray(topRatedSeries);
-    if(currentCategory.toLowerCase() === categories[2].title.toLowerCase()) setCurrentSlidesArray([]);
+    if(currentCategory.toLowerCase() === categories[1].title.toLowerCase()) setCurrentSlidesArray(upcomingSeries);
+    if(currentCategory.toLowerCase() === categories[2].title.toLowerCase()) setCurrentSlidesArray(upcomingGames);
   }, [currentCategory])
 
 	// Slider settings
@@ -57,7 +57,7 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
 	};
 
   useEffect(() => {
-    if(type === "series") setCurrentSlidesArray(topRatedSeries)
+    if(type === "series") setCurrentSlidesArray(upcomingSeries)
   }, [])
 
 	return (
@@ -93,18 +93,18 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
 			) : null}
 			<div className="w-[95%] self-center">
 				<Slider {...settings}>
-					{currentSlidesArray.slice(0, 9).map((movie, i) => {
-            const year = getFullYear(movie.releaseDate) || getFullYear(movie.firstAirDate);
+					{currentSlidesArray.slice(0, 9).map((media, i) => {
+            const year = getFullYear(media.releaseDate) || getFullYear(media.firstAirDate);
 						return (
 							<MovieSlide
 								key={i}
-								title={movie.title}
-								img={movie.banner}
-                mediaLink={movie.videos.length > 0 ? movie.videos[0] : null}
-								ranking={movie.activity.ranking ? movie.activity.ranking : null}
-								description={movie.description}
+								title={media.title}
+								img={media.banner}
+                mediaLink={media.videos.length > 0 ? media.videos[0] : null}
+								ranking={media.activity.ranking ? media.activity.ranking : null}
+								description={media.description}
 								type="trailer"
-								pegi={movie.pegi}
+								pegi={media.pegi}
                 year={year}
 							/>
 						);

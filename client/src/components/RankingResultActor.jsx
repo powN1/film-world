@@ -16,7 +16,7 @@ const RankingResultActor = (props) => {
 	};
 
 	return (
-		<div className={ "w-full flex lg:flex-col py-5 gap-5 " + (index % 2 === 1 ? "bg-gray-200/25" : "") } >
+		<div className={ "w-full flex lg:flex-col px-3 py-5 gap-5 " + (index % 2 === 1 ? "bg-gray-200/25" : "") } >
 			<Link className="lg:hidden relative min-w-[100px] w-[100px] min-h-[150px] max-h-[150px] md:min-w-[90px] md:w-[90px] md:min-h-[125px] border border-gray-300 cursor-pointer">
 				<img src={img} alt="" className="h-full w-full object-cover" />
 			</Link>

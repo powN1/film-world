@@ -105,9 +105,11 @@ const WideSlider = () => {
       </div>
       <Link
         to="/ranking"
+        state={{ category: currentCategory }}
         className="w-[90%] lg:w-1/5 text-center self-center py-3 max-lg:px-10 border border-gray-300 font-bold mt-8 hover:bg-white hover:text-black duration-500"
       >
-        Check most popular movies
+        Check most popular
+        <span> {currentCategory}</span>
       </Link>
     </div>
   );

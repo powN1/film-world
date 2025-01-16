@@ -17,7 +17,7 @@ const medias = [
 ];
 
 const UserRatingsInfo = ({ user }) => {
-  const { currentCategory, setCurrentCategory, currentMediaSelected, setCurrentMediaSelected } = useContext(UserRatingsContext)
+  const { currentCategory, setCurrentCategory, currentSubCategory, setCurrentSubCategory } = useContext(UserRatingsContext)
 
 	const { personal_info: { firstName, surname, username, profile_img }, ratings } = user;
 
@@ -26,15 +26,15 @@ const UserRatingsInfo = ({ user }) => {
 
 		if (category !== currentCategory) {
 			setCurrentCategory(category);
-			setCurrentMediaSelected(medias[0].title.toLowerCase());
+			setCurrentSubCategory(medias[0].title.toLowerCase());
 		}
 	};
 
 	const handleShowHighlight = (e) => {
 		const media = e.target.innerText.toLowerCase();
 
-		if (media !== currentMediaSelected) {
-			setCurrentMediaSelected(media);
+		if (media !== currentSubCategory) {
+			setCurrentSubCategory(media);
 		}
 	};
 	return (
@@ -94,7 +94,7 @@ const UserRatingsInfo = ({ user }) => {
 											path="/"
 											className={
 												"block px-3 py-1 relative " +
-												(currentMediaSelected === media.title.toLowerCase()
+												(currentSubCategory === media.title.toLowerCase()
 													? "bg-yellow-400 font-bold"
 													: "")
 											}

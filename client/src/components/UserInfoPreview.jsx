@@ -67,6 +67,7 @@ const UserInfoPreview = ({ user, setUser }) => {
           headers: { Authorization: `${access_token}` },
         }
       );
+      console.log(userAuthUsername, username);
       console.log(response.data);
       return response.data.userBackgroundUrl;
     } catch (err) {

@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import axios from "axios";
 import Download from "../components/Download";
@@ -12,11 +12,13 @@ export const UserRatingsContext = createContext({});
 const UserDetailsPage = () => {
 	const { userId } = useParams();
 
+  const location = useLocation()
+
 	const [user, setUser] = useState({ personal_info: {} });
 	const [loading, setLoading] = useState(true);
 
 	const [currentCategory, setCurrentCategory] = useState("ratings");
-	const [currentMediaSelected, setCurrentMediaSelected] = useState("movies");
+	const [currentSubCategory, setCurrentSubCategory] = useState("movies");
 	const [mediasToShow, setMediasToShow] = useState([]);
 
 	const fetchUser = async (userId) => {
@@ -52,23 +54,37 @@ const UserDetailsPage = () => {
 	useEffect(() => {
     if(currentCategory.toLowerCase() === "ratings") {
       if (user.ratings) { 
-        const show = user.ratings.filter((media) => media.itemType === currentMediaSelected.toLowerCase());
+        const show = user.ratings.filter((media) => media.itemType === currentSubCategory.toLowerCase());
         setMediasToShow(show);
       }
     } else if(currentCategory.toLowerCase() === "wants to see") {
       if (user.wantToSeeMedias) { 
-        const show = user.wantToSeeMedias.filter((media) => media.itemType === currentMediaSelected.toLowerCase());
+        const show = user.wantToSeeMedias.filter((media) => media.itemType === currentSubCategory.toLowerCase());
         setMediasToShow(show);
       }
     } else if(currentCategory.toLowerCase() === "favorite") {
       if (user.wantToSeeMedias) { 
-        const show = user.favoriteMedias.filter((media) => media.itemType === currentMediaSelected.toLowerCase());
+        const show = user.favoriteMedias.filter((media) => media.itemType === currentSubCategory.toLowerCase());
         setMediasToShow(show);
       }
     }
-	}, [currentCategory, currentMediaSelected]);
+	}, [currentCategory, currentSubCategory]);
 
 
+	useEffect(() => {
+		// Retrieve the state passed from the previous page
+		if (location.state) {
+			const cat = location.state.category;
+			const subCat = location.state.subCategory;
+
+			if (cat) {
+				if (currentCategory !== cat) setCurrentCategory(cat);
+			}
+			if (subCat) {
+				if (currentSubCategory !== subCat) setCurrentSubCategory(subCat);
+			}
+		}
+	}, [location]);
 	return loading ? (
 		<Loader />
 	) : (
@@ -76,8 +92,8 @@ const UserDetailsPage = () => {
 			value={{
 				currentCategory,
 				setCurrentCategory,
-				currentMediaSelected,
-				setCurrentMediaSelected,
+				currentSubCategory,
+				setCurrentSubCategory,
 			}}
 		>
 			<UserRatingsInfo user={user} />

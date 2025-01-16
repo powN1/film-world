@@ -36,6 +36,7 @@ const UserLatestReviews = ({ author, reviews }) => {
 
 					<Link
 						to="texts"
+            state={{ category: "reviews" }}
 						className="w-[90%] lg:w-1/4 text-center self-center py-3 max-lg:px-10 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
 					>
 						See all

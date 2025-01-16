@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from "react";
-import { DataContext } from "../App";
+import { useContext } from "react";
 import RankingResult from "./RankingResult";
 import { getFullYear } from "../common/date";
 import { RankingContext } from "../pages/RankingPage";
@@ -29,7 +28,7 @@ const RankingResults = () => {
 				</h2>
 				<div className="flex flex-col w-full md:w-[85%] lg:w-2/3 items-center">
 					{mediaToShow.map((media, i) => {
-						const ratingFixed = media.activity.rating.toFixed(2);
+						const ratingFixed = media.activity.rating && media.activity.rating.toFixed(2);
 						if (
 							localCurrentCategory === "movies" ||
 							localCurrentCategory === "series" ||
@@ -59,15 +58,13 @@ const RankingResults = () => {
 								/>
 							);
 						} else if ( localCurrentCategory === "movie roles" || localCurrentCategory === "serie roles") {
-              console.log(localCurrentCategory)
-              console.log(media)
 							const year = media.movie ? getFullYear(media.movie.releaseDate) : getFullYear(media.serie.firstAirDate);
 							const title = media.movie ? media.movie.title : media.serie.title;
 							return (
 								<RankingResultRole
 									key={i}
 									index={i}
-									img={media.characterBanner}
+									img={media.characterBanner || media.actor.banner}
 									title={title}
 									year={year}
 									actor={media.actor}

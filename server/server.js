@@ -12,7 +12,7 @@ import "dotenv/config";
 // firebase
 import admin from "firebase-admin";
 import { getAuth } from "firebase-admin/auth";
-import serviceAccountKey from "./movie-database-project-c228a-firebase-adminsdk-byj42-74fe5a0510.json" assert {
+import serviceAccountKey from "./movie-database-project-c228a-firebase-adminsdk-byj42-74fe5a0510.json" with {
 	type: "json",
 };
 
@@ -50,7 +50,6 @@ const s3 = new aws.S3({
 	accessKeyId: process.env.AWS_ACCESS_KEY,
 	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
-
 // Connect mongoose to the database
 mongoose.connect(process.env.DB_LOCATION, {
 	useNewUrlParser: true,
@@ -919,7 +918,7 @@ async function getSerieFromTheMovieDBById(serieId) {
 
 			const genreArray = [];
 			const firstAirDate = new Date(first_air_date);
-			const lastAirDate = new Date(last_air_date);
+			const lastAirDate = last_air_date && new Date(last_air_date);
 			const createdBy = created_by.map((creator) => creator.name);
 
 			const coverUrl = `https://image.tmdb.org/t/p/w342${poster_path}`;
@@ -1007,8 +1006,16 @@ async function getSerieFromTheMovieDBById(serieId) {
 					console.log("got videos");
 				})
 				.catch((err) => console.log(err));
+    
+			const serieTitleCoded = title.replace(/[^a-zA-Z0-9]/g, " ") .replace(/\s+/g, "-") .trim();
+			const serieReleaseDate = new Date(firstAirDate);
+
+			const serieYear = serieReleaseDate.getFullYear();
+			const serieTitleId = `${serieTitleCoded}-${serieYear}-${nanoid().slice(0, 6)}`;
+
 			const serie = new Serie({
 				title,
+        titleId: serieTitleId,
 				cover,
 				banner,
 				createdBy,
@@ -1016,7 +1023,7 @@ async function getSerieFromTheMovieDBById(serieId) {
 				genre: genreArray,
 				originCountry: origin_country,
 				firstAirDate,
-				lastAirDate,
+				lastAirDate: lastAirDate && lastAirDate,
 				numberOfEpisodes,
 				numberOfSeasons,
 				status,
@@ -1027,6 +1034,7 @@ async function getSerieFromTheMovieDBById(serieId) {
 				seasons: seasonsFormatted,
 				photos,
 				videos,
+        itemType: "series"
 			});
 
 			serie
@@ -1036,13 +1044,14 @@ async function getSerieFromTheMovieDBById(serieId) {
 		})
 		.catch((err) => console.log(err));
 }
-const listOfSeriesByIdToFetch = [1425, 40008, 71912];
+const listOfSeriesByIdToFetch = [247767, 241609,209876, 271855,241114 ];
+
 // setTimeout(() => {
 //   console.log('fetching now')
 // 	listOfSeriesByIdToFetch.forEach(async (serie) => {
 // 		await getSerieFromTheMovieDBById(serie);
 // 	});
-// }, 3000);
+// }, 1000);
 
 async function getGameFromTheIGDBById(gameId) {
 	const urlGame = `https://api.igdb.com/v4/games`;
@@ -1053,7 +1062,7 @@ async function getGameFromTheIGDBById(gameId) {
 		headers: {
 			"Content-Type": "text/plain",
 			"Client-ID": "7l5442ioowsl72nd3t8kcxom4nneu2",
-			Authorization: "Bearer qi0ucg8biwwrddmt2a81snmdq3gohf",
+			Authorization: "Bearer ii7prjl7w609lypuxh0a0y5zup3zwi",
 		},
 	};
 
@@ -1145,9 +1154,16 @@ async function getGameFromTheIGDBById(gameId) {
 
 			const cover = await uploadFileToAWSfromUrl(coverUrl);
 			const banner = await uploadFileToAWSfromUrl(bannerUrl);
+      
+			const gameTitleCoded = title.replace(/[^a-zA-Z0-9]/g, " ") .replace(/\s+/g, "-") .trim();
+			const gameReleaseDate = new Date(releaseDate);
+
+			const gameYear = gameReleaseDate.getFullYear();
+			const gameTitleId = `${gameTitleCoded}-${gameYear}-${nanoid().slice(0, 6)}`;
 
 			const game = new Game({
 				title,
+        titleId: gameTitleId,
 				banner,
 				cover,
 				description: summary,
@@ -1167,6 +1183,7 @@ async function getGameFromTheIGDBById(gameId) {
 				publishers,
 				photos: uploadedScreenshots,
 				videos: videosLinks,
+        itemType: "games"
 			});
 
 			game
@@ -1177,9 +1194,7 @@ async function getGameFromTheIGDBById(gameId) {
 		.catch((err) => console.log(err));
 }
 const listOfGamesToFetch = [
-	51523, 298526, 300976, 135994, 92550, 37136, 51523, 298526, 302704, 228530,
-	152244, 76883, 279661, 250634,
-];
+ 297805, 296837, 258065, 258065, 309653, 251771];
 // listOfGamesToFetch.forEach(async (game) => {
 // 	await getGameFromTheIGDBById(game);
 // 	setTimeout(() => {}, 3500);
@@ -2190,6 +2205,42 @@ app.post("/get-games", (req, res) => {
 		});
 });
 
+app.post("/get-games-anticipated", (req, res) => {
+	const { sortByRating, count } = req.body;
+
+	let countQuery = 0;
+	if (count) {
+		if (typeof count !== "number")
+			return res
+				.status(400)
+				.json({ error: "Wrong game count. Please type a number" });
+		countQuery = count;
+	}
+
+	let sortQuery = {};
+	if (sortByRating) {
+		if (typeof sortByRating !== "boolean") {
+			return res
+				.status(400)
+				.json({ error: "Wrong sort value. Please choose a true or false" });
+		}
+		sortQuery = { "activity.peopleAwaiting": -1 };
+	}
+
+	const findQuery = {};
+	findQuery["activity.peopleAwaiting"] = { $exists: true };
+
+	Game.find(findQuery)
+		.sort(sortQuery)
+		.limit(countQuery)
+		.then((games) => {
+			return res.status(200).json({ games });
+		})
+		.catch((err) => {
+			return res.status(500).json({ error: err.message });
+		});
+});
+
 app.post("/get-games-by-filters", (req, res) => {
 	const { count, genre, country, year } = req.body;
 
@@ -2295,6 +2346,10 @@ app.post("/get-games-latest", (req, res) => {
 app.post("/get-games-top-rated", (req, res) => {
 	const { count } = req.body;
 
+	const findQuery = {};
+  const today = new Date()
+  findQuery["releaseDate"] = { $lt: today }
+
 	const sortQuery = {};
 	let countQuery = 0;
 
@@ -2309,7 +2364,7 @@ app.post("/get-games-top-rated", (req, res) => {
 
 	sortQuery["activity.rating"] = -1;
 
-	Game.find()
+	Game.find(findQuery)
 		.sort(sortQuery)
 		.limit(countQuery)
 		.then((games) => {
@@ -2320,10 +2375,15 @@ app.post("/get-games-top-rated", (req, res) => {
 		});
 });
 
-app.post("/get-games-anticipated", (req, res) => {
-	const { sortByRating, count } = req.body;
+app.post("/get-games-upcoming", (req, res) => {
+	const { count } = req.body;
 
+	const findQuery = {};
+	const sortQuery = {};
 	let countQuery = 0;
+
+	// Error checking
+
 	if (count) {
 		if (typeof count !== "number")
 			return res
@@ -2332,18 +2392,9 @@ app.post("/get-games-anticipated", (req, res) => {
 		countQuery = count;
 	}
 
-	let sortQuery = {};
-	if (sortByRating) {
-		if (typeof sortByRating !== "boolean") {
-			return res
-				.status(400)
-				.json({ error: "Wrong sort value. Please choose a true or false" });
-		}
-		sortQuery = { "activity.peopleAwaiting": -1 };
-	}
-
-	const findQuery = {};
-	findQuery["activity.peopleAwaiting"] = { $exists: true };
+	const today = new Date();
+	findQuery.releaseDate = { $gt: today };
+	sortQuery["releaseDate"] = 1;
 
 	Game.find(findQuery)
 		.sort(sortQuery)
@@ -2934,7 +2985,7 @@ app.post("/get-roles-movie-top-rated", (req, res) => {
 	Role.find(findQuery)
 		.limit(count)
 		.sort(sortQuery)
-		.populate("actor", "activity personal_info.name personal_info.nameId")
+		.populate("actor", "activity personal_info.name personal_info.nameId banner")
 		.populate("movie", "title releaseDate")
 		.then((roles) => {
 			return res.status(200).json({ roles });
@@ -2992,6 +3043,7 @@ app.post("/get-roles-movie-top-rated-male", async (req, res) => {
 
 					// Specific fields from actor document
 					"actor.personal_info.name": 1,
+					"actor.banner": 1,
 					"actor.activity.rating": 1,
 
 					// Specific fields from movie document
@@ -3057,6 +3109,7 @@ app.post("/get-roles-movie-top-rated-female", async (req, res) => {
 
 					// Specific fields from actor document
 					"actor.personal_info.name": 1,
+					"actor.banner": 1,
 					"actor.activity.rating": 1,
 
 					// Specific fields from movie document
@@ -3080,7 +3133,7 @@ app.post("/get-roles-serie", (req, res) => {
 
 	Role.find(findQuery)
 		.limit(count)
-		.populate("actor", "activity personal_info.name personal_info.nameId")
+		.populate("actor", "banner activity personal_info.name personal_info.nameId")
 		.populate("serie", "title firstAirDate")
 		.then((roles) => {
 			return res.status(200).json({ roles });
@@ -3100,7 +3153,7 @@ app.post("/get-roles-serie-top-rated", (req, res) => {
 	Role.find(findQuery)
 		.limit(count)
 		.sort(sortQuery)
-		.populate("actor", "activity personal_info.name personal_info.nameId")
+		.populate("actor", "banner activity personal_info.name personal_info.nameId")
 		.populate("serie", "title firstAirDate")
 		.then((roles) => {
 			return res.status(200).json({ roles });
@@ -3158,6 +3211,7 @@ app.post("/get-roles-serie-top-rated-male", async (req, res) => {
 
 					// Specific fields from actor document
 					"actor.personal_info.name": 1,
+          "actor.banner": 1,
 					"actor.activity.rating": 1,
 
 					// Specific fields from movie document
@@ -3222,6 +3276,7 @@ app.post("/get-roles-serie-top-rated-female", async (req, res) => {
 					activity: 1,
 
 					// Specific fields from actor document
+					"actor.banner": 1,
 					"actor.personal_info.name": 1,
 					"actor.activity.rating": 1,
 
@@ -3518,7 +3573,6 @@ app.post("/get-series-most-anticipated", (req, res) => {
 		});
 });
 
-// NOTE: THIS IS COPIED FROM THE MOVIES ROUTE AND NEEDS TO BE ADJUSTED CUZ THERE IS NO RELEASEDATE FIELD FOR SERIES DOCUMENTS
 app.post("/get-series-upcoming", (req, res) => {
 	const { count } = req.body;
 
@@ -3536,10 +3590,9 @@ app.post("/get-series-upcoming", (req, res) => {
 		countQuery = count;
 	}
 
-	// NOTE: THIS IS COPIED FROM THE MOVIES ROUTE AND NEEDS TO BE ADJUSTED CUZ THERE IS NO RELEASEDATE FIELD FOR SERIES DOCUMENTS
 	const today = new Date();
-	findQuery.releaseDate = { $gt: today };
-	sortQuery["releaseDate"] = 1;
+	findQuery.firstAirDate = { $gt: today };
+	sortQuery["firstAirDate"] = 1;
 
 	Serie.find(findQuery)
 		.sort(sortQuery)
@@ -4990,8 +5043,8 @@ app.post("/facebook-auth", async (req, res) => {
 					},
 					facebook_auth: true,
 				});
-
-				await user
+        
+        await user
 					.save()
 					.then((u) => {
 						user = u;

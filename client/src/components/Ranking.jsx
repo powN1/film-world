@@ -98,7 +98,7 @@ const Ranking = ({ type, showCategories, anticipated = false }) => {
         </div>
         <Link
           to="/ranking"
-          state={{ category: type }}
+          state={{ category: type, subCategory: anticipated && "most anticipated" }}
           className="w-[90%] lg:w-1/3 self-center py-3 text-center max-lg:px-10 border border-gray-300 font-bold mt-8 hover:bg-black hover:text-white duration-500"
         >
           See ranking
