@@ -4663,12 +4663,16 @@ app.post("/facebook-auth", async (req, res) => {
     });
 });
 
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(__dirname, "../client/dist"));
+
+  app.get("*", (req, res) => {
+    path.resolve(__dirname, "../", "client", "dist", "index.html");
+  });
+} else {
+  app.get("/", (req, res) => res.send("Please set to production"));
+}
+
 app.listen(PORT, () => {
   console.log(`listening on port: ${PORT}`);
 });
-
-// app.use(express.static(__dirname, "../client/dist"));
-//
-// app.get("*", (req, res) => {
-//   path.resolve(__dirname, "../", "client", "dist", "index.html");
-// });
