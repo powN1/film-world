@@ -8,8 +8,8 @@ import { IoMdClose } from "react-icons/io";
 import { IoChevronDown } from "react-icons/io5";
 import { IoMdExit } from "react-icons/io";
 import { HiOutlineCog6Tooth } from "react-icons/hi2";
-import filmwebLogo from "../imgs/filmweb-logo.png";
-import filmwebLogoSmall from "../imgs/filmweb-logo-small.png";
+import logo from "../imgs/logo.webp";
+import logoSmall from "../imgs/logo-small.webp";
 import { navbarItems } from "./navbarItems";
 import { useContext, useEffect, useRef, useState } from "react";
 import SearchPoster from "../common/SearchPoster";
@@ -70,22 +70,18 @@ const Navbar = () => {
   };
 
   const handleMobileMenuDropdown = (e) => {
+    // Animate dropdown menu using grid 0fr -> 1fr
     const list = e.currentTarget.children[1];
     if (list) {
-      if (list.classList.contains("invisible")) {
-        list.classList.remove("invisible");
-        list.classList.remove("max-h-0");
-        list.classList.add("visible");
-        list.classList.add("max-h-[700px]");
-        e.currentTarget.children[0].children[0].classList.toggle("rotate-180");
+      if (list.classList.contains("grid-rows-animate-height-closed")) {
+        list.classList.remove("grid-rows-animate-height-closed");
+        list.classList.add("grid-rows-animate-height-open");
       } else {
-        list.classList.remove("visible");
-        list.classList.remove("max-h-[700px]");
-        list.classList.add("invisible");
-        list.classList.add("max-h-0");
-        e.currentTarget.children[0].children[0].classList.toggle("rotate-180");
+        list.classList.remove("grid-rows-animate-height-open");
+        list.classList.add("grid-rows-animate-height-closed");
       }
     }
+    e.currentTarget.children[0].children[0].classList.toggle("rotate-180");
   };
 
   const handleInputSearch = (e) => {
@@ -263,7 +259,7 @@ const Navbar = () => {
               }
             >
               <img
-                src={mobileView || tabletView ? filmwebLogo : navbarSize === "small" ? filmwebLogoSmall : filmwebLogo}
+                src={mobileView || tabletView ? logo : navbarSize === "small" ? logoSmall : logo}
                 alt="website logo"
                 className="h-full w-full object-cover block mx-auto select-none"
               />
@@ -640,7 +636,7 @@ const Navbar = () => {
                 ) : (
                   <Link to="/" className="h-[32px]">
                     <img
-                      src={filmwebLogo}
+                      src={logo}
                       alt="website logo"
                       className="h-full w-full object-cover block mx-auto select-none"
                     />
@@ -671,10 +667,10 @@ const Navbar = () => {
               )}
             </div>
 
-            <ul className="list-none flex flex-col">
+            <ul className="overflow-hidden list-none">
               {navbarItems.map((item, itemIndex) => {
                 return (
-                  <li key={itemIndex} className="relative" onClick={handleMobileMenuDropdown}>
+                  <li key={itemIndex} onClick={handleMobileMenuDropdown}>
                     <Link
                       to={!item.submenu && item.path}
                       onClick={!item.submenu && (() => setShowMobileMenu((prevVal) => !prevVal))}
@@ -684,28 +680,30 @@ const Navbar = () => {
                       {item.submenu && <IoChevronDown className="text-gray-400 text-xl duration-300 origin-center" />}
                     </Link>
                     {item.submenu && (
-                      <ul className="w-full list-none block transition-all duration-500 max-h-0 invisible sliding relative after:content-[''] after:w-[4px] after:h-full after:absolute after:left-0 after:top-0 after:bg-yellow-400 ">
-                        {item.submenu.map((submenu, submenuIndex) => {
-                          const category = submenu.category && submenu.category;
-                          const subCategory = submenu.subCategory && submenu.subCategory;
+                      <ul className="grid grid-rows-animate-height-closed sliding transition-all duration-500 relative after:content-[''] after:w-[4px] after:h-full after:absolute after:left-0 after:top-0 after:bg-yellow-400">
+                        <div className="overflow-hidden bg-neutral-200 text-black text-nowrap">
+                          {item.submenu.map((submenu, submenuIndex) => {
+                            const category = submenu.category && submenu.category;
+                            const subCategory = submenu.subCategory && submenu.subCategory;
 
-                          const dataToPass = { category, subCategory };
-                          return (
-                            <li
-                              key={submenuIndex}
-                              className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
-                            >
-                              <Link
-                                to={submenu.path}
-                                state={dataToPass}
-                                className="block py-3 px-7 font-medium hover:text-yellow-500"
-                                onClick={() => setShowMobileMenu((prevVal) => !prevVal)}
+                            const dataToPass = { category, subCategory };
+                            return (
+                              <li
+                                key={submenuIndex}
+                                className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
                               >
-                                {submenu.title}
-                              </Link>
-                            </li>
-                          );
-                        })}
+                                <Link
+                                  to={submenu.path}
+                                  state={dataToPass}
+                                  className="block py-3 px-7 font-medium hover:text-yellow-500"
+                                  onClick={() => setShowMobileMenu((prevVal) => !prevVal)}
+                                >
+                                  {submenu.title}
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </div>
                       </ul>
                     )}
                   </li>

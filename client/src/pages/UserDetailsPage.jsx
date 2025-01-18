@@ -37,7 +37,6 @@ const UserDetailsPage = () => {
 		const loadUser = async () => {
 			const userData = await fetchUser(userId);
 
-    console.log(userData)
 			if (userData) {
 				setUser(userData);
 				const show = userData.ratings.filter(

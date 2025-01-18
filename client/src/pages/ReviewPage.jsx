@@ -39,7 +39,6 @@ const ReviewPage = () => {
 				setParentCommentCountFunc: setTotalParentCommentsLoaded,
 			});
       
-      console.log(response.data.review)
 			return response.data.review;
 		} catch (err) {
 			console.error(err);

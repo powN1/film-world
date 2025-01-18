@@ -49,7 +49,6 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
 
 	const handleShowUnderline = (e) => {
 		const category = e.target.innerText.toLowerCase();
-		console.log(e.target, category);
 
 		if (category !== currentCategory) {
 			setCurrentCategory(category);

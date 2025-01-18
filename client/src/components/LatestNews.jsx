@@ -11,7 +11,6 @@ const LastestNews = () => {
   const [latestNews, setLatestNews] = useState([]);
 
   const fetchLatestNews = async (category) => {
-    console.log("current category changed, fetching articles");
     const queryObj = { type: "latest", count: 15 };
     if (category) queryObj.category = category;
 
@@ -31,7 +30,6 @@ const LastestNews = () => {
     useContext(DataContext);
   const handleShowUnderline = (e) => {
     const category = e.target.innerText.toLowerCase();
-    console.log(e.target, category);
 
     if (category !== currentCategory) {
       setCurrentCategory(category);

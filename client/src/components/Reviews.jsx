@@ -5,13 +5,11 @@ import { MediaQueriesContext } from "../App";
 import { DataContext } from "../App";
 
 const Reviews = () => {
-	const { mobileView, tabletView } = useContext(MediaQueriesContext);
-
 	const { latestReviews } = useContext(DataContext);
 
 	const settings = {
 		dots: true,
-		arrows: mobileView || tabletView ? false : true,
+		arrows: true,
 		infinite: true,
 		speed: 500,
 		slidesToShow: 3,

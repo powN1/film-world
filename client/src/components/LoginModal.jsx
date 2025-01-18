@@ -5,7 +5,7 @@ import { IoMdClose } from "react-icons/io";
 import { FaEye } from "react-icons/fa";
 import { FaRegEye } from "react-icons/fa";
 import { UserContext } from "../App";
-import filmwebLogoSmall from "../imgs/filmweb-logo-small.png";
+import logoSmall from "../imgs/logo-small.webp";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
 import { storeInSession } from "../common/session";
@@ -138,7 +138,6 @@ const LoginModal = ({ mode, setLoginModalVisible }) => {
 		}
 
 		if (!email.length) {
-			console.log("hello?");
 			return toast.error("Enter email");
 		}
 
@@ -193,13 +192,13 @@ const LoginModal = ({ mode, setLoginModalVisible }) => {
 								onClick={() => setNormalLoginClicked(true)}
 							>
 								<img
-									src={filmwebLogoSmall}
+									src={logoSmall}
 									alt=""
 									className="h-[20px] w-[20px]"
 								/>
 								<p className="">
 									Sign in through{" "}
-									<span className="font-bold">filmweb account</span>
+									<span className="font-bold">film world account</span>
 								</p>
 							</button>
 							<Link
@@ -274,7 +273,7 @@ const LoginModal = ({ mode, setLoginModalVisible }) => {
 									setNewAccountClicked(true);
 								}}
 							>
-								Create new filmweb account
+								Create new film world account
 							</button>
 							<button
 								className="py-2 w-[90%] text-gray-600 rounded-sm"

@@ -28,7 +28,6 @@ const SettingsPage = () => {
 			const userData = await fetchUser(username);
 			if (userData) {
 				setUser(userData);
-        console.log(userData)
 			}
 			setLoading(false); // Set loading to false after fetching
 		};

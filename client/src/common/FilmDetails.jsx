@@ -68,9 +68,6 @@ const FilmDetails = ({ type, media }) => {
 	}
 
 	const rateMovie = async (mediaId, userRating, userReview = null) => {
-		console.log(
-			`media: ${mediaId}, type:${type}, userRating:${userRating}, userReview:${userReview}`,
-		);
 		try {
 			const response = await axios.post(
 				import.meta.env.VITE_SERVER_DOMAIN + "/add-rating",

@@ -138,7 +138,7 @@ const ArticleEditor = () => {
 
 					<hr className="w-full opacity-70my-5" />
 
-					<div id="textEditor" className="font-sansNarrow"></div>
+					<div id="textEditor" className="font-sansNarrow flex text-xl"></div>
 				</div>
 			</div>
 		</section>

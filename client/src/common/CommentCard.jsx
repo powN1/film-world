@@ -147,7 +147,6 @@ const CommentCard = ({ type, index, leftVal, commentData }) => {
 					skip,
 				})
 				.then(({ data: { replies } }) => {
-					console.log(replies);
 					commentsArr[currentIndex].isReplyLoaded = true;
 
 					for (let i = 0; i < replies.length; i++) {

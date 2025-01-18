@@ -7,7 +7,6 @@ import MoviesPage from "./pages/MoviesPage";
 import SeriesPage from "./pages/SeriesPage";
 import GamesPage from "./pages/GamesPage";
 import RankingPage from "./pages/RankingPage";
-import MyFilmwebPage from "./pages/MyFilmwebPage";
 import { lookInSession } from "./common/session";
 import axios from "axios";
 import WriteArticlePage from "./pages/WriteArticlePage";
@@ -449,7 +448,6 @@ function App() {
               <Route path="/reviews" element={<ReviewsPage />} />
               <Route path="/review/:reviewId" element={<ReviewPage />} />
               <Route path="ranking" element={<RankingPage />} />
-              <Route path="my" element={<MyFilmwebPage />} />
               <Route path="/person/:personId" element={<PersonPage />} />
               <Route path="/user/:userId" element={<UserPage />} />
               <Route path="/user/:userId/details" element={<UserDetailsPage />} />

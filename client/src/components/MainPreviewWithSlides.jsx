@@ -64,7 +64,6 @@ const MainPreviewWithSlides = ({ type }) => {
 
 		// Reset autoplay timer
 		if (sliderRef.current) {
-			console.log("reseting slider autoplay timer");
 			sliderRef.current.slickGoTo(filmIndex);
 			sliderRef.current.slickPause(); // Pause autoplay
 			sliderRef.current.slickPlay(); // Restart autoplay

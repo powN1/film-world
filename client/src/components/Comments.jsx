@@ -39,7 +39,6 @@ export const fetchComments = async ({
 
 const Comments = ({ type }) => {
   const { reviewId, articleId } = useParams();
-  console.log(`params`, reviewId, articleId)
 	let context;
 
 	if (articleId) {

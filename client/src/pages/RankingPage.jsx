@@ -136,10 +136,6 @@ const RankingPage = () => {
     }
   }, [location]);
 
-  useEffect(() => {
-    console.log("current media to show: ", mediaToShow);
-  }, [mediaToShow]);
-
   return (
     <>
       <RankingContext.Provider
