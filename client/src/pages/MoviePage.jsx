@@ -18,9 +18,9 @@ const MoviePage = () => {
 
 	const fetchMovie = async (movieId) => {
 		try {
-			const movieRes = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-movie", { titleId: movieId });
+			const movieRes = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/api/get-movie", { titleId: movieId });
       const movie_id = movieRes.data.movie._id;
-			const reviews = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-media", { count: 1, referredMediaId: movie_id });
+			const reviews = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/api/get-reviews-media", { count: 1, referredMediaId: movie_id });
       movieRes.data.movie.reviews = reviews.data.reviews;
 			return movieRes.data.movie;
 		} catch (err) {

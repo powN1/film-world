@@ -7,7 +7,7 @@ const Review = ({img, link, mediaLink, name, title, year, author, rating, descri
 			{/* Review img */}
 			<Link
 				to={`/review/${link}`}
-				className={ "relative group overflow-hidden rounded-tl-sm rounded-tr-sm " + (type === "big" ? "h-[220px] lg:h-[280px]" : "h-[220px] lg:h-[180px]") }
+				className={ "relative group overflow-hidden rounded-tl-sm rounded-tr-sm " + (type === "big" ? "h-[220px] lg:h-[280px] 3xl:h-[370px]" : "h-[220px] lg:h-[180px] 3xl:h-[240px]")}
 			>
 				<img
 					src={img}

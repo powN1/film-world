@@ -53,6 +53,15 @@ const Birthday = () => {
 					arrows: false,
 				},
 			},
+      {
+        // 2k view
+        breakpoint: 3840,
+        settings: {
+          slidesToShow: 7,
+          slidesToScroll: 7,
+          arrows: true,
+        },
+      },
 		],
 	};
 

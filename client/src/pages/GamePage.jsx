@@ -18,9 +18,9 @@ const GamePage = () => {
 
 	const fetchGame = async (gameId) => {
 		try {
-			const gameRes = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-game", { titleId: gameId },);
+			const gameRes = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/api/get-game", { titleId: gameId },);
       const game_id = gameRes.data.game._id;
-			const reviews = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-media", { count: 1, referredMediaId: game_id });
+			const reviews = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/api/get-reviews-media", { count: 1, referredMediaId: game_id });
       gameRes.data.game.reviews = reviews.data.reviews;
 			return gameRes.data.game;
 		} catch (err) {

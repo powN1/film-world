@@ -8,7 +8,7 @@ const MainNews = () => {
 	return (
 		<div className="bg-white">
 			<div
-				className="lg:w-[55%] mx-auto bg-black grid grid-rows-[80px_80px_80px_80px_80px_80px] grid-cols-[3fr_3fr_4fr] max-md:grid-rows-[70px_70px_70px_70px_70px_70px_70px_70px_70px_70px_70px] max-md:grid-cols-[1fr_1fr] gap-7 max-md:gap-5 p-4"
+				className="lg:w-[55%] mx-auto bg-black grid grid-rows-11 grid-cols-[1fr_1fr] lg:grid-rows-6 lg:grid-cols-[3fr_3fr_4fr] gap-7 max-md:gap-5 p-4"
 			>
 				{randomArticles.slice(0, 9).map((article, i) => {
 					let gridarea = {};

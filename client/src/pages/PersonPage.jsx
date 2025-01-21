@@ -18,7 +18,7 @@ const PersonPage = () => {
 	const fetchPerson = async (nameId) => {
 		try {
 			const response = await axios.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/get-actor",
+				import.meta.env.VITE_SERVER_DOMAIN + "/api/get-actor",
 				{ nameId: nameId },
 			);
 			return response.data.actor;

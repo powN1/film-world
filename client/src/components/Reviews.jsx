@@ -22,7 +22,7 @@ const Reviews = () => {
 				settings: {
 					slidesToShow: 1,
 					slidesToScroll: 1,
-					arrows: true,
+					arrows: false,
 				},
 			},
 			{
@@ -31,7 +31,7 @@ const Reviews = () => {
 				settings: {
 					slidesToShow: 2,
 					slidesToScroll: 2,
-					arrows: true,
+					arrows: false,
 				},
 			},
 		],

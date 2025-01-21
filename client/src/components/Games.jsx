@@ -24,7 +24,7 @@ const Games = () => {
 				settings: {
 					slidesToShow: 1,
 					slidesToScroll: 1,
-					arrows: true,
+					arrows: false,
 				},
 			},
 		],
@@ -42,7 +42,7 @@ const Games = () => {
 						alt=""
 						className="h-full w-full object-cover group-hover:scale-110 duration-700"
 					/>
-					<h2 className="absolute left-0 bottom-[12%] text-white text-5xl max-lg:text-3xl font-extrabold uppercase w-full text-center px-6 group-hover:text-yellow-400 duration-700 tracking-wide">
+					<h2 className="absolute left-0 bottom-[12%] text-white text-3xl lg:text-5xl 3xl:text-6xl font-extrabold uppercase w-full text-center px-6 group-hover:text-yellow-400 duration-700 tracking-wide">
 						{articles[0].title}
 					</h2>
 				</Link>

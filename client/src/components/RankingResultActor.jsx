@@ -3,7 +3,7 @@ import { FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const RankingResultActor = (props) => {
-	const { index, img, name, roles, rating, ratedByCount } = props;
+	const { index, img, name, nameId, roles, rating, ratedByCount } = props;
 
 	const [currentRole, setCurrentRole] = useState("");
 
@@ -26,7 +26,7 @@ const RankingResultActor = (props) => {
 				{/* Name */}
 				<p className="text-xl lg:pl-4">
 					<span>{index + 1}. </span>
-					{name}
+					<Link to={`/person/${nameId}`}>{name}</Link>
 				</p>
 
 				{/* Rating */}
@@ -69,17 +69,12 @@ const RankingResultActor = (props) => {
 					<span>{currentRole.characterName}</span>{" "}
 					<span className="text-gray-400">
 						in{" "}
-						{currentRole.movie
-							? "movie"
-							: currentRole.serie
-								? "serie "
-								: null}{" "}
-					</span>
+						{currentRole.movie ? "movie" : currentRole.serie ? "serie " : null}{" "} </span>
 					<span>
 						{currentRole.movie
-							? currentRole.movie.title
+							? <Link to={`/movie/${currentRole.movie.titleId}`}>{currentRole.movie.title}</Link>
 							: currentRole.serie
-								? currentRole.serie.title
+								? <Link to={`/serie/${currentRole.serie.titleId}`}>{currentRole.serie.title}</Link>
 								: null}
 					</span>
 				</div>

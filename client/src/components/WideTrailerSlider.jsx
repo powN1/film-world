@@ -36,7 +36,7 @@ const WideTrailerSlider = ({ type, showCategories = true }) => {
 				settings: {
 					slidesToShow: 2,
 					slidesToScroll: 2,
-					arrows: true,
+					arrows: false,
 				},
 			},
 		],

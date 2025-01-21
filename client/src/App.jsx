@@ -111,33 +111,33 @@ function App() {
   // NOTE: Top rated movies, series and upcoming
   // NOTE: Latest game articles
 
-  const fetchMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
+  const fetchMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-movies");
   const fetchLatestMovies = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-latest", { count: 100 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-movies-latest", { count: 100 });
   const fetchRandomMovies = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-random", { count: 10 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-movies-random", { count: 10 });
   const fetchPopularMovies = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-top-rated", { count: 20 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-movies-top-rated", { count: 20 });
   const fetchTopRatedMovies = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-top-rated", { count: 100 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-movies-top-rated", { count: 100 });
   const fetchAnticipatedMovies = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-most-anticipated", { count: 10 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-movies-most-anticipated", { count: 10 });
   const fetchUpcomingMovies = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies-upcoming", { count: 10 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-movies-upcoming", { count: 10 });
 
   const fetchSeries = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series", {
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-series", {
       count: 10,
     });
   const fetchRandomSeries = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-random", { count: 10 });
-  // const fetchPopularSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-popular", { count: 20 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-series-random", { count: 10 });
+  // const fetchPopularSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-series-popular", { count: 20 });
   const fetchTopRatedSeries = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-top-rated", { count: 100 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-series-top-rated", { count: 100 });
   const fetchUpcomingSeries = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-upcoming", { count: 10 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-series-upcoming", { count: 10 });
   const fetchLatestSeries = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series-latest", { sortByRating: true, count: 10 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-series-latest", { sortByRating: true, count: 10 });
 
   const fetchAnimes = async () => await axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/get-animes");
   const fetchPopularAnimes = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
@@ -145,70 +145,70 @@ function App() {
   const fetchUpcomingAnimes = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
 
   const fetchRandomGames = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-random", {
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-games-random", {
       count: 20,
     });
   const fetchLatestGames = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-latest", {
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-games-latest", {
       count: 20,
     });
   const fetchTopRatedGames = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-top-rated", { count: 100 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-games-top-rated", { count: 100 });
   const fetchUpcomingGames = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-upcoming", { count: 10 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-games-upcoming", { count: 10 });
   const fetchAnticipatedGames = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games-anticipated", { sortByRating: true, count: 20 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-games-anticipated", { sortByRating: true, count: 20 });
 
   const fetchMovieRoles = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-movie", {
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-roles-movie", {
       count: 20,
     });
   const fetchMovieTopRatedRoles = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-movie-top-rated", { count: 100 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-roles-movie-top-rated", { count: 100 });
   const fetchMovieTopRatedMaleRoles = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-movie-top-rated-male", { count: 100 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-roles-movie-top-rated-male", { count: 100 });
   const fetchMovieTopRatedFemaleRoles = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-movie-top-rated-female", { count: 100 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-roles-movie-top-rated-female", { count: 100 });
   const fetchSerieRoles = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-serie", {
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-roles-serie", {
       count: 20,
     });
   const fetchSerieTopRatedRoles = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-serie-top-rated", { count: 100 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-roles-serie-top-rated", { count: 100 });
   const fetchSerieTopRatedMaleRoles = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-serie-top-rated-male", { count: 100 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-roles-serie-top-rated-male", { count: 100 });
   const fetchSerieTopRatedFemaleRoles = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-roles-serie-top-rated-female", { count: 100 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-roles-serie-top-rated-female", { count: 100 });
 
   const fetchRandomArticles = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", {
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-articles", {
       random: true,
       count: 20,
     });
   const fetchLatestArticles = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest", { count: 20 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-articles-latest", { count: 20 });
   const fetchLatestMoviesArticles = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-movies", { count: 20 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-articles-latest-movies", { count: 20 });
   const fetchLatestSeriesArticles = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-series", { count: 20 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-articles-latest-series", { count: 20 });
   const fetchLatestGamesArticles = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest-games", { count: 20 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-articles-latest-games", { count: 20 });
 
   const fetchRandomReviews = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-random", { count: 20 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-reviews-random", { count: 20 });
   const fetchLatestReviews = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest", { count: 20 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-reviews-latest", { count: 20 });
   const fetchLatestMoviesReviews = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-movies", { count: 20 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-reviews-latest-movies", { count: 20 });
   const fetchLatestSeriesReviews = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-series", { count: 20 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-reviews-latest-series", { count: 20 });
   const fetchLatestGamesReviews = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest-games", { count: 20 });
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-reviews-latest-games", { count: 20 });
 
-  const fetchActors = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
+  const fetchActors = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-actors");
   const fetchActorsTopRated = async () =>
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors-top-rated", { count: 100 });
-  const fetchCharacters = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-characters");
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-actors-top-rated", { count: 100 });
+  const fetchCharacters = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-characters");
 
   useEffect(() => {
     checkDevice();

@@ -51,9 +51,9 @@ const RankingPage = () => {
     }
 
     let urlPath;
-    if (currentCategory.toLowerCase() === "movies") urlPath = "/get-movies-by-filters";
-    else if (currentCategory.toLowerCase() === "series") urlPath = "/get-series-by-filters";
-    else if (currentCategory.toLowerCase() === "games") urlPath = "/get-games-by-filters";
+    if (currentCategory.toLowerCase() === "movies") urlPath = "/api/get-movies-by-filters";
+    else if (currentCategory.toLowerCase() === "series") urlPath = "/api/get-series-by-filters";
+    else if (currentCategory.toLowerCase() === "games") urlPath = "/api/get-games-by-filters";
 
     try {
       const response = await axios.post(

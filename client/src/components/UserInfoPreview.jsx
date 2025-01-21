@@ -26,9 +26,9 @@ const UserInfoPreview = ({ user, setUser }) => {
     ratings,
   } = user;
 
-  const fetchMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-  const fetchSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series");
-  const fetchGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games");
+  const fetchMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-movies");
+  const fetchSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-series");
+  const fetchGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-games");
 
   const handleMediaFetch = async () => {
     const movies = await fetchMovies();
@@ -61,7 +61,7 @@ const UserInfoPreview = ({ user, setUser }) => {
   const handleUserBackgroundAddition = async (photoUrl) => {
     try {
       const response = await axios.post(
-        import.meta.env.VITE_SERVER_DOMAIN + "/add-user-background",
+        import.meta.env.VITE_SERVER_DOMAIN + "/api/add-user-background",
         { photoUrl },
         {
           headers: { Authorization: `${access_token}` },
@@ -76,7 +76,7 @@ const UserInfoPreview = ({ user, setUser }) => {
   const handleUserBackgroundRemoval = async () => {
     try {
       const response = await axios.post(
-        import.meta.env.VITE_SERVER_DOMAIN + "/remove-user-background",
+        import.meta.env.VITE_SERVER_DOMAIN + "/api/remove-user-background",
         {},
         {
           headers: { Authorization: `${access_token}` },

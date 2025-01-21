@@ -31,7 +31,7 @@ const ReviewPage = () => {
 	const fetchReview = async (reviewId) => {
 		try {
 			const response = await axios.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/get-review",
+				import.meta.env.VITE_SERVER_DOMAIN + "/api/get-review",
 				{ reviewId },
 			);
 			response.data.review.comments = await fetchComments({
@@ -48,7 +48,7 @@ const ReviewPage = () => {
 	const fetchLatestReviews = async () => {
 		try {
 			const response = await axios.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-latest",
+				import.meta.env.VITE_SERVER_DOMAIN + "/api/get-reviews-latest",
 				{ count: 8 },
 			);
 

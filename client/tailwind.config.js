@@ -35,6 +35,11 @@ export default {
   theme: {
     fontFamily: fontFamily,
     extend: {
+      screens: {
+        "3xl": "1921px",
+        "4xl": "2561px",
+        "5xl": "3841px",
+      },
       // Set 'Lato' as default family font for the whole project
       fontFamily: {
         lato: ["'Lato'", "sans-serif"],

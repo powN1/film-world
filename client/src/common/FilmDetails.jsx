@@ -70,7 +70,7 @@ const FilmDetails = ({ type, media }) => {
 	const rateMovie = async (mediaId, userRating, userReview = null) => {
 		try {
 			const response = await axios.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/add-rating",
+				import.meta.env.VITE_SERVER_DOMAIN + "/api/add-rating",
 				{ mediaId, type, userRating, reviewText: userReview },
 				{
 					headers: { Authorization: `${access_token}` },
@@ -86,7 +86,7 @@ const FilmDetails = ({ type, media }) => {
 	const checkUserMediaRating = async (mediaId) => {
 		try {
 			const response = await axios.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/check-rating",
+				import.meta.env.VITE_SERVER_DOMAIN + "/api/check-rating",
 				{ mediaId },
 				{
 					headers: { Authorization: `${access_token}` },
@@ -101,7 +101,7 @@ const FilmDetails = ({ type, media }) => {
 	const checkUserMediaLike = async (mediaId) => {
 		try {
 			const response = await axios.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/check-favorite",
+				import.meta.env.VITE_SERVER_DOMAIN + "/api/check-favorite",
 				{ mediaId },
 				{
 					headers: { Authorization: `${access_token}` },
@@ -116,7 +116,7 @@ const FilmDetails = ({ type, media }) => {
 	const checkUserMediaWantToSee = async (mediaId) => {
 		try {
 			const response = await axios.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/check-want-to-see",
+				import.meta.env.VITE_SERVER_DOMAIN + "/api/check-want-to-see",
 				{ mediaId },
 				{
 					headers: { Authorization: `${access_token}` },
@@ -130,7 +130,7 @@ const FilmDetails = ({ type, media }) => {
 	const handleReviewRemoval = async () => {
 		try {
 			const response = await axios.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/remove-rating",
+				import.meta.env.VITE_SERVER_DOMAIN + "/api/remove-rating",
 				{ mediaId: media._id, type: "movie" },
 				{
 					headers: { Authorization: `${access_token}` },
@@ -153,7 +153,7 @@ const FilmDetails = ({ type, media }) => {
 	const handleMediaLike = async (mediaId) => {
 		try {
 			const response = await axios.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/add-favorite",
+				import.meta.env.VITE_SERVER_DOMAIN + "/api/add-favorite",
 				{ mediaId, type },
 				{
 					headers: { Authorization: `${access_token}` },
@@ -168,7 +168,7 @@ const FilmDetails = ({ type, media }) => {
 	const handleMediaWantToSee = async (mediaId) => {
 		try {
 			const response = await axios.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/add-want-to-see",
+				import.meta.env.VITE_SERVER_DOMAIN + "/api/add-want-to-see",
 				{ mediaId, type },
 				{
 					headers: { Authorization: `${access_token}` },

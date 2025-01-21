@@ -20,10 +20,10 @@ const SingleNews = ({
 						to={`/article/${link}`}
 						className="flex justify-between group overflow-hidden cursor-pointer"
 					>
-						<p className="w-[70%] text-sm group-hover:text-yellow-400 duration-300 overflow-hidden line-clamp-3">
+						<p className="w-[70%] text-sm 3xl:text-base group-hover:text-yellow-400 duration-300 overflow-hidden line-clamp-3">
 							{description}
 						</p>
-						<div className="h-[65px] w-[65px] overflow-hidden border border-gray-300">
+						<div className="h-[65px] w-[65px] 3xl:h-[80px] 3xl:w-[80px] overflow-hidden border border-gray-300">
 							<img
 								src={img}
 								alt={description}
@@ -38,7 +38,7 @@ const SingleNews = ({
 						to={`/article/${link}`}
 						className="flex group overflow-hidden cursor-pointer max-md:col-span-2 max-md:row-span-1"
 					>
-						<div className="w-[40%] overflow-hidden border border-gray-800">
+						<div className="w-[37%] overflow-hidden border border-gray-800">
 							<img
 								src={img}
 								alt={description}
@@ -59,7 +59,7 @@ const SingleNews = ({
 						to={`/article/${link}`}
 						className="flex md:flex-col gap-y-1 max-md:gap-x-2 group overflow-hidden cursor-pointer"
 					>
-						<div className="h-[65%] max-md:h-full max-md:w-[40%] overflow-hidden border border-gray-300">
+						<div className="h-full h-[60%] 3xl:h-[60%] w-[40%] lg:w-full overflow-hidden border border-gray-300">
 							<img
 								src={img}
 								alt={description}
@@ -80,7 +80,7 @@ const SingleNews = ({
 						to={`/article/${link}`}
 						className={`relative group cursor-pointer max-md:flex max-md:flex-col max-md:col-span-1 max-md:row-span-2 ${gridarea["row-start"]} ${gridarea["row-span"]} ${gridarea["col-start"]} ${gridarea["col-span"]}`}
 					>
-						<div className="h-full max-md:h-1/2 overflow-hidden border border-gray-800">
+						<div className="lg:h-full h-1/2 overflow-hidden border border-gray-800">
 							<img
 								src={img}
 								alt={description}
@@ -131,7 +131,7 @@ const SingleNews = ({
 							<p className="text-3xl max-lg:text-xl text-white line-clamp-2 text-ellipsis group-hover:text-yellow-400 duration-300 [text-shadow:_1px_1px_2px_rgb(0_0_0_/_80%)]">
 								{description}
 							</p>
-							<span className="text-gray-400 max-lg:text-sm">
+							<span className="text-gray-400 text-sm lg:text-base">
 								{comments} comments
 							</span>
 						</div>

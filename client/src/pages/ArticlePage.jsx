@@ -30,7 +30,7 @@ const ArticlePage = () => {
 
 	const fetchArticle = async (articleId) => {
 		try {
-			const response = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-article", { articleId },);
+			const response = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/api/get-article", { articleId },);
 
 			response.data.article.comments = await fetchComments({
 				mediaId: response.data.article._id,
@@ -46,7 +46,7 @@ const ArticlePage = () => {
 	const fetchLatestArticles = async () => {
 		try {
 			const response = await axios.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/get-articles-latest",
+				import.meta.env.VITE_SERVER_DOMAIN + "/api/get-articles-latest",
 				{ count: 8 },
 			);
 			return response.data.articles;

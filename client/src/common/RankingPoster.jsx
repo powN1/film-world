@@ -6,7 +6,7 @@ const RankingPoster = ({ mediaLink, title, img, rating, peopleAwaiting }) => {
 	return (
 		<Link to={mediaLink} className="w-full max-lg:w-[30%] flex flex-col gap-y-3 group cursor-pointer">
 			<div className="[box-shadow:_2px_2px_6px_rgb(0_0_0_/_30%)]">
-				<div className="h-[200px] max-lg:h-[150px] overflow-hidden">
+				<div className="h-[150px] lg:h-[200px] 3xl:h-[270px] overflow-hidden">
 					<img
 						src={img}
 						alt={`${title} image`}

@@ -8,7 +8,7 @@ const MovieSlide = ({ title, img, mediaLink, ranking = null, description = null,
 			case "movie":
 				return (
 					<Link to={mediaLink} className="flex flex-col gap-y-2 mx-3 relative group">
-						<div className="h-[260px] border border-gray-700 overflow-hidden">
+						<div className="h-[260px] 3xl:h-[350px] border border-gray-700 overflow-hidden">
 							<img
 								src={img}
 								alt={title}
@@ -37,7 +37,7 @@ const MovieSlide = ({ title, img, mediaLink, ranking = null, description = null,
 						<div
 							className={
 								"border border-gray-300 overflow-hidden after:content-[''] after:absolute after:left-0 after:top-0 after:w-full after:h-full after:bg-black after:opacity-25 " +
-								(scrollable ? "h-[330px] md:h-[450px]" : "h-[400px]")
+								(scrollable ? "h-[330px] md:h-[450px]" : "h-[400px] 3xl:h-[500px]")
 							}
 						>
 							<img

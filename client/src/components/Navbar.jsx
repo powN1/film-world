@@ -50,10 +50,10 @@ const Navbar = () => {
 
   const modalInputRef = useRef(null);
 
-  const fetchMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-movies");
-  const fetchSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-series");
-  const fetchGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-games");
-  const fetchActors = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-actors");
+  const fetchMovies = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-movies");
+  const fetchSeries = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-series");
+  const fetchGames = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-games");
+  const fetchActors = async () => await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-actors");
 
   const handleMediaFetch = async () => {
     const movies = await fetchMovies();
@@ -182,7 +182,7 @@ const Navbar = () => {
 
     authWithGoogle()
       .then((user) => {
-        let serverRoute = "/google-auth";
+        let serverRoute = "/api/google-auth";
 
         let formData = { access_token: user.accessToken };
 

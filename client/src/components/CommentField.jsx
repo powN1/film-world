@@ -49,7 +49,7 @@ const CommentField = ({ type, action, index = null, replyingTo = undefined, setR
 			}
 			axios
 				.post(
-					import.meta.env.VITE_SERVER_DOMAIN + "/add-comment",
+					import.meta.env.VITE_SERVER_DOMAIN + "/api/add-comment",
 					{
             type, 
             mediaId,

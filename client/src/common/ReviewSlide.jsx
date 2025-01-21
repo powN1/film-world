@@ -9,7 +9,7 @@ const ReviewSlide = ({ title, link, img, category, rating, description, author, 
 			{/* Movie img */}
 			<Link
 				to={`review/${link}`}
-				className="relative h-[160px] border border-gray-300 group overflow-hidden rounded-tl-sm rounded-tr-sm"
+				className="relative h-[160px] 3xl:h-[210px] border border-gray-300 group overflow-hidden rounded-tl-sm rounded-tr-sm"
 			>
 				<img
 					src={img}

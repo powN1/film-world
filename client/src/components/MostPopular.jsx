@@ -39,6 +39,15 @@ const MostPopular = ({ type, category }) => {
           arrows: false,
         },
       },
+      {
+        // 2k view
+        breakpoint: 3840,
+        settings: {
+          slidesToShow: 6,
+          slidesToScroll: 6,
+          arrows: true,
+        },
+      },
     ],
   };
 

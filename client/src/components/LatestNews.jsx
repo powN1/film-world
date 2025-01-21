@@ -15,7 +15,7 @@ const LastestNews = () => {
     if (category) queryObj.category = category;
 
     await axios
-      .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-articles", queryObj)
+      .post(import.meta.env.VITE_SERVER_DOMAIN + "/api/get-articles", queryObj)
       .then(({ data }) => {
         setLatestNews(data.articles);
       })
@@ -62,7 +62,7 @@ const LastestNews = () => {
                 );
               })}
             </ul>
-            <div className="grid md:grid-rows-[190px_190px_190px_190px_190px_190px] grid-cols-3 max-md:grid-rows-16rows70px max-md:grid-cols-1 gap-3">
+            <div className="grid md:grid-rows-6 grid-cols-3 max-md:grid-rows-16rows70px max-md:grid-cols-1 gap-3">
               {latestNews.slice(0, 15).map((article, i) => {
                 let gridarea = {};
                 if (i === 3) {

@@ -24,7 +24,7 @@ const UserDetailsPage = () => {
 	const fetchUser = async (userId) => {
 		try {
 			const response = await axios.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/get-user",
+				import.meta.env.VITE_SERVER_DOMAIN + "/api/get-user",
 				{ userId },
 			);
 			return response.data.user;

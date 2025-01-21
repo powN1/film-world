@@ -156,13 +156,13 @@ const ReviewEditor = () => {
 
 	const fetchData = async () => {
 		const fetchMovies = await axios.post(
-			import.meta.env.VITE_SERVER_DOMAIN + "/get-movies",
+			import.meta.env.VITE_SERVER_DOMAIN + "/api/get-movies",
 		);
 		const fetchSeries = await axios.post(
-			import.meta.env.VITE_SERVER_DOMAIN + "/get-series",
+			import.meta.env.VITE_SERVER_DOMAIN + "/api/get-series",
 		);
 		const fetchGames = await axios.post(
-			import.meta.env.VITE_SERVER_DOMAIN + "/get-games",
+			import.meta.env.VITE_SERVER_DOMAIN + "/api/get-games",
 		);
 
 		setMovies(fetchMovies.data.movies);

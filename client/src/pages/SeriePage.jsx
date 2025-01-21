@@ -18,9 +18,9 @@ const SeriePage = () => {
 
 	const fetchSerie = async (serieId) => {
 		try {
-			const serieRes = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-serie", { titleId: serieId },);
+			const serieRes = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/api/get-serie", { titleId: serieId },);
       const serie_id = serieRes.data.serie._id;
-			const reviews = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/get-reviews-media", { count: 1, referredMediaId: serie_id });
+			const reviews = await axios.post( import.meta.env.VITE_SERVER_DOMAIN + "/api/get-reviews-media", { count: 1, referredMediaId: serie_id });
       serieRes.data.serie.reviews = reviews.data.reviews;
 			return serieRes.data.serie;
 		} catch (err) {

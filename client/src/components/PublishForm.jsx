@@ -78,7 +78,7 @@ const PublishForm = () => {
 		};
 		axios
 			.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/create-article",
+				import.meta.env.VITE_SERVER_DOMAIN + "/api/create-article",
 				{ ...articleObj, id: articleId },
 				{
 					headers: { Authorization: `${access_token}` },

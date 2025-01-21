@@ -73,7 +73,7 @@ const PublishReviewForm = () => {
 		};
 		axios
 			.post(
-				import.meta.env.VITE_SERVER_DOMAIN + "/create-review",
+				import.meta.env.VITE_SERVER_DOMAIN + "/api/create-review",
 				{ ...reviewObj, id: review_id },
 				{
 					headers: { Authorization: `${access_token}` },

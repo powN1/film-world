@@ -9,7 +9,7 @@ const PreviewSlide = ({ film, film: { title, cover }, activeSlide, filmIndex, in
 			<div>
 				<div
 					className={
-						"h-[200px] relative after:content-[''] after:h-full after:w-full after:top-0 after:left-0 after:absolute after:border-yellow-400 after:transition-all after:duration-100 " +
+						"h-[200px] 3xl:h-[280px] relative after:content-[''] after:h-full after:w-full after:top-0 after:left-0 after:absolute after:border-yellow-400 after:transition-all after:duration-100 " +
 						(activeSlide === filmIndex
 							? "after:border-[3px]"
 							: "after:border-0")

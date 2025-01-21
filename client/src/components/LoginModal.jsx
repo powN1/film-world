@@ -71,7 +71,7 @@ const LoginModal = ({ mode, setLoginModalVisible }) => {
 
 		authWithGoogle()
 			.then((user) => {
-				let serverRoute = "/google-auth";
+				let serverRoute = "/api/google-auth";
 
 				let formData = { access_token: user.accessToken };
 
@@ -88,7 +88,7 @@ const LoginModal = ({ mode, setLoginModalVisible }) => {
 
 		authWithFacebook()
 			.then((user) => {
-				let serverRoute = "/facebook-auth";
+				let serverRoute = "/api/facebook-auth";
 
 				let formData = {
 					access_token: user.accessToken,
@@ -104,7 +104,7 @@ const LoginModal = ({ mode, setLoginModalVisible }) => {
 	};
 
 	const handleSubmit = (type) => {
-		const serverRoute = type === "sign-in" ? "/signin" : "/signup";
+		const serverRoute = type === "sign-in" ? "/api/sign-in" : "/api/sign-up";
 
 		// Regex for identifying whether the email and password are correctly formatted
 		let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
