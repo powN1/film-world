@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import { generateUploadUrl, uploadFileToAWSfromUrl } from "./utils/awsFunctions.js"
+import { generateUploadUrl, uploadFileToAWSfromUrl } from "./utils/awsFunctions.js";
 import { nanoid } from "nanoid";
 import axios from "axios";
 import path from "path";
@@ -17,19 +17,41 @@ import Movie from "./Schema/Movie.js";
 import Role from "./Schema/Role.js";
 import Serie from "./Schema/Serie.js";
 
-import movieRoutes from "./routes/movieRoute.js"
-import serieRoutes from "./routes/serieRoute.js"
-import gameRoutes from "./routes/gameRoute.js"
-import articleRoutes from "./routes/articleRoute.js"
-import reviewRoutes from "./routes/reviewRoute.js"
-import roleRoutes from "./routes/roleRoute.js"
-import actorRoutes from "./routes/actorRoute.js"
-import userRoutes from "./routes/userRoute.js"
-import commentRoutes from "./routes/commentRoute.js"
+import movieRoutes from "./routes/movieRoute.js";
+import serieRoutes from "./routes/serieRoute.js";
+import gameRoutes from "./routes/gameRoute.js";
+import articleRoutes from "./routes/articleRoute.js";
+import reviewRoutes from "./routes/reviewRoute.js";
+import roleRoutes from "./routes/roleRoute.js";
+import actorRoutes from "./routes/actorRoute.js";
+import userRoutes from "./routes/userRoute.js";
+import commentRoutes from "./routes/commentRoute.js";
 
 const PORT = 3000;
 
 const app = express();
+
+if (process.env.NODE_ENV === "production") {
+  // Accept requests only from pownprojects.site when in production
+  app.use(
+    cors({
+      origin: "http://pownprojects.site", // Your frontend URL
+      methods: "GET,POST,PUT,DELETE", // Allowed HTTP methods
+      allowedHeaders: "Content-Type,Authorization", // Allowed headers
+    })
+  );
+
+  const __dirname = import.meta.dirname;
+  app.use(express.static(path.join(__dirname, "../client/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../", "client", "dist", "index.html"));
+  });
+} else {
+  // Accept requests from different ports than backend port (3000) for development
+  app.use(cors());
+  app.get("/", (req, res) => res.send("Please set to production"));
+}
 
 // Firebase initialize config
 admin.initializeApp({
@@ -38,9 +60,6 @@ admin.initializeApp({
 
 // Middleware so the server can process json
 app.use(express.json());
-
-// Accept requests from different ports than backend port (3000)
-app.use(cors());
 
 // Connect mongoose to the database
 mongoose.connect(process.env.DB_LOCATION, {
@@ -226,15 +245,15 @@ app.get("/api/get-upload-url", (req, res) => {
 //     });
 // });
 
-app.use('/api', movieRoutes);
-app.use('/api', serieRoutes);
-app.use('/api', gameRoutes);
-app.use('/api', articleRoutes);
-app.use('/api', reviewRoutes);
-app.use('/api', roleRoutes);
-app.use('/api', actorRoutes);
-app.use('/api', userRoutes);
-app.use('/api', commentRoutes);
+app.use("/api", movieRoutes);
+app.use("/api", serieRoutes);
+app.use("/api", gameRoutes);
+app.use("/api", articleRoutes);
+app.use("/api", reviewRoutes);
+app.use("/api", roleRoutes);
+app.use("/api", actorRoutes);
+app.use("/api", userRoutes);
+app.use("/api", commentRoutes);
 
 // unused
 app.post("/api/add-actor", async (req, res) => {
@@ -389,23 +408,6 @@ app.post("/api/add-serie", async (req, res) => {
 });
 
 // end unused
-
-if (process.env.NODE_ENV === "production") {
-  const __dirname = import.meta.dirname;
-  app.use(express.static(path.join(__dirname, "../client/dist")));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../", "client", "dist", "index.html"));
-  });
-} else {
-  app.get("/", (req, res) => res.send("Please set to production"));
-}
-
-// app.use(cors({
-//   origin: "http://localhost:3000", // Your frontend URL
-//   methods: "GET,POST,PUT,DELETE", // Allowed HTTP methods
-//   allowedHeaders: "Content-Type,Authorization", // Allowed headers
-// }));
 
 app.listen(PORT, () => {
   console.log(`listening on port: ${PORT}`);
