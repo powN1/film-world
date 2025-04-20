@@ -669,45 +669,93 @@ const Navbar = () => {
 
             <ul className="overflow-hidden list-none">
               {navbarItems.map((item, itemIndex) => {
-                return (
-                  <li key={itemIndex} onClick={handleMobileMenuDropdown}>
-                    <Link
-                      to={!item.submenu && item.path}
-                      onClick={!item.submenu && (() => setShowMobileMenu((prevVal) => !prevVal))}
-                      className="relative flex justify-between items-center py-3 px-5 bg-white"
-                    >
-                      {item.title}
-                      {item.submenu && <IoChevronDown className="text-gray-400 text-xl duration-300 origin-center" />}
-                    </Link>
-                    {item.submenu && (
-                      <ul className="grid grid-rows-animate-height-closed sliding transition-all duration-500 relative after:content-[''] after:w-[4px] after:h-full after:absolute after:left-0 after:top-0 after:bg-yellow-400">
-                        <div className="overflow-hidden bg-neutral-200 text-black text-nowrap">
-                          {item.submenu.map((submenu, submenuIndex) => {
-                            const category = submenu.category && submenu.category;
-                            const subCategory = submenu.subCategory && submenu.subCategory;
+                if (item.adminOnly) {
+                  if (admin) {
+                    return (
+                      <li key={itemIndex} onClick={handleMobileMenuDropdown}>
+                        <Link
+                          to={!item.submenu && item.path}
+                          onClick={!item.submenu && (() => setShowMobileMenu((prevVal) => !prevVal))}
+                          className="relative flex justify-between items-center py-3 px-5 bg-white"
+                        >
+                          {item.title}
+                          {item.submenu && (
+                            <IoChevronDown className="text-gray-400 text-xl duration-300 origin-center" />
+                          )}
+                        </Link>
+                        {item.submenu && (
+                          <ul className="grid grid-rows-animate-height-closed sliding transition-all duration-500 relative after:content-[''] after:w-[4px] after:h-full after:absolute after:left-0 after:top-0 after:bg-yellow-400">
+                            <div className="overflow-hidden bg-neutral-200 text-black text-nowrap">
+                              {item.submenu.map((submenu, submenuIndex) => {
+                                const category = submenu.category && submenu.category;
+                                const subCategory = submenu.subCategory && submenu.subCategory;
 
-                            const dataToPass = { category, subCategory };
-                            return (
-                              <li
-                                key={submenuIndex}
-                                className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
-                              >
-                                <Link
-                                  to={submenu.path}
-                                  state={dataToPass}
-                                  className="block py-3 px-7 font-medium hover:text-yellow-500"
-                                  onClick={() => setShowMobileMenu((prevVal) => !prevVal)}
+                                const dataToPass = { category, subCategory };
+                                return (
+                                  <li
+                                    key={submenuIndex}
+                                    className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
+                                  >
+                                    <Link
+                                      to={submenu.path}
+                                      state={dataToPass}
+                                      className="block py-3 px-7 font-medium hover:text-yellow-500"
+                                      onClick={() => setShowMobileMenu((prevVal) => !prevVal)}
+                                    >
+                                      {submenu.title}
+                                    </Link>
+                                  </li>
+                                );
+                              })}
+                            </div>
+                          </ul>
+                        )}
+                      </li>
+                    );
+                  } else {
+                    return null;
+                  }
+                } else {
+                  return (
+                    <li key={itemIndex} onClick={handleMobileMenuDropdown}>
+                      <Link
+                        to={!item.submenu && item.path}
+                        onClick={!item.submenu && (() => setShowMobileMenu((prevVal) => !prevVal))}
+                        className="relative flex justify-between items-center py-3 px-5 bg-white"
+                      >
+                        {item.title}
+                        {item.submenu && <IoChevronDown className="text-gray-400 text-xl duration-300 origin-center" />}
+                      </Link>
+                      {item.submenu && (
+                        <ul className="grid grid-rows-animate-height-closed sliding transition-all duration-500 relative after:content-[''] after:w-[4px] after:h-full after:absolute after:left-0 after:top-0 after:bg-yellow-400">
+                          <div className="overflow-hidden bg-neutral-200 text-black text-nowrap">
+                            {item.submenu.map((submenu, submenuIndex) => {
+                              const category = submenu.category && submenu.category;
+                              const subCategory = submenu.subCategory && submenu.subCategory;
+
+                              const dataToPass = { category, subCategory };
+                              return (
+                                <li
+                                  key={submenuIndex}
+                                  className="bg-neutral-200 text-black text-nowrap first:pt-3 last:pb-3"
                                 >
-                                  {submenu.title}
-                                </Link>
-                              </li>
-                            );
-                          })}
-                        </div>
-                      </ul>
-                    )}
-                  </li>
-                );
+                                  <Link
+                                    to={submenu.path}
+                                    state={dataToPass}
+                                    className="block py-3 px-7 font-medium hover:text-yellow-500"
+                                    onClick={() => setShowMobileMenu((prevVal) => !prevVal)}
+                                  >
+                                    {submenu.title}
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </div>
+                        </ul>
+                      )}
+                    </li>
+                  );
+                }
               })}
             </ul>
 
