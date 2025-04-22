@@ -27,7 +27,7 @@ import actorRoutes from "./routes/actorRoute.js";
 import userRoutes from "./routes/userRoute.js";
 import commentRoutes from "./routes/commentRoute.js";
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3001;
 
 const app = express();
 
@@ -68,7 +68,7 @@ mongoose.connect(process.env.DB_LOCATION, {
   autoIndex: true,
 });
 
-app.get("/api/aws", async (req, res) => {
+app.get("/film-world/api/aws", async (req, res) => {
   const imageUrl = "https://lh3.googleusercontent.com/a/ACg8ocLcigctbdVmKSfa_-1EmTY2zeHMj48TujAVIr1MC7DvYT3zO3Q=s384-c";
 
   const imageResponse = await axios.get(imageUrl, {
@@ -91,7 +91,7 @@ app.get("/api/aws", async (req, res) => {
   // res.status(200).json({ imageResponse });
 });
 
-app.post("/api/get-characters", (req, res) => {
+app.post("/film-world/api/get-characters", (req, res) => {
   Character.find()
     .then((characters) => {
       return res.status(200).json({ characters });
@@ -99,7 +99,7 @@ app.post("/api/get-characters", (req, res) => {
     .catch((err) => res.status(500).json({ error: err.message }));
 });
 
-app.get("/api/get-upload-url", (req, res) => {
+app.get("/film-world/api/get-upload-url", (req, res) => {
   generateUploadUrl()
     .then((url) => res.status(200).json({ uploadUrl: url }))
     .catch((err) => {
@@ -245,18 +245,18 @@ app.get("/api/get-upload-url", (req, res) => {
 //     });
 // });
 
-app.use("/api", movieRoutes);
-app.use("/api", serieRoutes);
-app.use("/api", gameRoutes);
-app.use("/api", articleRoutes);
-app.use("/api", reviewRoutes);
-app.use("/api", roleRoutes);
-app.use("/api", actorRoutes);
-app.use("/api", userRoutes);
-app.use("/api", commentRoutes);
+app.use("/film-world/api", movieRoutes);
+app.use("/film-world/api", serieRoutes);
+app.use("/film-world/api", gameRoutes);
+app.use("/film-world/api", articleRoutes);
+app.use("/film-world/api", reviewRoutes);
+app.use("/film-world/api", roleRoutes);
+app.use("/film-world/api", actorRoutes);
+app.use("/film-world/api", userRoutes);
+app.use("/film-world/api", commentRoutes);
 
 // unused
-app.post("/api/add-actor", async (req, res) => {
+app.post("/film-world/api/add-actor", async (req, res) => {
   let { personal_info, banner, activity, roles } = req.body;
 
   const awsImageUrl = await uploadFileToAWSfromUrl(banner);
@@ -278,7 +278,7 @@ app.post("/api/add-actor", async (req, res) => {
     });
 });
 
-app.post("/api/add-character", async (req, res) => {
+app.post("/film-world/api/add-character", async (req, res) => {
   let { personal_info, banner, activity, roles, adversaries } = req.body;
 
   const awsImageUrl = await uploadFileToAWSfromUrl(banner);
@@ -307,7 +307,7 @@ app.post("/api/add-character", async (req, res) => {
     });
 });
 
-app.post("/api/add-role", async (req, res) => {
+app.post("/film-world/api/add-role", async (req, res) => {
   let { filmTitle, characterName, characterBanner, actor, movie, serie, anime } = req.body;
   const awsImageUrl = await uploadFileToAWSfromUrl(characterBanner);
 
@@ -334,7 +334,7 @@ app.post("/api/add-role", async (req, res) => {
     });
 });
 
-app.post("/api/add-game", async (req, res) => {
+app.post("/film-world/api/add-game", async (req, res) => {
   let { title, banner, description, genre, length, year } = req.body;
 
   const awsImageUrl = await uploadFileToAWSfromUrl(banner);
@@ -358,7 +358,7 @@ app.post("/api/add-game", async (req, res) => {
     });
 });
 
-app.post("/api/add-movie", async (req, res) => {
+app.post("/film-world/api/add-movie", async (req, res) => {
   let { title, banner, description, genre, length, year } = req.body;
 
   const awsImageUrl = await uploadFileToAWSfromUrl(banner);
@@ -382,7 +382,7 @@ app.post("/api/add-movie", async (req, res) => {
     });
 });
 
-app.post("/api/add-serie", async (req, res) => {
+app.post("/film-world/api/add-serie", async (req, res) => {
   let { title, banner, description, genre, seasons, yearBeginning, yearEnding } = req.body;
 
   const awsImageUrl = await uploadFileToAWSfromUrl(banner);

@@ -1,4 +1,4 @@
-<h1 align="center">🎬 MovieDB</h1>
+<h1 align="center">🎬 Film World</h1>
 <h3 align="center">Your one-stop movie database with custom articles, user authentication, and slick UI.</h3>
 
 <p align="center">
@@ -11,7 +11,9 @@
 
 ## 🚀 Overview
 
-**MovieDB** is a full-stack movie catalog and blogging platform built with the MERN stack. Users can explore movies, series and games, write custom articles using Editor.js (admin only), and log in via email, Google, or Facebook.
+
+<a href="https://pownprojects.site/film-world" style="text-decoration: underline; font-weight: bold;">Film World</a>
+ is a full-stack movie catalog and blogging platform built with the MERN stack. Users can explore movies, series and games, write custom articles using Editor.js (admin only), and log in via email, Google, or Facebook.
 
 ---
 
