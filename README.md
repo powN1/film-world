@@ -49,9 +49,9 @@
 | Frontend    | Backend            | Other Services        |
 | ----------- | ------------------ | --------------------- |
 | React       | Node.js + Express  | Firebase Auth         |
-| TypeScript  | JWT                | AWS S3                |
-| TailwindCSS | MongoDB + Mongoose | Editor.js             |
-| React Slick |                    | Google/Facebook Login |
+| TailwindCSS | JWT                | AWS S3                |
+| React Slick | MongoDB + Mongoose | Editor.js             |
+|             |                    | Google/Facebook Login |
 
 ---
 
