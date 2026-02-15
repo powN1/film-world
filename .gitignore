@@ -1,0 +1,6 @@
+.vscode
+Session.vim
+*.env
+node_modules
+TODO.md
+.prettierrc.json

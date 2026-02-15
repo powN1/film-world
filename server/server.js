@@ -27,7 +27,7 @@ import actorRoutes from "./routes/actorRoute.js";
 import userRoutes from "./routes/userRoute.js";
 import commentRoutes from "./routes/commentRoute.js";
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 const app = express();
 
@@ -410,5 +410,5 @@ app.post("/film-world/api/add-serie", async (req, res) => {
 // end unused
 
 app.listen(PORT, () => {
-  console.log(`listening on port: ${PORT}`);
+  // console.log(`listening on port: ${PORT}`);
 });
