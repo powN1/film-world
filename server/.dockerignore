@@ -1,4 +1,5 @@
 node_modules
 .env
 bun.lock
-movie-database-project-c228a-firebase-adminsdk-byj42-74fe5a0510.json
+movie-database-project-*-firebase-adminsdk-*.json
+

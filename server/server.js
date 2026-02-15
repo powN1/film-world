@@ -4,6 +4,7 @@ import cors from "cors";
 import { generateUploadUrl, uploadFileToAWSfromUrl } from "./utils/awsFunctions.js";
 import { nanoid } from "nanoid";
 import axios from "axios";
+import { fileURLToPath } from "url";
 import path from "path";
 import "dotenv/config";
 // firebase
@@ -28,29 +29,36 @@ import userRoutes from "./routes/userRoute.js";
 import commentRoutes from "./routes/commentRoute.js";
 
 const PORT = process.env.PORT || 3002;
-
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 if (process.env.NODE_ENV === "production") {
   // Accept requests only from pownprojects.site when in production
   app.use(
     cors({
-      origin: "http://pownprojects.site", // Your frontend URL
+      // origin: "http://patrykkurpiel.pl", // Your frontend URL
+      origin: "*", // Your frontend URL
       methods: "GET,POST,PUT,DELETE", // Allowed HTTP methods
       allowedHeaders: "Content-Type,Authorization", // Allowed headers
     })
   );
 
-  const __dirname = import.meta.dirname;
-  app.use(express.static(path.join(__dirname, "../client/dist")));
+  // const __dirname = import.meta.dirname;
+
+  // Correct path to React build inside Docker
+  const clientBuildPath = path.join(__dirname, "client/dist");
+  app.use(express.static(clientBuildPath));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../", "client", "dist", "index.html"));
+    res.sendFile(path.join(clientBuildPath, "index.html"));
   });
 } else {
   // Accept requests from different ports than backend port (3000) for development
   app.use(cors());
   app.get("/", (req, res) => res.send("Please set to production"));
+  
 }
 
 // Firebase initialize config
@@ -410,5 +418,5 @@ app.post("/film-world/api/add-serie", async (req, res) => {
 // end unused
 
 app.listen(PORT, () => {
-  // console.log(`listening on port: ${PORT}`);
+  console.log(`listening on port: ${PORT}`);
 });
