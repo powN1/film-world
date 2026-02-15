@@ -38,8 +38,8 @@ if (process.env.NODE_ENV === "production") {
   // Accept requests only from pownprojects.site when in production
   app.use(
     cors({
-      // origin: "http://patrykkurpiel.pl", // Your frontend URL
-      origin: "*", // Your frontend URL
+      origin: "http://patrykkurpiel.com", // Your frontend URL
+      // origin: "*", 
       methods: "GET,POST,PUT,DELETE", // Allowed HTTP methods
       allowedHeaders: "Content-Type,Authorization", // Allowed headers
     })
@@ -49,9 +49,9 @@ if (process.env.NODE_ENV === "production") {
 
   // Correct path to React build inside Docker
   const clientBuildPath = path.join(__dirname, "client/dist");
-  app.use(express.static(clientBuildPath));
+  app.use("/film-world", express.static(clientBuildPath));
 
-  app.get("*", (req, res) => {
+  app.get("/film-world/*", (req, res) => {
     res.sendFile(path.join(clientBuildPath, "index.html"));
   });
 } else {
